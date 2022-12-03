@@ -1,0 +1,415 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Common">
+      <UniqueIdentifier>6b3a9f66-518f-472a-960b-454711d6ee5b</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets">
+      <UniqueIdentifier>305cfd3f-bb57-4e1f-b131-e45df4d323fb</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dds;dlg;fbx;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tga;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Game">
+      <UniqueIdentifier>{fc7fcf1f-222c-4d14-8424-868572e5eeda}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\PlayScene">
+      <UniqueIdentifier>{43e115e2-8b60-43a0-952b-78dc9914c439}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\TitleScene">
+      <UniqueIdentifier>{82457628-7c47-4e1a-b66b-f7c31c8520d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Libraries">
+      <UniqueIdentifier>{4815bf3b-80b6-4d50-b582-332fd26fac9b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Libraries\MyLibraries">
+      <UniqueIdentifier>{811c2a07-d587-445e-9410-603255c1846d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{20bda224-49e4-4621-bbd2-d3720eb4e2a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources\Textures">
+      <UniqueIdentifier>{a7088ee9-fd00-4d18-b3f2-71b96f0dc9c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources\Fonts">
+      <UniqueIdentifier>{eea3c579-7cc7-4e3d-b495-74ec5c148a13}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources\Icon">
+      <UniqueIdentifier>{e17ffd14-7217-4e09-89a0-685e2df92d2e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources\Models">
+      <UniqueIdentifier>{89530e9a-e668-4911-9f24-e91850b1f232}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\PlayScene\Actor">
+      <UniqueIdentifier>{8aab299f-30b8-4a2f-bf62-94d009d53e68}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\PlayScene\Player">
+      <UniqueIdentifier>{bd191b7d-5e47-4d42-b607-d1966b7707ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\PlayScene\Obstacle">
+      <UniqueIdentifier>{57ce7d58-fd02-40dc-9535-bb7ffed8268f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\PlayScene\Stage">
+      <UniqueIdentifier>{09373fca-4399-4850-bf80-90f38b39138b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\PlayScene\Item">
+      <UniqueIdentifier>{8019c98a-4790-4474-a044-67fb6114e7a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\PlayScene\AABBfor3D">
+      <UniqueIdentifier>{1dfa75b9-9eb2-49a1-88cb-d7dbe27b6480}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\ResultScene">
+      <UniqueIdentifier>{e24428fa-369d-4606-ad2e-7e60450c0469}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\LoadingScreen">
+      <UniqueIdentifier>{c777e2e7-8bc3-4b7e-9466-87b7a758203d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Libraries\AXD2">
+      <UniqueIdentifier>{8b76501b-4468-4a66-a212-25a6d47436c7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Helpers">
+      <UniqueIdentifier>{0184e31e-088f-4cbd-9a39-35ad8bbfea87}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="Game.h" />
+    <ClInclude Include="StepTimer.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="DeviceResources.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\GameMain.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\IScene.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\PlayScene\PlayScene.h">
+      <Filter>Game\PlayScene</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\TitleScene\TitleScene.h">
+      <Filter>Game\TitleScene</Filter>
+    </ClInclude>
+    <ClInclude Include="Libraries\MyLibraries\DebugCamera.h">
+      <Filter>Libraries\MyLibraries</Filter>
+    </ClInclude>
+    <ClInclude Include="Libraries\MyLibraries\GridFloor.h">
+      <Filter>Libraries\MyLibraries</Filter>
+    </ClInclude>
+    <ClInclude Include="Libraries\MyLibraries\Camera.h">
+      <Filter>Libraries\MyLibraries</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources\Icon\Icon.h">
+      <Filter>Resources\Icon</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\PlayScene\IBehavior.h">
+      <Filter>Game\PlayScene</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\PlayScene\ISpawner.h">
+      <Filter>Game\PlayScene</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\PlayScene\Actor\Actor.h">
+      <Filter>Game\PlayScene\Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\PlayScene\Item\Item.h">
+      <Filter>Game\PlayScene\Item</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\PlayScene\Item\ItemManeger.h">
+      <Filter>Game\PlayScene\Item</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\PlayScene\Obstacle\Obstacle.h">
+      <Filter>Game\PlayScene\Obstacle</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\PlayScene\Obstacle\ObstacleManeger.h">
+      <Filter>Game\PlayScene\Obstacle</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\PlayScene\Player\Player.h">
+      <Filter>Game\PlayScene\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\PlayScene\Stage\Stage.h">
+      <Filter>Game\PlayScene\Stage</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\PlayScene\AABBFor3D\AABBFor3D.h">
+      <Filter>Game\PlayScene\AABBfor3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\PlayScene\Item\ItemSpawner.h">
+      <Filter>Game\PlayScene\Item</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\PlayScene\MyRandom.h">
+      <Filter>Game\PlayScene</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\PlayScene\Obstacle\ObstacleSpawner.h">
+      <Filter>Game\PlayScene\Obstacle</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\PlayScene\Obstacle\NormalObstacle.h">
+      <Filter>Game\PlayScene\Obstacle</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\PlayScene\Obstacle\StickObstacle.h">
+      <Filter>Game\PlayScene\Obstacle</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\PlayScene\Obstacle\ObstacleBehavior.h">
+      <Filter>Game\PlayScene\Obstacle</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\BinaryFile.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\EffectManager.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\EffectManager2.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\EffectManager3.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\ShaderSample.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\ShaderSample2.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\ShaderSample3.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\ResultScene\ResultScene.h">
+      <Filter>Game\ResultScene</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\PlayScene\ShadowMap.h">
+      <Filter>Game\PlayScene</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\LoadingScreen\LoadingScreen.h">
+      <Filter>Game\LoadingScreen</Filter>
+    </ClInclude>
+    <ClInclude Include="Libraries\AXD2\Adx2.h">
+      <Filter>Libraries\AXD2</Filter>
+    </ClInclude>
+    <ClInclude Include="Libraries\MyLibraries\Singleton.h">
+      <Filter>Libraries\MyLibraries</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\PlayScene\Objects.h">
+      <Filter>Game\PlayScene</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\PlayScene\Stage\StageManager.h">
+      <Filter>Game\PlayScene\Stage</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\PlayScene\AliveTimer.h">
+      <Filter>Game\PlayScene</Filter>
+    </ClInclude>
+    <ClInclude Include="Helpers\CueSheet_0.h">
+      <Filter>Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="Helpers\DODGESound_acf.h">
+      <Filter>Helpers</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="Game.cpp" />
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="DeviceResources.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\GameMain.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\PlayScene\PlayScene.cpp">
+      <Filter>Game\PlayScene</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\TitleScene\TitleScene.cpp">
+      <Filter>Game\TitleScene</Filter>
+    </ClCompile>
+    <ClCompile Include="Libraries\MyLibraries\DebugCamera.cpp">
+      <Filter>Libraries\MyLibraries</Filter>
+    </ClCompile>
+    <ClCompile Include="Libraries\MyLibraries\GridFloor.cpp">
+      <Filter>Libraries\MyLibraries</Filter>
+    </ClCompile>
+    <ClCompile Include="Libraries\MyLibraries\Camera.cpp">
+      <Filter>Libraries\MyLibraries</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\PlayScene\IBehavior.cpp">
+      <Filter>Game\PlayScene</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\PlayScene\ISpawner.cpp">
+      <Filter>Game\PlayScene</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\PlayScene\Actor\Actor.cpp">
+      <Filter>Game\PlayScene\Actor</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\PlayScene\Item\Item.cpp">
+      <Filter>Game\PlayScene\Item</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\PlayScene\Item\ItemManeger.cpp">
+      <Filter>Game\PlayScene\Item</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\PlayScene\Obstacle\Obstacle.cpp">
+      <Filter>Game\PlayScene\Obstacle</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\PlayScene\Obstacle\ObstacleManeger.cpp">
+      <Filter>Game\PlayScene\Obstacle</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\PlayScene\Player\Player.cpp">
+      <Filter>Game\PlayScene\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\PlayScene\Stage\Stage.cpp">
+      <Filter>Game\PlayScene\Stage</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\PlayScene\AABBFor3D\AABBFor3D.cpp">
+      <Filter>Game\PlayScene\AABBfor3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\PlayScene\Item\ItemSpawner.cpp">
+      <Filter>Game\PlayScene\Item</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\PlayScene\MyRandom.cpp">
+      <Filter>Game\PlayScene</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\PlayScene\Obstacle\ObstacleSpawner.cpp">
+      <Filter>Game\PlayScene\Obstacle</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\PlayScene\Obstacle\NormalObstacle.cpp">
+      <Filter>Game\PlayScene\Obstacle</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\PlayScene\Obstacle\StickObstacle.cpp">
+      <Filter>Game\PlayScene\Obstacle</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\PlayScene\Obstacle\ObstacleBehavior.cpp">
+      <Filter>Game\PlayScene\Obstacle</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\BinaryFile.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\EffectManager.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\EffectManager2.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\EffectManager3.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\ShaderSample.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\ShaderSample2.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\ShaderSample3.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\ResultScene\ResultScene.cpp">
+      <Filter>Game\ResultScene</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\PlayScene\ShadowMap.cpp">
+      <Filter>Game\PlayScene</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\LoadingScreen\LoadingScreen.cpp">
+      <Filter>Game\LoadingScreen</Filter>
+    </ClCompile>
+    <ClCompile Include="Libraries\AXD2\Adx2.cpp">
+      <Filter>Libraries\AXD2</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\PlayScene\Stage\StageManager.cpp">
+      <Filter>Game\PlayScene\Stage</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\PlayScene\AliveTimer.cpp">
+      <Filter>Game\PlayScene</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="resource.rc" />
+    <ResourceCompile Include="Resources\Icon\Icon.rc">
+      <Filter>Resources\Icon</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="directx.ico">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Resources\Textures\TridentLogo.png">
+      <Filter>Resources\Textures</Filter>
+    </Image>
+    <Image Include="Resources\Icon\Icon.ico">
+      <Filter>Resources\Icon</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="settings.manifest">
+      <Filter>Assets</Filter>
+    </Manifest>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Fonts\myfile.spritefont">
+      <Filter>Resources\Fonts</Filter>
+    </None>
+    <None Include="Resources\Fonts\SegoeUI_18.spritefont">
+      <Filter>Resources\Fonts</Filter>
+    </None>
+    <None Include="Game\Particle.hlsli">
+      <Filter>Game</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <MeshContentTask Include="Resources\Assets\dice.FBX">
+      <Filter>Assets</Filter>
+    </MeshContentTask>
+    <MeshContentTask Include="Resources\Assets\tenkyuu.fbx">
+      <Filter>Assets</Filter>
+    </MeshContentTask>
+    <MeshContentTask Include="Resources\Assets\stickObstale.fbx">
+      <Filter>Assets</Filter>
+    </MeshContentTask>
+    <MeshContentTask Include="Resources\Assets\StageObject.fbx">
+      <Filter>Assets</Filter>
+    </MeshContentTask>
+    <MeshContentTask Include="Resources\Assets\star.fbx">
+      <Filter>Assets</Filter>
+    </MeshContentTask>
+    <MeshContentTask Include="Resources\Assets\playeraidoru.fbx">
+      <Filter>Assets</Filter>
+    </MeshContentTask>
+    <MeshContentTask Include="Resources\Assets\playerhidari.fbx">
+      <Filter>Assets</Filter>
+    </MeshContentTask>
+    <MeshContentTask Include="Resources\Assets\playerjanp.fbx">
+      <Filter>Assets</Filter>
+    </MeshContentTask>
+    <MeshContentTask Include="Resources\Assets\playermigiasi.fbx">
+      <Filter>Assets</Filter>
+    </MeshContentTask>
+    <MeshContentTask Include="Resources\Assets\fireShadow.fbx">
+      <Filter>Assets</Filter>
+    </MeshContentTask>
+    <MeshContentTask Include="Resources\Assets\do-nattu.fbx">
+      <Filter>Assets</Filter>
+    </MeshContentTask>
+    <MeshContentTask Include="Resources\Assets\stage.fbx">
+      <Filter>Assets</Filter>
+    </MeshContentTask>
+    <MeshContentTask Include="Resources\Assets\roll.fbx">
+      <Filter>Assets</Filter>
+    </MeshContentTask>
+    <MeshContentTask Include="Resources\Assets\testModel.fbx">
+      <Filter>Assets</Filter>
+    </MeshContentTask>
+    <MeshContentTask Include="Resources\Assets\bule.fbx">
+      <Filter>Assets</Filter>
+    </MeshContentTask>
+    <MeshContentTask Include="Resources\Assets\shield.fbx">
+      <Filter>Assets</Filter>
+    </MeshContentTask>
+    <MeshContentTask Include="Resources\Assets\roll2.fbx">
+      <Filter>Assets</Filter>
+    </MeshContentTask>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Game\ParticleGS.hlsl">
+      <Filter>Game</Filter>
+    </FxCompile>
+    <FxCompile Include="Game\ParticlePS.hlsl">
+      <Filter>Game</Filter>
+    </FxCompile>
+    <FxCompile Include="Game\ParticleVS.hlsl">
+      <Filter>Game</Filter>
+    </FxCompile>
+  </ItemGroup>
+</Project>
