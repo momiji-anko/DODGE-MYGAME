@@ -159,13 +159,7 @@ void Obstacle::Draw(Camera* camera)
 		m_world *= scale * rot * trans;
 
 		m_pModel->Draw(context, *m_commonState, m_world, camera->GetViewMatrix(), camera->GetProjectionMatrix());
-		/*m_geo->Draw(DirectX::SimpleMath::Matrix::Identity, camera->GetViewMatrix(), camera->GetProjectionMatrix(), DirectX::Colors::White, nullptr, true);
 
-		m_geoWorld = DirectX::SimpleMath::Matrix::Identity;
-		m_geoWorld *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(m_capsule->b));*/
-
-
-		//m_geo->Draw(m_geoWorld, camera->GetViewMatrix(), camera->GetProjectionMatrix(), DirectX::Colors::White, nullptr, true);
 		break;
 	case Obstacle::ObstacleType::STRAIGHT_MOVE_BOTTOM_TOP:
 	case Obstacle::ObstacleType::STRAIGHT_MOVE_LEFT_RIGHT:

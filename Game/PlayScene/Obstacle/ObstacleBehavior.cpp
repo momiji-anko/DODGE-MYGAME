@@ -103,8 +103,8 @@ void MeanderingeBehavior::Execute(const DX::StepTimer& timer, Actor* actor)
 	DirectX::SimpleMath::Vector3 seekVlocity = obstacle->Seek(obstacle->GetPlayerPosition());
 	DirectX::SimpleMath::Vector3 wanderVelocity = obstacle->Wander();
 	
-	seekVlocity *= elapsedTime;
-	wanderVelocity *= 0.1;
+	seekVlocity *= elapsedTime/10;
+	wanderVelocity *= 0.1f;
 	actor->SetPosition(DirectX::SimpleMath::Vector3(position.x+ seekVlocity.x+ wanderVelocity.x, position.y, position.z+ seekVlocity.z + wanderVelocity.z));
 
 }

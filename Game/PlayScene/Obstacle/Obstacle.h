@@ -33,28 +33,27 @@ private:
 	static const float MOVE_SPEED;
 
 	//変数
-	ObstacleType m_type;
-	EffectManager3* m_effect;
-	std::unique_ptr<DirectX::GeometricPrimitive> m_geo;
-	DirectX::SimpleMath::Matrix m_geoWorld;
+	ObstacleType                                                       m_type;
+	EffectManager3*                                                    m_effect;
+	std::unique_ptr<DirectX::GeometricPrimitive>                       m_geo;
 
-	DirectX::SimpleMath::Vector3 m_scale;
+	DirectX::SimpleMath::Vector3                                       m_scale;
 
-	float m_rotSpeed;
-	float m_meanderingSpeed;
+	float                                                              m_rotSpeed;
+	float                                                              m_meanderingSpeed;
 
 
-	float m_mass;           // 質量
-	float m_maxSpeed;       // 最大移動速度(スピード)
-	float m_maxForce;       // 適用される最大の力
+	float                                                              m_mass;           // 質量
+	float                                                              m_maxSpeed;       // 最大移動速度(スピード)
+	float                                                              m_maxForce;       // 適用される最大の力
 
-	DirectX::SimpleMath::Vector3 m_force;       // 物体に加わる力
+	DirectX::SimpleMath::Vector3                                       m_force;       // 物体に加わる力
 
 		// 徘徊行動用パラメータ
-	float m_wanderRadius;
-	float m_wanderDistance;
-	float m_wanderAngularVelocity;
-	float m_wanderAngle;
+	float                                                              m_wanderRadius;
+	float                                                              m_wanderDistance;
+	float                                                              m_wanderAngularVelocity;
+	float                                                              m_wanderAngle;
 	DirectX::SimpleMath::Vector3                                       m_playerPosition;
 
 public :
@@ -155,7 +154,11 @@ public :
 
 	DirectX::SimpleMath::Vector3 Forward() const
 	{
-		DirectX::SimpleMath::Vector3 vec = GetVelocity()-m_playerPosition;
+		float x = std::cos(m_angle) * GetVelocity().Length();
+		float z = std::sin(m_angle) * GetVelocity().Length();
+		x = -sin(m_angle) * MOVE_SPEED;
+		z = -cos(m_angle) * MOVE_SPEED;
+		DirectX::SimpleMath::Vector3 vec{x,0.0,z};
 		vec.Normalize();
 		return vec;
 	}

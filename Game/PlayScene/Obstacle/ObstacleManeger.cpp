@@ -94,7 +94,7 @@ void ObstacleManeger::Initialize(DirectX::CommonStates* commonState, StageSelect
 	CreateBehavior();
 	
 
-	m_spawneCoolTime = 3.0f;
+	m_spawneCoolTime = SPANE_COOL_TIME_S;
 	m_spawneTime_s = 0.0f;
 
 	////	エフェクトファクトリの作成
@@ -233,7 +233,7 @@ void ObstacleManeger::Update(const DX::StepTimer& timer)
 			case 4:
 				
 				
-				CreateObstacle(m_normalSpawnePosition[type], Obstacle::ObstacleType::NORMAL, rad);
+				CreateObstacle(m_normalSpawnePosition[type], Obstacle::ObstacleType::MEANDERING, rad);
 				break;
 			case 5:
 
