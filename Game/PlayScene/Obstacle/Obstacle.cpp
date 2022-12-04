@@ -35,7 +35,7 @@ void Obstacle::Initialize(const DirectX::SimpleMath::Vector3& velocity,const Dir
 	m_wanderAngularVelocity = DirectX::XMConvertToRadians(30.0f);
 	m_wanderAngle = angle;
 
-	m_velocity = velocity;
+	m_velocity = Seek(m_playerPosition);
 	m_position = position;
 
 	m_active = active;
