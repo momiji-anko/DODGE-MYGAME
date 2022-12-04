@@ -180,8 +180,8 @@ bool MeanderingObstacleSpawner::Create(std::vector<std::unique_ptr<Actor>>& acto
 
 		}
 		DirectX::SimpleMath::Vector3 velocity;
-		velocity.x = -sin(angle) * 0.1;
-		velocity.z = cos(angle) * 0.1;
+		velocity.x = 1;
+		velocity.z = 1;
 		//ƒAƒCƒeƒ€‚Ì‰Šú‰»
 		actor->Initialize(velocity, position, true, angle, behavior, model, commonState);
 

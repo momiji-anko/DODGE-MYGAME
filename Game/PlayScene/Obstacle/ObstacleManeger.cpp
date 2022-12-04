@@ -9,7 +9,7 @@
 
 const int ObstacleManeger::OBSTACLE_MAX_NUM = 100;
 const int ObstacleManeger::EFFECT_MAX_NUM = 5;
-const float ObstacleManeger::SPANE_COOL_TIME_S = 5.0f;
+const float ObstacleManeger::SPANE_COOL_TIME_S = 0.5f;
 
 //コンストラクタ
 ObstacleManeger::ObstacleManeger() 
@@ -85,6 +85,7 @@ void ObstacleManeger::Initialize(DirectX::CommonStates* commonState, StageSelect
 		{
 			int num = MyRandom::GetIntRange(0, EFFECT_MAX_NUM - 1);
 			o->SetEffect(m_effectlist[num].get());
+			
 		}
 	}
 
@@ -223,7 +224,7 @@ void ObstacleManeger::Update(const DX::StepTimer& timer)
 
 		if (m_time_s <= 50)
 		{
-			switch (MyRandom::GetIntRange(0, 5))
+			switch (MyRandom::GetIntRange(0, 4))
 			{
 			case 0:
 			case 1:
@@ -275,10 +276,15 @@ void ObstacleManeger::Update(const DX::StepTimer& timer)
 
 		if (m_spawneCoolTime <= 1.0f)
 		{
-			m_spawneCoolTime = 1.0f;
+			//m_spawneCoolTime = 1.0f;
 		}
 	}
+	for (std::unique_ptr<Actor>& obstacle : m_obstacles)
+	{
+		Obstacle* obs = dynamic_cast<Obstacle*> (obstacle.get());
 
+		obs->SetPlayerPosition(m_playerPosition);
+	}
 
 	for (std::unique_ptr<Actor>& obstacle : m_obstacles)
 	{
@@ -287,6 +293,8 @@ void ObstacleManeger::Update(const DX::StepTimer& timer)
 
 		obstacle->Update(timer);
 	}
+
+
 }
 
 // 描画

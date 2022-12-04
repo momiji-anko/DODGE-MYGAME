@@ -91,28 +91,21 @@ void MeteoriteBehavior::Execute(const DX::StepTimer& timer, Actor* actor)
 void MeanderingeBehavior::Execute(const DX::StepTimer& timer, Actor* actor)
 {
 	const float MOVE_SPEED = 1.0f;
-
+	float elapsedTime = timer.GetElapsedSeconds();
 	DirectX::SimpleMath::Vector3 position = actor->GetPosition();
 	DirectX::SimpleMath::Vector3 velocity = actor->GetVelocity();
 	DirectX::SimpleMath::Vector3 rot = actor->GetRotation();
 	float angle = actor->GetAngle();
-	
+	actor->SetVelocity(DirectX::SimpleMath::Vector3(1, 0, 1));
 	Obstacle* obstacle = dynamic_cast<Obstacle*>(actor);
-	float& rotSpeed = obstacle->GetRotSpeed();
-	DirectX::SimpleMath::Vector3 vec;
-
-
-	rot.y += rotSpeed;
-
-	if (rot.y <= -DirectX::XM_PI / 2 || rot.y >= DirectX::XM_PI / 2)
-	{
-		rotSpeed *= -1;
-	}
-
-	vec.z = -sin( rot.y) * MOVE_SPEED;
-	vec.x = cos( rot.y) * MOVE_SPEED;
-	actor->SetRotation(rot);
-	actor->SetPosition(position + ((vec + velocity) * timer.GetElapsedSeconds()));
+	
+	actor->GetAABB()->SetData(DirectX::SimpleMath::Vector3(position.x - 0.3f, position.y - 0.5f, position.z - 0.3f), DirectX::SimpleMath::Vector3(position.x + 0.3f, position.y + 0.5f, position.z + 0.3f));
+	DirectX::SimpleMath::Vector3 seekVlocity = obstacle->Seek(obstacle->GetPlayerPosition());
+	DirectX::SimpleMath::Vector3 wanderVelocity = obstacle->Wander();
+	
+	seekVlocity *= elapsedTime;
+	wanderVelocity *= 0.1;
+	actor->SetPosition(DirectX::SimpleMath::Vector3(position.x+ seekVlocity.x+ wanderVelocity.x, position.y, position.z+ seekVlocity.z + wanderVelocity.z));
 
 }
 
@@ -149,7 +142,7 @@ void BirdBehavior::Execute(const DX::StepTimer& timer, Actor* actor)
 		aabb->SetData(DirectX::SimpleMath::Vector3(position.x - 0.5f, position.y - 0.5f, position.z - 0.4f), DirectX::SimpleMath::Vector3(position.x + 0.5f, position.y + 0.5f, position.z + 0.4f));
 
 	}
-
+	
 
 
 	actor->SetPosition(position + (velocity * timer.GetElapsedSeconds()));
