@@ -9,7 +9,7 @@
 
 const int ObstacleManeger::OBSTACLE_MAX_NUM = 100;
 const int ObstacleManeger::EFFECT_MAX_NUM = 5;
-const float ObstacleManeger::SPANE_COOL_TIME_S = 0.5f;
+const float ObstacleManeger::SPANE_COOL_TIME_S = 3.0f;
 
 //コンストラクタ
 ObstacleManeger::ObstacleManeger() 
@@ -233,7 +233,7 @@ void ObstacleManeger::Update(const DX::StepTimer& timer)
 			case 4:
 				
 				
-				CreateObstacle(m_normalSpawnePosition[type], Obstacle::ObstacleType::MEANDERING, rad);
+				CreateObstacle(m_normalSpawnePosition[type], Obstacle::ObstacleType::NORMAL, rad);
 				break;
 			case 5:
 
@@ -251,21 +251,26 @@ void ObstacleManeger::Update(const DX::StepTimer& timer)
 		{
 			int random = MyRandom::GetIntRange(0, 100);
 
-			if (random <= 50)
+			if (random <= 30)
 			{
 				CreateObstacle(m_normalSpawnePosition[type], Obstacle::ObstacleType::NORMAL, rad);
 
 			}
-			else if (random <= 75)
+			else if (random <= 45)
 			{
 				float  angle = (DirectX::XM_PI / 2.0f) * type;
 
 				CreateObstacle(m_stickSpawnePosition[type], Obstacle::ObstacleType::STICK, angle);
 			}
-			else if (random <= 100)
+			else if (random <= 50)
 			{
 
 				CreateObstacle(m_birdSpawnPosition[type], Obstacle::ObstacleType::BIRD, birdangle);
+			
+			}else if (random <= 100)
+			{
+
+				CreateObstacle(m_normalSpawnePosition[type], Obstacle::ObstacleType::MEANDERING, rad);
 			}
 
 		}

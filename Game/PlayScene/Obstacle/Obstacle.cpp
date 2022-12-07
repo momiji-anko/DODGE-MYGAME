@@ -35,8 +35,9 @@ void Obstacle::Initialize(const DirectX::SimpleMath::Vector3& velocity,const Dir
 	m_wanderAngularVelocity = DirectX::XMConvertToRadians(30.0f);
 	m_wanderAngle = angle;
 
-	m_velocity = Seek(m_playerPosition);
+	
 	m_position = position;
+	m_velocity = velocity;
 
 	m_active = active;
 
@@ -49,6 +50,10 @@ void Obstacle::Initialize(const DirectX::SimpleMath::Vector3& velocity,const Dir
 	m_wanderAngle = atan2(m_position.x-m_playerPosition.x, m_position.z - m_playerPosition.z);
 	switch (m_type)
 	{
+	case Obstacle::ObstacleType::MEANDERING:
+		m_velocity = DirectX::SimpleMath::Vector3::Zero;
+		m_velocity = Seek(m_playerPosition);
+		break;
 	case Obstacle::ObstacleType::NORMAL:
 
 		m_velocity.x = -sin(m_angle) * MOVE_SPEED;
@@ -64,6 +69,8 @@ void Obstacle::Initialize(const DirectX::SimpleMath::Vector3& velocity,const Dir
 		m_velocity = DirectX::SimpleMath::Vector3::TransformNormal(m_velocity, rotetion);
 		break;
 
+
+
 	}
 	m_geo = DirectX::GeometricPrimitive::CreateGeoSphere(pDR->GetD3DDeviceContext(), 1.0f, 2, false);
 	
@@ -72,40 +79,24 @@ void Obstacle::Initialize(const DirectX::SimpleMath::Vector3& velocity,const Dir
 
 	m_AABBObject = std::make_unique<AABBFor3D>();
 	m_AABBObject->Initialize();
-	//m_AABBObject->SetData(DirectX::SimpleMath::Vector3(m_position.x + 0.5f, m_position.y + 0.5f, m_position.z + 0.5f), DirectX::SimpleMath::Vector3(m_position.x - 0.5f, m_position.y - 0.5f, m_position.z - 0.5f));
 	m_AABBObject->SetData({ 100,100,100 }, {100,100,100});
-
+	m_seekTime_s = 0.f;
 }
 
 // XV
 void Obstacle::Update(const DX::StepTimer& timer)
 {
 	m_world = DirectX::SimpleMath::Matrix::Identity;
+	m_seekTime_s += timer.GetElapsedSeconds();
 
 	switch (m_type)
 	{
 	case Obstacle::ObstacleType::NORMAL:
 	case Obstacle::ObstacleType::MEANDERING:
 
-		m_AABBObject->SetData(DirectX::SimpleMath::Vector3(m_position.x - 0.3f, m_position.y - 0.5f, m_position.z - 0.3f), DirectX::SimpleMath::Vector3(m_position.x + 0.3f, m_position.y + 0.5f, m_position.z + 0.3f));
 		m_effect->Update(timer);
-		
-		break;
-	case Obstacle::ObstacleType::STICK:
-	
-		if (m_angle ==0.0f|| m_angle == DirectX::XM_PI)
-		{
-			m_AABBObject->SetData(DirectX::SimpleMath::Vector3(m_position.x - 0.5f, m_position.y - 0.0f, m_position.z - 12.0f), DirectX::SimpleMath::Vector3(m_position.x + 0.5f, m_position.y + 1.5f, m_position.z + 12.0f));
-
-		}	
-		else if (m_angle == DirectX::XM_PI /2.0f|| m_angle == DirectX::XM_PI+(DirectX::XM_PI/2.0f))
-		{
-			m_AABBObject->SetData(DirectX::SimpleMath::Vector3(m_position.x - 12.0f, m_position.y - 0.0f, m_position.z - 0.4f), DirectX::SimpleMath::Vector3(m_position.x + 12.0f, m_position.y + 1.0f, m_position.z + 0.4f));
-
-		}
 
 		break;
-
 	}
 
 	m_behavia->Execute(timer, this);
@@ -134,11 +125,7 @@ void Obstacle::Draw(Camera* camera)
 	DirectX::SimpleMath::Matrix rot = DirectX::SimpleMath::Matrix::CreateRotationY(m_rotation.y);
 	DirectX::SimpleMath::Matrix scale = DirectX::SimpleMath::Matrix::CreateScale(0.005f);
 
-	//if(m_type!= Obstacle::ObstacleType::ROTATESTICK)
-
-
-	//m_AABBObject->Draw(DirectX::SimpleMath::Matrix::Identity, camera->GetViewMatrix(), camera->GetProjectionMatrix(), DirectX::SimpleMath::Color(1, 1, 0, 1));
-
+	
 	
 
 	switch (m_type)

@@ -215,12 +215,10 @@
     <ClInclude Include="Game\PlayScene\Item\ItemSpawner.h" />
     <ClInclude Include="Game\PlayScene\MyRandom.h" />
     <ClInclude Include="Game\PlayScene\Objects.h" />
-    <ClInclude Include="Game\PlayScene\Obstacle\NormalObstacle.h" />
     <ClInclude Include="Game\PlayScene\Obstacle\Obstacle.h" />
     <ClInclude Include="Game\PlayScene\Obstacle\ObstacleBehavior.h" />
     <ClInclude Include="Game\PlayScene\Obstacle\ObstacleManeger.h" />
     <ClInclude Include="Game\PlayScene\Obstacle\ObstacleSpawner.h" />
-    <ClInclude Include="Game\PlayScene\Obstacle\StickObstacle.h" />
     <ClInclude Include="Game\PlayScene\Player\Player.h" />
     <ClInclude Include="Game\PlayScene\PlayScene.h" />
     <ClInclude Include="Game\PlayScene\ShadowMap.h" />
@@ -260,12 +258,10 @@
     <ClCompile Include="Game\PlayScene\Item\ItemManeger.cpp" />
     <ClCompile Include="Game\PlayScene\Item\ItemSpawner.cpp" />
     <ClCompile Include="Game\PlayScene\MyRandom.cpp" />
-    <ClCompile Include="Game\PlayScene\Obstacle\NormalObstacle.cpp" />
     <ClCompile Include="Game\PlayScene\Obstacle\Obstacle.cpp" />
     <ClCompile Include="Game\PlayScene\Obstacle\ObstacleBehavior.cpp" />
     <ClCompile Include="Game\PlayScene\Obstacle\ObstacleManeger.cpp" />
     <ClCompile Include="Game\PlayScene\Obstacle\ObstacleSpawner.cpp" />
-    <ClCompile Include="Game\PlayScene\Obstacle\StickObstacle.cpp" />
     <ClCompile Include="Game\PlayScene\Player\Player.cpp" />
     <ClCompile Include="Game\PlayScene\PlayScene.cpp" />
     <ClCompile Include="Game\PlayScene\ShadowMap.cpp" />

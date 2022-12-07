@@ -25,13 +25,7 @@ bool NormalObstacleSpawner::Create(std::vector< std::unique_ptr<Actor>>& actors,
 		//アイテムの初期化
 		actor->Initialize(velocity, position, true, angle, behavior, model, commonState);
 
-		if (obstale != nullptr)
-		{
 
-			/*AABBFor3D aabb;
-
-			obstale->SetAABB(&aabb);*/
-		}
 
 
 		//アイテムの生成に成功
@@ -176,7 +170,7 @@ bool MeanderingObstacleSpawner::Create(std::vector<std::unique_ptr<Actor>>& acto
 		Obstacle* obstale = dynamic_cast<Obstacle*>(actor.get());
 		if (obstale != nullptr)
 		{
-			obstale->SetType(Obstacle::ObstacleType::NORMAL);
+			obstale->SetType(Obstacle::ObstacleType::MEANDERING);
 
 		}
 		DirectX::SimpleMath::Vector3 velocity;
@@ -188,9 +182,7 @@ bool MeanderingObstacleSpawner::Create(std::vector<std::unique_ptr<Actor>>& acto
 		if (obstale != nullptr)
 		{
 
-			/*AABBFor3D aabb;
-
-			obstale->SetAABB(&aabb);*/
+		
 		}
 
 

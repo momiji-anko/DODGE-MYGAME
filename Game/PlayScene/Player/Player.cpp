@@ -136,7 +136,6 @@ void Player::Initialize(const DirectX::SimpleMath::Vector3& velocity, const Dire
 		nullptr,
 		m_invalidTexture.ReleaseAndGetAddressOf()
 	);
-	//m_invalidCount = 10;
 }
 
 // çXêV
@@ -156,13 +155,11 @@ void Player::Update(const DX::StepTimer& timer)
 	{
 		int playerStateInt = static_cast<int>(itemType);
 
-		//m_playerState = static_cast<PlayerState> (playerStateInt);
 
 		InvalidCountUp();
 		
 	
 
-		//m_musicID = m_pAdx2->Play(CRI_CUESHEET_0_INVINCIBLE);
 		m_itemHit = false;
 
 	}
@@ -200,8 +197,7 @@ void Player::Update(const DX::StepTimer& timer)
 
 		m_rotation.y = 0;
 	}
-	/*m_velocity.z = moveVec.z;
-	m_velocity.x = moveVec.x;*/
+
 	
 	m_position.z += m_velocity.z;
 	m_position.x += m_velocity.x;
@@ -254,7 +250,6 @@ void Player::Update(const DX::StepTimer& timer)
 	else
 	{
 		m_modelTime = 4;
-		//m_pAdx2->Stop(m_jumpmusicID);
 		m_velocity.y += GRAVITY_FORCE * timer.GetElapsedSeconds();
 
 	}
@@ -347,7 +342,6 @@ void Player::Draw(Camera* camera)
 	
 
 	m_world *= rot * scale * trans;
-	//m_AABBObject->Draw(DirectX::SimpleMath::Matrix::Identity, camera->GetViewMatrix(), camera->GetProjectionMatrix(),DirectX::SimpleMath::Color(1,0,0,1));
 	if (m_isInvalid)
 	{
 		m_playerModel[m_playerModelNum[m_modelTime]]->Draw(context, *m_commonState, m_world, camera->GetViewMatrix(), camera->GetProjectionMatrix());

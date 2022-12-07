@@ -55,7 +55,7 @@ private:
 	float                                                              m_wanderAngularVelocity;
 	float                                                              m_wanderAngle;
 	DirectX::SimpleMath::Vector3                                       m_playerPosition;
-
+	float m_seekTime_s;
 public :
 	//コンストラクタ
 	Obstacle();
@@ -101,47 +101,12 @@ public :
 	DirectX::SimpleMath::Vector3 GetScale(){ return m_scale; }
 	void SetScale(DirectX::SimpleMath::Vector3 scale) { m_scale = scale; }
 
-	void ApplyForce(const DirectX::SimpleMath::Vector3& force)
-	{
-		m_force += force;
-	}
 
-	DirectX::SimpleMath::Vector3 Truncate(const DirectX::SimpleMath::Vector3& v, const float maxLength)
-	{
-		const float maxLengthSquared = maxLength * maxLength;
-		const float vecLengthSquared = v.LengthSquared();
-		if (vecLengthSquared <= maxLengthSquared)
-			return v;
-		else
-			return v * (maxLength / v.Length());
-	}
+
+
 
 	DirectX::SimpleMath::Vector3 GetPlayerPosition() { return m_playerPosition; }
 	void SetPlayerPosition(DirectX::SimpleMath::Vector3 playerPos) { m_playerPosition = playerPos; }
-	void Locomote(float elapsedTime)
-	{
-		// 物体に加わる力の調整
-		m_force = Truncate(m_force, m_maxForce);
-
-
-		// 加速度の算出(加速度 = 力 / 質量)
-		DirectX::SimpleMath::Vector3 acceleration = m_force / m_mass;
-
-
-		// 速度の更新および調整
-		m_velocity += acceleration * elapsedTime;
-		m_velocity = Truncate(m_velocity, m_maxSpeed);
-
-
-		// 座標の更新
-		DirectX::SimpleMath::Vector3 position = GetPosition();
-		position += m_velocity * elapsedTime;
-		SetPosition(position);
-
-
-		// 物体に加わる力のリセット
-		m_force = DirectX::SimpleMath::Vector3::Zero;
-	}
 
 
 	DirectX::SimpleMath::Vector3 Wander();
@@ -162,4 +127,6 @@ public :
 		vec.Normalize();
 		return vec;
 	}
+
+	float GetSeekTime() { return m_seekTime_s; }
 };
