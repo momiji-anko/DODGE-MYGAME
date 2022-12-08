@@ -317,6 +317,23 @@ bool StageManeger::PlayerStageAABBHitCheck(Actor* player)
 	return false;
 }
 
+//bool StageManeger::StagePlayerHitCheck(Player* player)
+//{
+//	for (std::unique_ptr<Stage>& stage : m_stage)
+//	{
+//		if (stage->GetAABB()->HitCheck(player->GetAABB()))
+//		{
+//			DirectX::SimpleMath::Vector3 pos = player->GetPosition();
+//			player->SetPosition(DirectX::SimpleMath::Vector3(pos.x, stage->GetPosition().y + 0.48f, pos.z));
+//
+//			return true;
+//
+//		}
+//	}
+//	
+//	return false;
+//}
+
 bool StageManeger::ItemHitCheck(AABBFor3D* itemAABB)
 {
 	for (std::unique_ptr<Stage>& stage : m_stage)

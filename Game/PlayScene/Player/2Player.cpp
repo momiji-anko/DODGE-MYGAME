@@ -1,22 +1,22 @@
 #include"pch.h"
-#include"Player.h"
+#include"2Player.h"
 #include"DeviceResources.h"
 #include<Keyboard.h>
 #include<Mouse.h>
 #include<Effects.h>
 //#include"Helpers/DODGESound_acf.h"
-const float Player::MOVE_SPEED = 9.0f;
-const float Player::GRAVITY_FORCE = -1.4f;
-const float Player::JUMP_FORCE = 0.50f;
-const float Player::INVINCIBLE_TIME_SECONDS = 8.0f;
+const float TwoPlayer::MOVE_SPEED = 9.0f;
+const float TwoPlayer::GRAVITY_FORCE = -1.4f;
+const float TwoPlayer::JUMP_FORCE = 0.50f;
+const float TwoPlayer::INVINCIBLE_TIME_SECONDS = 8.0f;
 
 //コンストラクタ
-Player::Player() 
+TwoPlayer::TwoPlayer() 
 	:
 	Actor(),
 	m_invincbleTime(0.0f),
 	m_playerState(PlayerState::NORMAL),
-	m_playerModelNum{0,1,0,2,3},
+	m_playerModelNum{ 0,1,0,2,3 },
 	m_jumpVelcity(0),
 	m_flyVelocity{}, 
 	m_invalidCount(0),
@@ -25,13 +25,13 @@ Player::Player()
 
 }
 //デストラクタ	
-Player::~Player() 
+TwoPlayer::~TwoPlayer() 
 {
 	
 }
 
 // 初期化
-void Player::Initialize(const DirectX::SimpleMath::Vector3& velocity, const DirectX::SimpleMath::Vector3& position, bool active, float angle, IBehavior* behavia, DirectX::Model* model, DirectX::CommonStates* commonState)
+void TwoPlayer::Initialize(const DirectX::SimpleMath::Vector3& velocity, const DirectX::SimpleMath::Vector3& position, bool active, float angle, IBehavior* behavia, DirectX::Model* model, DirectX::CommonStates* commonState)
 {
 	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
 	ID3D11DeviceContext1* context = pDR->GetD3DDeviceContext();
@@ -58,7 +58,7 @@ void Player::Initialize(const DirectX::SimpleMath::Vector3& velocity, const Dire
 	//	ファイルを指定してモデルデータ読み込み
 	m_playerModel[0] = DirectX::Model::CreateFromCMO(
 		pDR->GetD3DDevice(),
-		L"Resources/Models/playeraidoru.cmo",
+		L"Resources/Models/Playeraidoru.cmo",
 		*factory0
 	);
 
@@ -139,7 +139,7 @@ void Player::Initialize(const DirectX::SimpleMath::Vector3& velocity, const Dire
 }
 
 // 更新
-void Player::Update(const DX::StepTimer& timer)
+void TwoPlayer::Update(const DX::StepTimer& timer)
 {
 	// キー入力情報を取得する
 	DirectX::Keyboard::State keyState = DirectX::Keyboard::Get().GetState();
@@ -153,7 +153,7 @@ void Player::Update(const DX::StepTimer& timer)
 
 	if (itemType != Item::ItemType::NONE)
 	{
-		int playerStateInt = static_cast<int>(itemType);
+		int TwoPlayerStateInt = static_cast<int>(itemType);
 
 
 		InvalidCountUp();
@@ -169,7 +169,7 @@ void Player::Update(const DX::StepTimer& timer)
 
 	DirectX::SimpleMath::Vector3 moveVec;
 
-	if (keyState.D || keyState.Right)
+	if (keyState.D )
 	{
 		m_position.x += MOVE_SPEED * time;
 
@@ -177,7 +177,7 @@ void Player::Update(const DX::StepTimer& timer)
 
 	}
 
-	if (keyState.A || keyState.Left)
+	if (keyState.A )
 	{
 		m_position.x -= MOVE_SPEED * time;
 
@@ -202,20 +202,20 @@ void Player::Update(const DX::StepTimer& timer)
 	m_position.z += m_velocity.z;
 	m_position.x += m_velocity.x;
 
-	if((keyState.D || keyState.Right)&&( keyState.S || keyState.Down))
+	if((keyState.D )&&( keyState.S ))
 		m_rotation.y =-(90 + 45);
 
-	if((keyState.D || keyState.Right)&&( keyState.W || keyState.Up))
+	if((keyState.D )&&( keyState.W))
 		m_rotation.y = -(45);
 
-	if((keyState.A || keyState.Left)&& (keyState.S || keyState.Down))
+	if((keyState.A )&& (keyState.S ))
 		m_rotation.y = (90 + 45);
 
-	if ((keyState.A || keyState.Left) && (keyState.W || keyState.Up))
+	if ((keyState.A ) && (keyState.W ))
 		m_rotation.y = (45);
 
 
-	if (keyState.D || keyState.Right || keyState.A || keyState.Left || keyState.S || keyState.Down || keyState.W || keyState.Up)
+	if (keyState.D  || keyState.A  || keyState.S  || keyState.W)
 	{
 		m_modelTime += time * 10;
 
@@ -321,7 +321,7 @@ void Player::Update(const DX::StepTimer& timer)
 }
 
 // 描画
-void Player::Draw(Camera* camera)
+void TwoPlayer::Draw(Camera* camera)
 {
 
 	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
@@ -356,23 +356,23 @@ void Player::Draw(Camera* camera)
 
 }
 
-void Player::TextureDraw(DirectX::SpriteBatch* spriteBatch)
+void TwoPlayer::TextureDraw(DirectX::SpriteBatch* spriteBatch)
 {
 	for (int i = 0; i < m_invalidCount; i++)
 	{
-		spriteBatch->Draw(m_invalidTexture.Get(), DirectX::SimpleMath::Vector2(20.0f, 10.0f + (i * 64.0f)), nullptr);
+		spriteBatch->Draw(m_invalidTexture.Get(), DirectX::SimpleMath::Vector2(20.0f+(i * 64.0f), 1250.0f), nullptr);
 	}
 
 
 }
 
 // 終了処理
-void Player::Finalize()
+void TwoPlayer::Finalize()
 {
 
 }
 
-void Player::PlayerShadow( ShadowMap* shadowMap, DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix projection)
+void TwoPlayer::PlayerShadow( ShadowMap* shadowMap, DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix projection)
 {
 	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
 	ID3D11DeviceContext1* context = pDR->GetD3DDeviceContext();
@@ -388,7 +388,7 @@ void Player::PlayerShadow( ShadowMap* shadowMap, DirectX::SimpleMath::Matrix vie
 	}
 }
 
-void Player::InvalidTime()
+void TwoPlayer::InvalidTime()
 {
 
 	if (m_invalidCountCoolDownTime_s>=2.75f)
@@ -444,13 +444,13 @@ void Player::InvalidTime()
 }
 
 
-void Player::InvalidCountUp()
+void TwoPlayer::InvalidCountUp()
 {
 	m_pAdx2->Play(CRI_CUESHEET_0_COIN04_);
 	m_invalidCount++;
 }
 
-void Player::InvalidCountDown()
+void TwoPlayer::InvalidCountDown()
 {
 	if (m_invalidCountCoolDownTime_s <= 0.0f)
 	{

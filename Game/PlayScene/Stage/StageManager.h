@@ -45,7 +45,7 @@ public:
 	void Finalize();
 
 	bool PlayerStageAABBHitCheck(Actor* player);
-
+	bool StagePlayerHitCheck(Player* player);
 	bool ItemHitCheck(AABBFor3D* itemAABB);
 
 	bool LoadGraphDataByJSON(const std::wstring& fileName);
@@ -54,5 +54,46 @@ public:
 
 
 	void SetShadow(ShadowMap* shadow);
+
+
+	// 点 c と線分 ab の間の距離の平方（2 乗した値）を返す関数
+	// a: 線分の始点
+	// b: 線分の終点
+	// c: 点
+	// 返り値: 点 c と線分 ab の間の距離の平方
+	float SqDistPointSegment(DirectX::SimpleMath::Vector3 a, DirectX::SimpleMath::Vector3 b, DirectX::SimpleMath::Vector3 c)
+	{
+		DirectX::SimpleMath::Vector3 ab = b - a; // ベクトル ab を算出
+		DirectX::SimpleMath::Vector3 ac = c - a; // ベクトル ac を算出
+		DirectX::SimpleMath::Vector3 bc = c - b; // ベクトル bc を算出
+		// ベクトル ac とベクトル ab の内積を計算
+		float e = ac.Dot(ab);
+		if (e <= 0.0f)
+		{
+			// c を射影した点が a 側へ外れているので、a と c の距離を返す
+			return ac.Dot(ac);
+		}
+		// ab 同士の内積を計算する
+		float f = ab.Dot(ab);
+		if (e >= f)
+		{
+			// c を射影した点が b 側へ外れているので、b と c の距離を返す
+			return bc.Dot(bc);
+		}
+		// c と c を射影した ab 上の点との距離を返す
+		return ac.Dot(ac) - e * e / f;
+	}
+
+
+	// 球とカプセルの衝突判定関数
+	bool HitCheck_Sphere2Capsule(Sphere sphere, Capsule capsule)
+	{
+		// 球の中心とカプセルの中心の線分との距離の平方を計算
+		float dist2 = SqDistPointSegment(capsule.a, capsule.b, sphere.c);
+		// 球の半径とカプセルの半径の合計を算出
+		float radius = sphere.r + capsule.r;
+		// dist2 が radius の 2 乗の結果以下となっていれば、当たっている
+		return dist2 <= radius * radius;
+	}
 
 };

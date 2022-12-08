@@ -1,7 +1,7 @@
 #pragma once 
 #include"../Actor/Actor.h"
 #include"../ShadowMap.h"
-
+#include"Game/PlayScene/Objects.h"
 class Stage :public Actor
 {
 public:
@@ -29,6 +29,8 @@ private:
 	float m_time;
 	ShadowMap* m_shadowMap;
 	bool m_endFlag;
+
+	//std::unique_ptr<Sphere> sphere;
 public:
 	//コンストラクタ
 	Stage();

@@ -195,6 +195,9 @@
     <ClInclude Include="Helpers\DODGESound_acf.h">
       <Filter>Helpers</Filter>
     </ClInclude>
+    <ClInclude Include="Game\PlayScene\Player\2Player.h">
+      <Filter>Game\PlayScene\Player</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -301,6 +304,9 @@
     </ClCompile>
     <ClCompile Include="Game\PlayScene\AliveTimer.cpp">
       <Filter>Game\PlayScene</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\PlayScene\Player\2Player.cpp">
+      <Filter>Game\PlayScene\Player</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

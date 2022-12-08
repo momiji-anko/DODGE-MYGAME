@@ -275,11 +275,11 @@ void PlayScene::Draw()
 		m_spriteBatch->Draw(m_numTexture.Get(), numPos, &numRect[static_cast<int>(m_waitTime)], Colors::White, 0.0f, { 0.0f,0.0f }, 2.0f, SpriteEffects_None, 0);
 
 	}
+	m_actor->TextureDraw(m_spriteBatch.get());
 	SimpleMath::Vector2 blackpos(0, 0);
 	DirectX::SimpleMath::Vector4 fadeColor{ 1.0f,1.0f,1.0f,m_fade };
 	m_spriteBatch->Draw(m_blackTexture.Get(), blackpos, nullptr, fadeColor, 0.0f, DirectX::SimpleMath::Vector2::Zero);
 
-	m_actor->TextureDraw(m_spriteBatch.get());
 	
 	m_spriteBatch->End();
 	

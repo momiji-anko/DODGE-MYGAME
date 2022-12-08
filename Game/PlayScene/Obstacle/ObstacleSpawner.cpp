@@ -83,7 +83,7 @@ bool MeteoriteObstacleSpawner::Create(std::vector< std::unique_ptr<Actor>>& acto
 		}
 
 		//ƒAƒCƒeƒ€‚Ì‰Šú‰»
-		actor->Initialize(DirectX::SimpleMath::Vector3(-3.0f,0.0f,0.0f), position, true, angle, behavior, model, commonState);
+		actor->Initialize(DirectX::SimpleMath::Vector3(0.0f,-1.0f,0.0f), position, true, angle, behavior, model, commonState);
 
 		
 

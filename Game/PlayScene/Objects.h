@@ -13,6 +13,6 @@ struct Capsule
 //‹…‚Ì\‘¢‘Ì
 struct Sphere
 {
-	DirectX::SimpleMath::Vector3 pos;
+	DirectX::SimpleMath::Vector3 c;
 	float r;
 };

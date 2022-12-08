@@ -97,18 +97,18 @@ void ObstacleManeger::Initialize(DirectX::CommonStates* commonState, StageSelect
 	m_spawneCoolTime = SPANE_COOL_TIME_S;
 	m_spawneTime_s = 0.0f;
 
-	////	エフェクトファクトリの作成
-	//DirectX::EffectFactory* factory = new DirectX::EffectFactory(pDR->GetD3DDevice());
+	//	エフェクトファクトリの作成
+	DirectX::EffectFactory* factory = new DirectX::EffectFactory(pDR->GetD3DDevice());
 
-	////	テクスチャの読み込みパス指定
-	//factory->SetDirectory(L"Resources/Models");
+	//	テクスチャの読み込みパス指定
+	factory->SetDirectory(L"Resources/Models");
 
-	////	ファイルを指定してモデルデータ読み込み
-	//m_models[Obstacle::ObstacleType::MEANDERING] = DirectX::Model::CreateFromCMO(
-	//	pDR->GetD3DDevice(),
-	//	L"Resources/Models/fireShadow.cmo",
-	//	*factory
-	//);
+	//	ファイルを指定してモデルデータ読み込み
+	m_models[Obstacle::ObstacleType::METEORITE] = DirectX::Model::CreateFromCMO(
+		pDR->GetD3DDevice(),
+		L"Resources/Models/star.cmo",
+		*factory
+	);
 	////	ファイルを指定してモデルデータ読み込み
 	//m_models[Obstacle::ObstacleType::NORMAL ] = DirectX::Model::CreateFromCMO(
 	//	pDR->GetD3DDevice(),
@@ -116,7 +116,7 @@ void ObstacleManeger::Initialize(DirectX::CommonStates* commonState, StageSelect
 	//	*factory
 	//);
 
-	//delete factory;
+	delete factory;
 		//	エフェクトファクトリの作成
 	DirectX::EffectFactory* factory1 = new DirectX::EffectFactory(pDR->GetD3DDevice());
 
@@ -233,7 +233,8 @@ void ObstacleManeger::Update(const DX::StepTimer& timer)
 			case 4:
 				
 				
-				CreateObstacle(m_normalSpawnePosition[type], Obstacle::ObstacleType::NORMAL, rad);
+				//CreateObstacle(m_normalSpawnePosition[type], Obstacle::ObstacleType::MEANDERING, rad);
+				CreateObstacle(m_playerPosition+DirectX::SimpleMath::Vector3(0.0f,5.0f,0.0f), Obstacle::ObstacleType::METEORITE, rad);
 				break;
 			case 5:
 
@@ -326,6 +327,7 @@ void ObstacleManeger::CreateSpawner()
 
 	m_spawners[Obstacle::ObstacleType::NORMAL] = std::make_unique<NormalObstacleSpawner>();
 	m_spawners[Obstacle::ObstacleType::STICK] = std::make_unique<StickObstacleSpawner>();
+	m_spawners[Obstacle::ObstacleType::METEORITE] = std::make_unique<MeteoriteObstacleSpawner>();
 	m_spawners[Obstacle::ObstacleType::ROTATESTICK] = std::make_unique<RotateStickObstacleSpawner>();
 	m_spawners[Obstacle::ObstacleType::REVERSE_ROTATESTICK] = std::make_unique<ReverseRotateStickObstacleSpawner>();
 	m_spawners[Obstacle::ObstacleType::MEANDERING] = std::make_unique<MeanderingObstacleSpawner>();
@@ -338,6 +340,7 @@ void ObstacleManeger::CreateBehavior()
 {
 	m_behavior[Obstacle::ObstacleType::NORMAL] = std::make_unique<NormalBehavior>();
 	m_behavior[Obstacle::ObstacleType::STICK] = std::make_unique<NormalBehavior>();
+	m_behavior[Obstacle::ObstacleType::METEORITE] = std::make_unique<MeteoriteBehavior>();
 	m_behavior[Obstacle::ObstacleType::ROTATESTICK] = std::make_unique<RotateStickBehavior>();
 	m_behavior[Obstacle::ObstacleType::REVERSE_ROTATESTICK] = std::make_unique<ReverseRotateStickBehavior>();
 	m_behavior[Obstacle::ObstacleType::MEANDERING] = std::make_unique<MeanderingeBehavior>();

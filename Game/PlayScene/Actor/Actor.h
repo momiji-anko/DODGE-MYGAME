@@ -81,4 +81,5 @@ public:
 	Capsule* GetCapsule() { return m_capsule.get(); }
 	void SetCapsule(std::unique_ptr<Capsule>& capsule) { m_capsule=std::move(capsule); }
 
+	void SetActive(bool active) { m_active = active; }
 };

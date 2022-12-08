@@ -126,7 +126,7 @@ void Obstacle::Draw(Camera* camera)
 	DirectX::SimpleMath::Matrix scale = DirectX::SimpleMath::Matrix::CreateScale(0.005f);
 
 	
-	
+	m_AABBObject->Draw(DirectX::SimpleMath::Matrix::Identity, camera->GetViewMatrix(), camera->GetProjectionMatrix(), DirectX::SimpleMath::Color(1, 1, 0, 1));
 
 	switch (m_type)
 	{
@@ -158,6 +158,12 @@ void Obstacle::Draw(Camera* camera)
 		break;
 	case Obstacle::ObstacleType::BIRD:
 		scale = DirectX::SimpleMath::Matrix::CreateScale(0.010f);
+		m_world *= scale * rot  * trans;
+
+		m_pModel->Draw(context, *m_commonState, m_world, camera->GetViewMatrix(), camera->GetProjectionMatrix());
+		break;
+	case Obstacle::ObstacleType::METEORITE:
+		scale = DirectX::SimpleMath::Matrix::CreateScale(1);
 		m_world *= scale * rot  * trans;
 
 		m_pModel->Draw(context, *m_commonState, m_world, camera->GetViewMatrix(), camera->GetProjectionMatrix());
