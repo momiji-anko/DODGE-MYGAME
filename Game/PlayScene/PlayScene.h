@@ -18,7 +18,7 @@
 #include"Item/ItemManeger.h"
 #include"ShadowMap.h"
 #include"Stage/StageManager.h"
-
+#include"AliveTimer.h"
 
 #include"Libraries/AXD2/Adx2.h"
 #include"../../Helpers/CueSheet_0.h"
@@ -40,7 +40,6 @@ private:
 	std::unique_ptr<Player>                          m_actor;
 	std::unique_ptr<ObstacleManeger>                 m_obstacleManeger;
 	std::unique_ptr<ItemManeger>                     m_itemManeger;
-	
 
 	DebugCamera*                                     m_pDebugCamera;
 	GridFloor*                                       m_pGridFloor;
@@ -74,6 +73,11 @@ private:
 	std::unique_ptr<DirectX::Model>                  m_model[2];
 	
 	bool                                             m_stratFlag;
+
+	AliveTimer* m_aliveTime;
+	//2P用に配列でプレイヤーを定義
+	std::vector<std::unique_ptr<Player>> m_players;
+	std::vector<bool >m_playersDied;
 public:
 
 	// コンストラクタ

@@ -57,7 +57,6 @@ void PlayScene::Initialize()
 	ID3D11Device1* device = pDR->GetD3DDevice();
 	ID3D11DeviceContext1* context = pDR->GetD3DDeviceContext();
 
-	m_actor = std::make_unique< Player>();
 
 
 
@@ -68,19 +67,18 @@ void PlayScene::Initialize()
 	m_shadowMap = std::make_unique<ShadowMap>();
 	m_shadowMap->Initialize(device, L"Resources/Shaders");
 
+	m_stageManeger = std::make_unique<StageManeger>();
+	m_stageManeger->Initialize(m_commonState.get(), StageSelect::Stage1);
+	m_stageManeger->SetShadow(m_shadowMap.get());
+
+	m_actor = std::make_unique< Player>();
+	m_actor->SetStageManeger(m_stageManeger.get());
+	m_actor->SetIteManeger(m_itemManeger.get());
 
 
 
 	m_itemManeger = std::make_unique< ItemManeger>();
 	m_itemManeger->Initialize(m_commonState.get());
-
-	m_stageManeger = std::make_unique<StageManeger>();
-	m_stageManeger->Initialize(m_commonState.get(), StageSelect::Stage1);
-	m_stageManeger->SetShadow(m_shadowMap.get());
-
-	m_actor->SetStageManeger(m_stageManeger.get());
-	m_actor->SetIteManeger(m_itemManeger.get());
-
 	m_itemManeger->SetStageManeger(m_stageManeger.get());
 
 	m_waitTime = 4.0f;
@@ -94,6 +92,17 @@ void PlayScene::Initialize()
 	
 	
 	m_musicID = m_pAdx2->Play(CRI_CUESHEET_0_PLAY);
+
+	for (int i = 0; i < 2; i++)
+	{
+		m_players.push_back(std::make_unique<Player>());
+		m_players[i]->SetStageManeger(m_stageManeger.get());
+		m_players[i]->SetIteManeger(m_itemManeger.get());
+	}
+
+	m_aliveTime = &AliveTimer::GetInstance();
+	m_aliveTime->Initialize(m_commonState.get(), 1);
+
 
 }
 
@@ -111,6 +120,7 @@ GAME_SCENE PlayScene::Update(const DX::StepTimer& timer)
 	{
 		m_flag = true;
 	}
+
 	if (m_fade > 1)
 	{
 		return GAME_SCENE::RESULT;
@@ -121,6 +131,7 @@ GAME_SCENE PlayScene::Update(const DX::StepTimer& timer)
 		m_fade += 0.09f;
 		return GAME_SCENE::NONE;
 	}
+
 	if (!m_flagFadeIn)
 		m_fade -= 0.03f;
 
@@ -139,8 +150,7 @@ GAME_SCENE PlayScene::Update(const DX::StepTimer& timer)
 	
 	m_stratFlag = false;
 
-	m_timer += time;
-
+	m_aliveTime->Update(timer);
 
 	m_actor->Update(timer);
 	
@@ -150,7 +160,6 @@ GAME_SCENE PlayScene::Update(const DX::StepTimer& timer)
 
 	m_itemManeger->Update(timer);
 	
-//	m_itemManeger->StageHIt(m_stageobj);
 
 	//m_pDebugCamera->Update();
 
@@ -234,25 +243,25 @@ void PlayScene::Draw()
 
 
 
-	SimpleMath::Vector2 onePos{ width / 2+30, 30 };
-	SimpleMath::Vector2 Pos2{ onePos.x - 120, onePos.y };
-	SimpleMath::Vector2 tenPos{ onePos.x - 60, onePos.y };
-	RECT rect[10] = {
-	{0	,0,52	,64},//0
-	{52	,0,97	,64},//1
-	{96	,0,140	,64},//2
-	{140,0,190,64},//3
-	{190,0,243,64},//4
-	{243,0,293,64},//5
-	{293,0,341,64},//6
-	{341,0,388,64},//7
-	{388,0,436,64},//8
-	{436,0,483,64} //9
-	};
-	m_spriteBatch->Draw(m_numTexture.Get(), onePos, &rect[static_cast<int>(m_timer) % 10], Colors::White, 0.0f, { 0.0f,0.0f }, 1, SpriteEffects_None, 0);
-	m_spriteBatch->Draw(m_numTexture.Get(), tenPos, &rect[static_cast<int>(m_timer / 10) % 10], Colors::White, 0.0f, { 0.0f,0.0f }, 1, SpriteEffects_None, 0);
-	m_spriteBatch->Draw(m_numTexture.Get(), Pos2, &rect[static_cast<int>(m_timer / 100) % 10], Colors::White, 0.0f, { 0.0f,0.0f }, 1, SpriteEffects_None, 0);
-
+	//SimpleMath::Vector2 onePos{ width / 2+30, 30 };
+	//SimpleMath::Vector2 Pos2{ onePos.x - 120, onePos.y };
+	//SimpleMath::Vector2 tenPos{ onePos.x - 60, onePos.y };
+	//RECT rect[10] = {
+	//{0	,0,52	,64},//0
+	//{52	,0,97	,64},//1
+	//{96	,0,140	,64},//2
+	//{140,0,190,64},//3
+	//{190,0,243,64},//4
+	//{243,0,293,64},//5
+	//{293,0,341,64},//6
+	//{341,0,388,64},//7
+	//{388,0,436,64},//8
+	//{436,0,483,64} //9
+	//};
+	//m_spriteBatch->Draw(m_numTexture.Get(), onePos, &rect[static_cast<int>(m_timer) % 10], Colors::White, 0.0f, { 0.0f,0.0f }, 1, SpriteEffects_None, 0);
+	//m_spriteBatch->Draw(m_numTexture.Get(), tenPos, &rect[static_cast<int>(m_timer / 10) % 10], Colors::White, 0.0f, { 0.0f,0.0f }, 1, SpriteEffects_None, 0);
+	//m_spriteBatch->Draw(m_numTexture.Get(), Pos2, &rect[static_cast<int>(m_timer / 100) % 10], Colors::White, 0.0f, { 0.0f,0.0f }, 1, SpriteEffects_None, 0);
+	m_aliveTime->Draw();
 
 
 	RECT numRect[6] = {
@@ -369,9 +378,20 @@ void PlayScene::LoadResources()
 			}
 		});
 
-	m_actor->Initialize(DirectX::SimpleMath::Vector3::Zero, DirectX::SimpleMath::Vector3(0.0f, 1.0f, 6.0f), true, 0.0f, nullptr, m_pModel.get(), m_commonState.get());
+	//m_actor->Initialize(DirectX::SimpleMath::Vector3::Zero, DirectX::SimpleMath::Vector3(0.0f, 1.0f, 6.0f), true, 0.0f, nullptr, m_pModel.get(), m_commonState.get());
 
 
+	DirectX::SimpleMath::Vector3 playersStartPos[2] = 
+	{ 
+		DirectX::SimpleMath::Vector3{-3.0f,0.0f,6.0f} ,
+		DirectX::SimpleMath::Vector3{3.0f,0.0f,6.0f} 
+	};
+	for (int i = 0; i < m_players.size(); i++)
+	{
+		
+		m_players[i]->Initialize(DirectX::SimpleMath::Vector3::Zero, playersStartPos[i], true, 0.0f, nullptr, m_pModel.get(), m_commonState.get());
+
+	}
 
 	DirectX::CreateWICTextureFromFile(
 		device,

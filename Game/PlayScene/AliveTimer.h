@@ -6,7 +6,7 @@
 #include"../../Libraries/MyLibraries/Camera.h"
 #include"StepTimer.h"
 #include"Libraries/MyLibraries/Singleton.h"
-
+#include<vector>
 
 class AliveTimer : public Singleton< AliveTimer>
 {
@@ -19,6 +19,8 @@ public:
 	};
 private:
 	float m_timer_s;
+	//プレイヤーのタイム
+	std::vector<float> m_playersAliveTime_s;
 	// スプライトバッチ
 	std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
 
@@ -31,7 +33,7 @@ public:
 	~AliveTimer();
 
 	// 初期化
-	void Initialize(DirectX::CommonStates* commonState);
+	void Initialize(DirectX::CommonStates* commonState, int playerNum);
 
 	// 更新
 	void Update(const DX::StepTimer& timer);
@@ -43,5 +45,7 @@ public:
 	void Finalize();
 
 	float GetTimer() { return m_timer_s; }
+
+	std::vector<float> GetPlayerAliveTime() { return m_playersAliveTime_s; }
 
 };

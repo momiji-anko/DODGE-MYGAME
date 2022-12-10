@@ -18,7 +18,11 @@
 class TitleScene : public IScene
 {
 private:
-
+	enum class PlayerMode
+	{
+		Player1 = 1,
+		Player2 = 2
+	};
 	enum class TitleState
 	{
 		FADEIN,
