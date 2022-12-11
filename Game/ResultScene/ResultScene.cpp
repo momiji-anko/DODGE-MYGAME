@@ -12,6 +12,7 @@
 
 #include "ResultScene.h"
 #include<string>
+#include"Game/PlayScene/AliveTimer.h"
 using namespace DirectX;
 
 /*--------------------------------------------------
@@ -50,7 +51,8 @@ void ResultScene::Initialize()
 		"Resources/Sounds/CueSheet_0.acb");
 
 	m_musicID = m_pAdx2->Play(CRI_CUESHEET_0_RESULT);
-
+	AliveTimer* aliveTime = &AliveTimer::GetInstance();
+	m_time = aliveTime->GetTimer();
 	if (m_time <= 35)
 	{
 

@@ -195,9 +195,6 @@
     <ClInclude Include="Helpers\DODGESound_acf.h">
       <Filter>Helpers</Filter>
     </ClInclude>
-    <ClInclude Include="Game\PlayScene\Player\2Player.h">
-      <Filter>Game\PlayScene\Player</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -305,9 +302,6 @@
     <ClCompile Include="Game\PlayScene\AliveTimer.cpp">
       <Filter>Game\PlayScene</Filter>
     </ClCompile>
-    <ClCompile Include="Game\PlayScene\Player\2Player.cpp">
-      <Filter>Game\PlayScene\Player</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />
@@ -392,6 +386,18 @@
       <Filter>Assets</Filter>
     </MeshContentTask>
     <MeshContentTask Include="Resources\Assets\roll2.fbx">
+      <Filter>Assets</Filter>
+    </MeshContentTask>
+    <MeshContentTask Include="Resources\Assets\Player2hidari.fbx">
+      <Filter>Assets</Filter>
+    </MeshContentTask>
+    <MeshContentTask Include="Resources\Assets\Player2idoru.fbx">
+      <Filter>Assets</Filter>
+    </MeshContentTask>
+    <MeshContentTask Include="Resources\Assets\Player2Janp.fbx">
+      <Filter>Assets</Filter>
+    </MeshContentTask>
+    <MeshContentTask Include="Resources\Assets\Player2Migi.fbx">
       <Filter>Assets</Filter>
     </MeshContentTask>
   </ItemGroup>

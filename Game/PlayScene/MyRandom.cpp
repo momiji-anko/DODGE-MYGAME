@@ -46,7 +46,7 @@ float MyRandom::GetFloatRange(float min, float max)
 //===================================
 int MyRandom::GetIntRange(int min, int max)
 {
-	assert(min < max);
+	assert(min <= max);
 
 	std::uniform_int_distribution<int> urd(min, max);
 	return urd(s_mt);

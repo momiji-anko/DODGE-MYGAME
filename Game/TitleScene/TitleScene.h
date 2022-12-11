@@ -6,7 +6,7 @@
 #include <SpriteBatch.h>
 #include <SpriteFont.h>
 #include <CommonStates.h>
-
+#include<Keyboard.h>
 #include "../IScene.h"
 #include "Game/GameMain.h"
 
@@ -18,16 +18,13 @@
 class TitleScene : public IScene
 {
 private:
-	enum class PlayerMode
-	{
-		Player1 = 1,
-		Player2 = 2
-	};
+
 	enum class TitleState
 	{
 		FADEIN,
 		TITLE,
 		STAGESELECT,
+		MODESELECT,
 		FADEOUT,
 	};
 	ADX2* m_pAdx2;
@@ -39,18 +36,22 @@ private:
 	// スプライトフォント
 	std::unique_ptr<DirectX::SpriteFont> m_spriteFont;
 
+	std::unique_ptr<DirectX::Keyboard::KeyboardStateTracker> m_keyboardStateTracker;
+
 	// テクスチャ
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_titileTexture;
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_pushTexture;
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_blackTexture;
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> mCRIWARETexture;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>						m_titileTexture;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>						m_pushTexture;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>						m_blackTexture;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>						m_CRIWARETexture;
+	std::vector<Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>>	m_modeSelectTextures;
+	int   m_modeSelectNum;
 
 	float m_alpha;
 	float m_alphaVel;
 
 	float m_fade;
-	bool m_flag;
-	bool m_flagFadeIn;
+	bool  m_flag;
+	bool  m_flagFadeIn;
 
 	std::unique_ptr<DirectX::Model> m_stageModel;
 
@@ -70,7 +71,7 @@ private:
 	StageSelect m_stageSelect;
 
 	int m_stageSelectInt;
-
+	GameMain::PlayerMode m_playerMode;
 public:
 
 	// コンストラクタ
@@ -105,4 +106,5 @@ public:
 	}
 
 	StageSelect GetStageSelect() { return m_stageSelect; }
+	GameMain::PlayerMode  GetPlayerMode() { return m_playerMode; }
 };

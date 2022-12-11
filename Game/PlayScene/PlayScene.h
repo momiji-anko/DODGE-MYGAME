@@ -77,7 +77,9 @@ private:
 	AliveTimer* m_aliveTime;
 	//2P用に配列でプレイヤーを定義
 	std::vector<std::unique_ptr<Player>> m_players;
-	std::vector<bool >m_playersDied;
+	
+	GameMain::PlayerMode m_playerMode;
+
 public:
 
 	// コンストラクタ
@@ -103,10 +105,9 @@ public:
 
 	float GetTime() { return m_timer; }
 
-	std::unique_ptr<Player>& GetPlayer() { return std::move(m_actor); }
-	std::unique_ptr<ObstacleManeger>& GetObstacleManeger() { return std::move(m_obstacleManeger); }
-	std::unique_ptr<StageManeger>& GetStageManeger() { return std::move(m_stageManeger); }
-	std::unique_ptr<ItemManeger>& GetItemManeger() { return std::move(m_itemManeger); }
-
-
+	/// <summary>
+	/// プレイヤーのモード（一人か二人か）
+	/// </summary>
+	/// <param name="mode">Player1=一人、Player2=二人、</param>
+	void SetPlayerMode(GameMain::PlayerMode mode) { m_playerMode = mode; }
 };

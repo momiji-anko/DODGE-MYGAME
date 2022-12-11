@@ -8,6 +8,7 @@
 #include "Libraries/MyLibraries/DebugCamera.h"
 #include "Libraries/MyLibraries/GridFloor.h"
 #include "PlayScene.h"
+#include"Game/PlayScene/MyRandom.h"
 
 // 名前空間の利用
 using namespace DirectX;
@@ -71,10 +72,6 @@ void PlayScene::Initialize()
 	m_stageManeger->Initialize(m_commonState.get(), StageSelect::Stage1);
 	m_stageManeger->SetShadow(m_shadowMap.get());
 
-	m_actor = std::make_unique< Player>();
-	m_actor->SetStageManeger(m_stageManeger.get());
-	m_actor->SetIteManeger(m_itemManeger.get());
-
 
 
 	m_itemManeger = std::make_unique< ItemManeger>();
@@ -93,15 +90,31 @@ void PlayScene::Initialize()
 	
 	m_musicID = m_pAdx2->Play(CRI_CUESHEET_0_PLAY);
 
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < static_cast<int>(m_playerMode); i++)
 	{
 		m_players.push_back(std::make_unique<Player>());
 		m_players[i]->SetStageManeger(m_stageManeger.get());
 		m_players[i]->SetIteManeger(m_itemManeger.get());
 	}
+	DirectX::SimpleMath::Vector3 playersStartPos[2] =
+	{
+		DirectX::SimpleMath::Vector3{3.0f,0.0f,6.0f} ,
+		DirectX::SimpleMath::Vector3{-3.0f,0.0f,6.0f}
+	};
+
+	if (m_playerMode == GameMain::PlayerMode::Player1)
+	{
+		playersStartPos[0] = DirectX::SimpleMath::Vector3(0.0f, 1.0f, 6.0f);
+	}
+	for (int i = 0; i < m_players.size(); i++)
+	{
+
+		m_players[i]->SetID(i + 1);
+		m_players[i]->Initialize(DirectX::SimpleMath::Vector3::Zero, playersStartPos[i], true, 0.0f, nullptr, m_pModel.get(), m_commonState.get());
+	}
 
 	m_aliveTime = &AliveTimer::GetInstance();
-	m_aliveTime->Initialize(m_commonState.get(), 1);
+	m_aliveTime->Initialize(m_commonState.get(), m_players.size());
 
 
 }
@@ -116,11 +129,7 @@ GAME_SCENE PlayScene::Update(const DX::StepTimer& timer)
 
 	
 
-	if (m_actor->GetPosition().y < -50.0f)
-	{
-		m_flag = true;
-	}
-
+	
 	if (m_fade > 1)
 	{
 		return GAME_SCENE::RESULT;
@@ -152,11 +161,16 @@ GAME_SCENE PlayScene::Update(const DX::StepTimer& timer)
 
 	m_aliveTime->Update(timer);
 
-	m_actor->Update(timer);
-	
+	//m_actor->Update(timer);
+
+	for (std::vector<std::unique_ptr<Player>>::iterator player = m_players.begin(); player != m_players.end(); ++player)
+	{
+		(*player)->Update(timer);
+	}
+
 	
 	m_obstacleManeger->Update(timer);
-	m_obstacleManeger->SetPlayerPosition(m_actor->GetPosition());
+	m_obstacleManeger->SetPlayerPosition(m_players[MyRandom::GetIntRange(0 , m_players.size() - 1)]->GetPosition());
 
 	m_itemManeger->Update(timer);
 	
@@ -164,25 +178,68 @@ GAME_SCENE PlayScene::Update(const DX::StepTimer& timer)
 	//m_pDebugCamera->Update();
 
 	m_stageManeger->Update(timer);
-
-	if (m_obstacleManeger->PlayerHitCheck(m_actor->GetAABB()) && m_actor->GetNowPlayerState() == PlayerState::NORMAL)
+	
+	//プレイヤーのデスカウント
+	int  deathCount = 0;
+	for (std::vector<std::unique_ptr<Player>>::iterator player = m_players.begin(); player != m_players.end(); ++player)
 	{
-		if (m_actor->GetInvalidCount() <= -1)
+		//死んでいた場合カウントを進める
+		if (m_obstacleManeger->PlayerHitCheck((*player)->GetAABB()) && (*player)->GetNowPlayerState() == PlayerState::NORMAL)
 		{
-			m_flag = true;
-			m_pAdx2->Play(CRI_CUESHEET_0_DAMAGE1);
-		}
-		else
-		{
-			m_actor->InvalidCountDown();
-		}
+			if ((*player)->GetInvalidCount() <= -1)
+			{
+				deathCount++;
+				m_pAdx2->Play(CRI_CUESHEET_0_DAMAGE1);
+			}
+			else
+			{
+				(*player)->InvalidCountDown();
+			}
 
+		}
 	}
 
-	if (m_obstacleManeger->PlayerCapsuleHitCheck(m_actor.get()))
+	//プレイヤーが全員死んでいた場合シーン遷移フラグをONにする
+	if (deathCount == m_players.size())
 	{
-
+		m_flag = true;
 	}
+
+	//
+	int playerFallCount = 0;
+	for (std::vector<std::unique_ptr<Player>>::iterator player = m_players.begin(); player != m_players.end(); ++player)
+	{
+		//死んでいた場合カウントを進める
+		if ((*player)->GetPosition().y < -50.0f)
+		{
+			
+
+		}
+	}
+
+	int count = 0;
+	for (std::vector<std::unique_ptr<Player>>::iterator player = m_players.begin(); player != m_players.end(); ++player)
+	{
+		if (!(*player)->IsActive())
+		{
+			count++;
+
+		}
+	}
+	if (count == m_players.size())
+	{
+		m_flag = true;
+	}
+
+	for (std::vector<std::unique_ptr<Player>>::iterator player = m_players.begin(); player != m_players.end(); ++player)
+	{
+		if ((*player)->IsActive())
+		{
+			m_obstacleManeger->PlayerCapsuleHitCheck((*player).get());
+
+		}
+	}
+
 	return GAME_SCENE::NONE;
 }
 
@@ -227,7 +284,6 @@ void PlayScene::Draw()
 
 			m_model[i]->Draw(context, *m_commonState, world, m_pDebugCamera->GetViewMatrix(), m_pDebugCamera->GetProjectionMatrix());
 		}
-		m_actor->Draw(m_pDebugCamera);
 
 	}
 
@@ -235,32 +291,19 @@ void PlayScene::Draw()
 
 	
 	m_itemManeger->Draw(m_pDebugCamera);
-	m_actor->Draw(m_pDebugCamera);
+	
+	
+	//プレイヤーの描画
+	for (std::vector<std::unique_ptr<Player>>::iterator player = m_players.begin(); player != m_players.end(); ++player)
+	{
+		(*player)->Draw(m_pDebugCamera);
+	}
 
 	m_spriteBatch->Begin(SpriteSortMode_Deferred, m_commonState->NonPremultiplied());
 
-	SimpleMath::Vector2 pos(640 - 128, 360 - 228);
 
 
-
-	//SimpleMath::Vector2 onePos{ width / 2+30, 30 };
-	//SimpleMath::Vector2 Pos2{ onePos.x - 120, onePos.y };
-	//SimpleMath::Vector2 tenPos{ onePos.x - 60, onePos.y };
-	//RECT rect[10] = {
-	//{0	,0,52	,64},//0
-	//{52	,0,97	,64},//1
-	//{96	,0,140	,64},//2
-	//{140,0,190,64},//3
-	//{190,0,243,64},//4
-	//{243,0,293,64},//5
-	//{293,0,341,64},//6
-	//{341,0,388,64},//7
-	//{388,0,436,64},//8
-	//{436,0,483,64} //9
-	//};
-	//m_spriteBatch->Draw(m_numTexture.Get(), onePos, &rect[static_cast<int>(m_timer) % 10], Colors::White, 0.0f, { 0.0f,0.0f }, 1, SpriteEffects_None, 0);
-	//m_spriteBatch->Draw(m_numTexture.Get(), tenPos, &rect[static_cast<int>(m_timer / 10) % 10], Colors::White, 0.0f, { 0.0f,0.0f }, 1, SpriteEffects_None, 0);
-	//m_spriteBatch->Draw(m_numTexture.Get(), Pos2, &rect[static_cast<int>(m_timer / 100) % 10], Colors::White, 0.0f, { 0.0f,0.0f }, 1, SpriteEffects_None, 0);
+	//タイムの表示
 	m_aliveTime->Draw();
 
 
@@ -284,7 +327,14 @@ void PlayScene::Draw()
 		m_spriteBatch->Draw(m_numTexture.Get(), numPos, &numRect[static_cast<int>(m_waitTime)], Colors::White, 0.0f, { 0.0f,0.0f }, 2.0f, SpriteEffects_None, 0);
 
 	}
-	m_actor->TextureDraw(m_spriteBatch.get());
+
+	
+
+	for (std::vector<std::unique_ptr<Player>>::iterator player = m_players.begin(); player != m_players.end(); ++player)
+	{
+		(*player)->TextureDraw(m_spriteBatch.get());
+	}
+
 	SimpleMath::Vector2 blackpos(0, 0);
 	DirectX::SimpleMath::Vector4 fadeColor{ 1.0f,1.0f,1.0f,m_fade };
 	m_spriteBatch->Draw(m_blackTexture.Get(), blackpos, nullptr, fadeColor, 0.0f, DirectX::SimpleMath::Vector2::Zero);
@@ -302,11 +352,15 @@ void PlayScene::Draw()
 
 	DirectX::SimpleMath::Matrix lightView = DirectX::SimpleMath::Matrix::CreateLookAt(lightPos, DirectX::SimpleMath::Vector3::UnitY, DirectX::SimpleMath::Vector3::Up);
 	DirectX::SimpleMath::Matrix projection = DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(
-		DirectX::XMConvertToRadians(90.0f), 1.0f, 1.0f, 400.0f);
+	DirectX::XMConvertToRadians(90.0f), 1.0f, 1.0f, 400.0f);
 
 	m_obstacleManeger->ObstacleShadow(m_shadowMap.get(), lightView, projection);
 
-	m_actor->PlayerShadow(m_shadowMap.get(),lightView,projection);
+	for (std::vector<std::unique_ptr<Player>>::iterator player = m_players.begin(); player != m_players.end(); ++player)
+	{
+		(*player)->PlayerShadow(m_shadowMap.get(), lightView, projection);
+	}	
+	
 	m_itemManeger->Shadow(m_shadowMap.get(),lightView,projection);
 	m_shadowMap->End(context, lightView * projection);
 	
@@ -381,17 +435,7 @@ void PlayScene::LoadResources()
 	//m_actor->Initialize(DirectX::SimpleMath::Vector3::Zero, DirectX::SimpleMath::Vector3(0.0f, 1.0f, 6.0f), true, 0.0f, nullptr, m_pModel.get(), m_commonState.get());
 
 
-	DirectX::SimpleMath::Vector3 playersStartPos[2] = 
-	{ 
-		DirectX::SimpleMath::Vector3{-3.0f,0.0f,6.0f} ,
-		DirectX::SimpleMath::Vector3{3.0f,0.0f,6.0f} 
-	};
-	for (int i = 0; i < m_players.size(); i++)
-	{
-		
-		m_players[i]->Initialize(DirectX::SimpleMath::Vector3::Zero, playersStartPos[i], true, 0.0f, nullptr, m_pModel.get(), m_commonState.get());
 
-	}
 
 	DirectX::CreateWICTextureFromFile(
 		device,

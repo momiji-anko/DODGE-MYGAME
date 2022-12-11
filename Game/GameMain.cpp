@@ -29,6 +29,7 @@ using namespace DirectX;
 GameMain::GameMain()
 	: m_nextScene(GAME_SCENE::TITLE)		// 初期シーンの設定
 	, m_pScene(nullptr)
+	,m_playerMode(GameMain::PlayerMode::NONE)
 {
 }
 
@@ -153,6 +154,14 @@ void GameMain::CreateScene()
 	case GAME_SCENE::PLAY:
 	{
 		m_pScene = new PlayScene();
+
+		PlayScene* playScene = dynamic_cast<PlayScene*> (m_pScene);
+
+		if (playScene != nullptr)
+		{
+			playScene->SetPlayerMode(m_playerMode);
+		}
+
 		break;
 	}
 	case GAME_SCENE::RESULT:
@@ -161,12 +170,7 @@ void GameMain::CreateScene()
 
 		ResultScene* resultScene = dynamic_cast<ResultScene*> (m_pScene);
 
-		if (resultScene != nullptr)
-		{
-			resultScene->SetTime(m_time);
-
-
-		}
+	
 
 		break;
 	}
@@ -198,28 +202,29 @@ void GameMain::DeleteScene()
 	{
 		return;
 	}
-	// 次シーンの作成
+	
 	switch (m_nextScene)
 	{
 	case GAME_SCENE::TITLE:
 	{
+	
 
 		break;
 	}
 	case GAME_SCENE::PLAY:
 	{
+		TitleScene* titleScene = dynamic_cast<TitleScene*> (m_pScene);
+
+		if (titleScene != nullptr)
+		{
+			m_playerMode = titleScene->GetPlayerMode();
+		}
 
 		break;
 	}
 	case GAME_SCENE::RESULT:
 	{
-		PlayScene* playScene = dynamic_cast<PlayScene*> (m_pScene);
 
-		if (playScene != nullptr)
-		{
-			m_time = playScene->GetTime();
-		
-		}
 
 		break;
 	}

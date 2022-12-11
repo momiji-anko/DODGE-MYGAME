@@ -17,6 +17,7 @@ class Scene;
 class Game final : public DX::IDeviceNotify
 {
 public:
+
     // 定数 /////////////////////////////////////////////////////////
     static const wchar_t* TITLE;    // ゲームタイトル
     static const int SCREEN_W;      // 画面サイズ

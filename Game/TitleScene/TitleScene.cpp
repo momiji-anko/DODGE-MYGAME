@@ -31,7 +31,8 @@ TitleScene::TitleScene()
 	m_titlePosition{},
 	m_titleRotetion(0.0f),
 	m_stageSelect(StageSelect::Stage1),
-	m_titleSelect(TitleState::FADEIN)
+	m_titleSelect(TitleState::FADEIN),
+	m_modeSelectNum(0)
 {
 }
 
@@ -65,6 +66,10 @@ void TitleScene::Initialize()
 	m_titlePosition[0] = DirectX::SimpleMath::Vector2(-size.right,0);
 	m_titlePosition[1] = DirectX::SimpleMath::Vector2(size.right, 0);
 	m_titleAlpha = 0.7f;
+
+
+	m_keyboardStateTracker = std::make_unique < DirectX::Keyboard::KeyboardStateTracker >();
+	
 }
 
 /*--------------------------------------------------
@@ -75,7 +80,9 @@ GAME_SCENE TitleScene::Update(const DX::StepTimer& timer)
 {
 	// キー入力情報を取得する
 	DirectX::Keyboard::State keyState = DirectX::Keyboard::Get().GetState();
-
+	//キーボードステートトラッカーの更新
+	m_keyboardStateTracker->Update(keyState);
+	
 	// マウス入力情報を取得する
 	DirectX::Mouse::State mouseState = DirectX::Mouse::Get().GetState();
 
@@ -99,11 +106,11 @@ GAME_SCENE TitleScene::Update(const DX::StepTimer& timer)
 		
 		break;
 	case TitleScene::TitleState::TITLE:
-		if (keyState.IsKeyDown(Keyboard::Keys::Space) && m_flagFadeIn == true)
+		if (m_keyboardStateTracker->IsKeyPressed(Keyboard::Keys::Space) && m_flagFadeIn == true)
 		{
-			m_flag = true;
+			m_titleSelect = TitleScene::TitleState::MODESELECT;
 			m_pAdx2->Play(CRI_CUESHEET_0_BUTTON);
-			m_titleSelect = TitleState::FADEOUT;
+			
 		}
 		break;
 	case TitleScene::TitleState::STAGESELECT:
@@ -112,8 +119,37 @@ GAME_SCENE TitleScene::Update(const DX::StepTimer& timer)
 		{
 			//m_flag = true;
 			m_pAdx2->Play(CRI_CUESHEET_0_BUTTON);
-			
+
 		}
+
+		break;
+	case TitleScene::TitleState::MODESELECT:
+
+
+		if (m_keyboardStateTracker->IsKeyPressed(Keyboard::Keys::Left))
+		{
+			m_modeSelectNum = 0;
+			m_pAdx2->Play(CRI_CUESHEET_0_BUTTON);
+			m_playerMode = GameMain::PlayerMode::Player1;
+
+		}
+		if (m_keyboardStateTracker->IsKeyPressed(Keyboard::Keys::Right))
+		{
+			m_modeSelectNum = 1;
+			m_pAdx2->Play(CRI_CUESHEET_0_BUTTON);
+			
+
+		}
+
+		if (m_keyboardStateTracker->IsKeyPressed(Keyboard::Keys::Space) && m_flagFadeIn == true)
+		{
+			m_flag = true;
+			m_pAdx2->Play(CRI_CUESHEET_0_BUTTON);
+			m_titleSelect = TitleState::FADEOUT;
+			m_playerMode = GameMain::PlayerMode::Player1;
+			m_playerMode = static_cast<GameMain::PlayerMode>(m_modeSelectNum + 1);
+		}
+
 		break;
 	case TitleScene::TitleState::FADEOUT:
 		break;
@@ -246,9 +282,44 @@ void TitleScene::Draw()
 		m_spriteBatch->Draw(m_titileTexture.Get(), position + DirectX::SimpleMath::Vector2(640, 220), nullptr, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, m_titleAlpha), m_titleRotetion, DirectX::SimpleMath::Vector2(640, 220));
 	}
 
-	m_spriteBatch->Draw(mCRIWARETexture.Get(), DirectX::SimpleMath::Vector2(size.right-110, size.bottom-110), nullptr, Colors::White, 0.0f, DirectX::SimpleMath::Vector2::Zero,0.1f);
+	m_spriteBatch->Draw(m_CRIWARETexture.Get(), DirectX::SimpleMath::Vector2(size.right-110, size.bottom-110), nullptr, Colors::White, 0.0f, DirectX::SimpleMath::Vector2::Zero,0.1f);
 	
-	m_spriteBatch->Draw(m_pushTexture.Get(), pos, nullptr, pushColor, 0.0f, DirectX::SimpleMath::Vector2::Zero);
+
+	
+
+	switch (m_titleSelect)
+	{
+	case TitleScene::TitleState::TITLE:
+		
+		m_spriteBatch->Draw(m_pushTexture.Get(), pos, nullptr, pushColor, 0.0f, DirectX::SimpleMath::Vector2::Zero);
+		
+		break;
+	case TitleScene::TitleState::MODESELECT:
+		
+		DirectX::SimpleMath::Vector2 modeSelectPosition[2] =
+		{
+			DirectX::SimpleMath::Vector2{size.right / 2.0f - size.right / 4.0f , size.bottom / 2.0f + size.bottom / 4.0f  },
+			DirectX::SimpleMath::Vector2{size.right / 2.0f + size.right / 4.0f , size.bottom / 2.0f + size.bottom / 4.0f }
+		};
+
+		DirectX::SimpleMath::Vector4 modeSelectColor[2] =
+		{
+			DirectX::SimpleMath::Vector4{1.0f,static_cast<float>(m_modeSelectNum),static_cast<float>(m_modeSelectNum),1.0f},
+			DirectX::SimpleMath::Vector4{1.0f,1.0f - m_modeSelectNum,1.0f - m_modeSelectNum,1.0f},
+		};
+
+		for (int i = 0; i < m_modeSelectTextures.size(); i++)
+		{
+
+			m_spriteBatch->Draw(m_modeSelectTextures[i].Get(), modeSelectPosition[i], nullptr, modeSelectColor[i], 0.0f, DirectX::SimpleMath::Vector2(294, 82.5f));
+
+		}
+
+		break;
+
+
+	}
+	
 	m_spriteBatch->Draw(m_blackTexture.Get(), pos, nullptr, fadeColor, 0.0f, DirectX::SimpleMath::Vector2::Zero);
 
 
@@ -311,7 +382,7 @@ void TitleScene::LoadResources()
 		device,
 		L"Resources/Textures/CRIWARELOGO_1.png",
 		nullptr,
-		mCRIWARETexture.ReleaseAndGetAddressOf()
+		m_CRIWARETexture.ReleaseAndGetAddressOf()
 	);
 
 	//	エフェクトファクトリの作成
@@ -354,5 +425,24 @@ void TitleScene::LoadResources()
 		num++;
 	}
 
+	//プレイヤーモードのテクスチャのロード
+	m_modeSelectTextures.resize(static_cast<int>(GameMain::PlayerMode::Player2));
+
+	const wchar_t* modeTexFileName[static_cast<int>(GameMain::PlayerMode::Player2)] =
+	{
+		L"Resources/Textures/solo.png",
+		L"Resources/Textures/maruti.png",
+	};
+
+
+	for (int i = 0; i < static_cast<int>(GameMain::PlayerMode::Player2); i++)
+	{
+		CreateWICTextureFromFile(
+			device,
+			modeTexFileName[i],
+			nullptr,
+			m_modeSelectTextures[i].ReleaseAndGetAddressOf()
+		);
+	}
 
 }

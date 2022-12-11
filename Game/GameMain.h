@@ -43,7 +43,17 @@ class ItemManeger;
 /// </summary>
 class GameMain
 {
-private:
+public:
+
+    //プレイヤーのモード（数）
+    enum class PlayerMode
+    {
+        NONE = 0,
+        Player1 = 1,
+        Player2 = 2
+    };
+
+private:    
 
     // キーボード
     std::unique_ptr<DirectX::Keyboard> m_keybord;
@@ -57,15 +67,11 @@ private:
 	// シーン
 	IScene* m_pScene;
 
-    float m_time;
 
     // ロード画面 
     std::unique_ptr<ILoadingScreen> m_loadingScreen;
 
-    std::unique_ptr<StageManeger> m_stageManeger;
-    std::unique_ptr<Player> m_player;
-    std::unique_ptr<ObstacleManeger> m_obstacleManeger;
-    std::unique_ptr<ItemManeger> m_itemManeger;
+    PlayerMode m_playerMode;
 
 public:
     GameMain();

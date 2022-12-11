@@ -78,7 +78,7 @@ void Game::Update(DX::StepTimer const& timer)
 void Game::Render()
 {
     // Don't try to render anything before the first Update.
-    if (m_timer.GetFrameCount() == 0)
+     if (m_timer.GetFrameCount() == 0)
     {
         return;
     }

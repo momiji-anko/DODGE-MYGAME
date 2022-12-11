@@ -66,6 +66,8 @@ private:
 	ItemManeger* m_itemManger;
 	//ObstacleManeger* m_obstacleManeger;
 	StageManeger* m_stageManeger;
+
+	int m_playerID;
 public:
 	//コンストラクタ
 	Player();
@@ -113,18 +115,14 @@ public:
 	void InvalidCountDown();
 	int  GetInvalidCount() { return m_invalidCount; }
 
-};
-#ifdef _DEBUG
-/*
-					✜ で    Ｃ   ご ✜
-					： す    ＋   注 ：
-					￤ か    ＋   文 ￤
-					： ?  Is the  は ：
-					✜   order C++?  ✜
-　　　糸冬　　　
-――――――――
-制作・著作 ＮＨＫ
-　 
+	int GetID() { return m_playerID; }
+	void SetID(int id) { m_playerID = id; }
 
-*/
-#endif
+private: 
+	void Player1Move(const DX::StepTimer& timer);
+	void Player2Move(const DX::StepTimer& timer);
+
+	void Player1CreateModel();
+	void Player2CreateModel();
+
+};
