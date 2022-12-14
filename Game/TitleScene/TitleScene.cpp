@@ -307,11 +307,12 @@ void TitleScene::Draw()
 			DirectX::SimpleMath::Vector4{1.0f,static_cast<float>(m_modeSelectNum),static_cast<float>(m_modeSelectNum),1.0f},
 			DirectX::SimpleMath::Vector4{1.0f,1.0f - m_modeSelectNum,1.0f - m_modeSelectNum,1.0f},
 		};
+		float tex[2] = {92,102};
 
 		for (int i = 0; i < m_modeSelectTextures.size(); i++)
 		{
 
-			m_spriteBatch->Draw(m_modeSelectTextures[i].Get(), modeSelectPosition[i], nullptr, modeSelectColor[i], 0.0f, DirectX::SimpleMath::Vector2(294, 82.5f));
+			m_spriteBatch->Draw(m_modeSelectTextures[i].Get(), modeSelectPosition[i], nullptr, modeSelectColor[i], 0.0f, DirectX::SimpleMath::Vector2(tex[i], 38.0f),2.0f);
 
 		}
 
@@ -430,8 +431,8 @@ void TitleScene::LoadResources()
 
 	const wchar_t* modeTexFileName[static_cast<int>(GameMain::PlayerMode::Player2)] =
 	{
-		L"Resources/Textures/solo.png",
-		L"Resources/Textures/maruti.png",
+		L"Resources/Textures/SOLO.png",
+		L"Resources/Textures/MARUTI.png",
 	};
 
 

@@ -274,7 +274,6 @@ void PlayScene::Draw()
 		{
 
 			DirectX::SimpleMath::Matrix world = SimpleMath::Matrix::Identity;
-
 			DirectX::SimpleMath::Matrix trans = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, 3.0f * i, 0.0f));
 			DirectX::SimpleMath::Matrix rot = DirectX::SimpleMath::Matrix::CreateRotationY(0.0f);
 			DirectX::SimpleMath::Matrix scale = DirectX::SimpleMath::Matrix::CreateScale(0.005);
