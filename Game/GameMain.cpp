@@ -30,6 +30,7 @@ GameMain::GameMain()
 	: m_nextScene(GAME_SCENE::TITLE)		// ‰ŠúƒV[ƒ“‚Ìİ’è
 	, m_pScene(nullptr)
 	,m_playerMode(GameMain::PlayerMode::NONE)
+	, m_stageNum(0)
 {
 }
 
@@ -160,6 +161,7 @@ void GameMain::CreateScene()
 		if (playScene != nullptr)
 		{
 			playScene->SetPlayerMode(m_playerMode);
+			playScene->SetStageNum(m_stageNum);
 		}
 
 		break;
@@ -218,6 +220,7 @@ void GameMain::DeleteScene()
 		if (titleScene != nullptr)
 		{
 			m_playerMode = titleScene->GetPlayerMode();
+			m_stageNum   = titleScene->GetStageNum();
 		}
 
 		break;

@@ -11,6 +11,13 @@ class StageManeger
 {
 public:
 
+	enum class StageSelect
+	{
+		Stage1,
+		Stage2,
+		Stage3
+	};
+
 private:
 
 	std::unique_ptr<DirectX::Model>           m_stageModel;
@@ -45,8 +52,7 @@ public:
 	void Finalize();
 
 	bool PlayerStageAABBHitCheck(Actor* player);
-	bool StagePlayerHitCheck(Player* player);
-	bool ItemHitCheck(AABBFor3D* itemAABB);
+	bool ItemHitCheck(Actor* item);
 
 	bool LoadGraphDataByJSON(const std::wstring& fileName);
 

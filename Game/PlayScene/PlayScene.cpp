@@ -62,14 +62,14 @@ void PlayScene::Initialize()
 
 
 	m_obstacleManeger = std::make_unique< ObstacleManeger>();
-	m_obstacleManeger->Initialize(m_commonState.get(), StageSelect::Stage1);
+	m_obstacleManeger->Initialize(m_commonState.get(), m_stageNum);
 
 
 	m_shadowMap = std::make_unique<ShadowMap>();
 	m_shadowMap->Initialize(device, L"Resources/Shaders");
 
 	m_stageManeger = std::make_unique<StageManeger>();
-	m_stageManeger->Initialize(m_commonState.get(), StageSelect::Stage1);
+	m_stageManeger->Initialize(m_commonState.get(), m_stageNum);
 	m_stageManeger->SetShadow(m_shadowMap.get());
 
 

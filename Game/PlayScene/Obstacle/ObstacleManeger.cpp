@@ -50,7 +50,7 @@ ObstacleManeger::~ObstacleManeger()
 }
 
 // ‰Šú‰»
-void ObstacleManeger::Initialize(DirectX::CommonStates* commonState, StageSelect stage)
+void ObstacleManeger::Initialize(DirectX::CommonStates* commonState, StageManeger::StageSelect stage)
 {
 	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
 	ID3D11Device1* device = pDR->GetD3DDevice();
@@ -191,21 +191,7 @@ void ObstacleManeger::Initialize(DirectX::CommonStates* commonState, StageSelect
 	CreateObstacle(DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f), Obstacle::ObstacleType::ROTATESTICK, 0);
 	CreateObstacle(DirectX::SimpleMath::Vector3(0.0f, 3.0f, 0.0f), Obstacle::ObstacleType::REVERSE_ROTATESTICK, 0);
 
-	switch (stage)
-	{
-	case StageSelect::Stage1:
-	
-		
-		break;
-	case StageSelect::Stage2:
 
-
-		break;
-	case StageSelect::Stage3:
-		break;
-	default:
-		break;
-	}
 	
 }
 
@@ -233,8 +219,8 @@ void ObstacleManeger::Update(const DX::StepTimer& timer)
 			case 4:
 				
 				
-				//CreateObstacle(m_normalSpawnePosition[type], Obstacle::ObstacleType::MEANDERING, rad);
-				CreateObstacle(m_playerPosition+DirectX::SimpleMath::Vector3(0.0f,5.0f,0.0f), Obstacle::ObstacleType::METEORITE, rad);
+				CreateObstacle(m_normalSpawnePosition[type], Obstacle::ObstacleType::MEANDERING, rad);
+				//CreateObstacle(m_playerPosition+DirectX::SimpleMath::Vector3(0.0f,5.0f,0.0f), Obstacle::ObstacleType::METEORITE, rad);
 				break;
 			case 5:
 

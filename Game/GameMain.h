@@ -13,20 +13,15 @@
 // シーンの列挙
 enum class GAME_SCENE : int
 {
-    NONE,
+	NONE,
 
-    TITLE,
-    PLAY,
-    RESULT,
+	TITLE,
+	PLAY,
+	RESULT,
 };
 
 //ステージ
-enum class StageSelect
-{
-    Stage1,
-    Stage2,
-    Stage3,
-};
+
 
 // 前方宣言
 class DebugCamera;
@@ -45,21 +40,21 @@ class GameMain
 {
 public:
 
-    //プレイヤーのモード（数）
-    enum class PlayerMode
-    {
-        NONE = 0,
-        Player1 = 1,
-        Player2 = 2
-    };
+	//プレイヤーのモード（数）
+	enum class PlayerMode
+	{
+		NONE = 0,
+		Player1 = 1,
+		Player2 = 2
+	};
 
 private:    
 
-    // キーボード
-    std::unique_ptr<DirectX::Keyboard> m_keybord;
-    
-    // マウス
-    std::unique_ptr<DirectX::Mouse> m_mouse;
+	// キーボード
+	std::unique_ptr<DirectX::Keyboard> m_keybord;
+	
+	// マウス
+	std::unique_ptr<DirectX::Mouse> m_mouse;
 
 	// 次のシーン番号
 	GAME_SCENE m_nextScene;
@@ -68,19 +63,20 @@ private:
 	IScene* m_pScene;
 
 
-    // ロード画面 
-    std::unique_ptr<ILoadingScreen> m_loadingScreen;
+	// ロード画面 
+	std::unique_ptr<ILoadingScreen> m_loadingScreen;
 
-    PlayerMode m_playerMode;
+	PlayerMode m_playerMode;
+	int m_stageNum;
 
 public:
-    GameMain();
-    ~GameMain();
+	GameMain();
+	~GameMain();
 
-    void Initialize();
-    void Update(const DX::StepTimer& timer);
-    void Render();
-    void Finalize();
+	void Initialize();
+	void Update(const DX::StepTimer& timer);
+	void Render();
+	void Finalize();
 
 	// シーン関係処理
 
@@ -91,5 +87,5 @@ public:
 	void DeleteScene();
 
 private:
-    void LoadResources(bool useLoadingScreen = true);
+	void LoadResources(bool useLoadingScreen = true);
 };

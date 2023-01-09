@@ -30,9 +30,9 @@ TitleScene::TitleScene()
 	m_titleRoutine(0),
 	m_titlePosition{},
 	m_titleRotetion(0.0f),
-	m_stageSelect(StageSelect::Stage1),
 	m_titleSelect(TitleState::FADEIN),
-	m_modeSelectNum(0)
+	m_modeSelectNum(0),
+	m_stageNum(0)
 {
 }
 
@@ -108,20 +108,33 @@ GAME_SCENE TitleScene::Update(const DX::StepTimer& timer)
 	case TitleScene::TitleState::TITLE:
 		if (m_keyboardStateTracker->IsKeyPressed(Keyboard::Keys::Space) && m_flagFadeIn == true)
 		{
-			m_titleSelect = TitleScene::TitleState::MODESELECT;
+			m_titleSelect = TitleScene::TitleState::STAGESELECT;
 			m_pAdx2->Play(CRI_CUESHEET_0_BUTTON);
 			
 		}
 		break;
 	case TitleScene::TitleState::STAGESELECT:
 
-		if (keyState.IsKeyDown(Keyboard::Keys::Left))
+		if (m_keyboardStateTracker->IsKeyPressed(Keyboard::Keys::Left))
 		{
-			//m_flag = true;
+			m_stageNum = 0;
 			m_pAdx2->Play(CRI_CUESHEET_0_BUTTON);
 
 		}
+		if (m_keyboardStateTracker->IsKeyPressed(Keyboard::Keys::Right))
+		{
+			m_stageNum = 1;
+			m_pAdx2->Play(CRI_CUESHEET_0_BUTTON);
 
+
+		}
+
+		if (m_keyboardStateTracker->IsKeyPressed(Keyboard::Keys::Space) && m_flagFadeIn == true)
+		{
+			m_titleSelect = TitleScene::TitleState::MODESELECT;
+			m_pAdx2->Play(CRI_CUESHEET_0_BUTTON);
+
+		}
 		break;
 	case TitleScene::TitleState::MODESELECT:
 
@@ -285,17 +298,40 @@ void TitleScene::Draw()
 	m_spriteBatch->Draw(m_CRIWARETexture.Get(), DirectX::SimpleMath::Vector2(size.right-110, size.bottom-110), nullptr, Colors::White, 0.0f, DirectX::SimpleMath::Vector2::Zero,0.1f);
 	
 
-	
+
 
 	switch (m_titleSelect)
 	{
 	case TitleScene::TitleState::TITLE:
-		
+	{
 		m_spriteBatch->Draw(m_pushTexture.Get(), pos, nullptr, pushColor, 0.0f, DirectX::SimpleMath::Vector2::Zero);
-		
+
+	}
+		break;
+	case TitleScene::TitleState::STAGESELECT:
+	{
+		DirectX::SimpleMath::Vector2 stageSelectPosition[2] =
+		{
+			DirectX::SimpleMath::Vector2{size.right / 2.0f - size.right / 4.0f , size.bottom / 2.0f + size.bottom / 4.0f  },
+			DirectX::SimpleMath::Vector2{size.right / 2.0f + size.right / 4.0f , size.bottom / 2.0f + size.bottom / 4.0f }
+		};
+
+		DirectX::SimpleMath::Vector4 stageSelectColor[2] =
+		{
+			DirectX::SimpleMath::Vector4{1.0f,static_cast<float>(m_stageNum),static_cast<float>(m_stageNum),1.0f},
+			DirectX::SimpleMath::Vector4{1.0f,1.0f - m_stageNum,1.0f - m_stageNum,1.0f},
+		};
+		float texSize[2] = { 117.5f,123 };
+		for (int i = 0; i < m_stageSelectTexture.size(); i++)
+		{
+
+			m_spriteBatch->Draw(m_stageSelectTexture[i].Get(), stageSelectPosition[i], nullptr, stageSelectColor[i], 0.0f, DirectX::SimpleMath::Vector2(texSize[i], 39.0f), 2.0f);
+
+		}
+	}
 		break;
 	case TitleScene::TitleState::MODESELECT:
-		
+	{
 		DirectX::SimpleMath::Vector2 modeSelectPosition[2] =
 		{
 			DirectX::SimpleMath::Vector2{size.right / 2.0f - size.right / 4.0f , size.bottom / 2.0f + size.bottom / 4.0f  },
@@ -315,7 +351,7 @@ void TitleScene::Draw()
 			m_spriteBatch->Draw(m_modeSelectTextures[i].Get(), modeSelectPosition[i], nullptr, modeSelectColor[i], 0.0f, DirectX::SimpleMath::Vector2(tex[i], 38.0f),2.0f);
 
 		}
-
+	}
 		break;
 
 
@@ -443,6 +479,26 @@ void TitleScene::LoadResources()
 			modeTexFileName[i],
 			nullptr,
 			m_modeSelectTextures[i].ReleaseAndGetAddressOf()
+		);
+	}
+
+	//プレイヤーモードのテクスチャのロード
+	m_stageSelectTexture.resize(2);
+	int stageTexNum = static_cast<int>(m_stageSelectTexture.size());
+	const wchar_t* stageTexFileName[2] =
+	{
+		L"Resources/Textures/stage1.png",
+		L"Resources/Textures/stage2.png",
+	};
+
+
+	for (int i = 0; i < m_stageSelectTexture.size(); i++)
+	{
+		CreateWICTextureFromFile(
+			device,
+			stageTexFileName[i],
+			nullptr,
+			m_stageSelectTexture[i].ReleaseAndGetAddressOf()
 		);
 	}
 

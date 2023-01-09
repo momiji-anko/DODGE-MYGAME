@@ -9,10 +9,10 @@
 #include"../ShadowMap.h"
 
 #include"../../EffectManager3.h"
+#include"Game/PlayScene/Stage/StageManager.h"
 
 class Player;
 
-enum class StageSelect;
 class ObstacleManeger
 {
 public:
@@ -50,7 +50,7 @@ public:
 	~ObstacleManeger();
 
 	// ‰Šú‰»
-	void Initialize(DirectX::CommonStates* commonState, StageSelect stage );
+	void Initialize(DirectX::CommonStates* commonState, StageManeger::StageSelect stage );
 
 	// XV
 	void Update(const DX::StepTimer& timer);

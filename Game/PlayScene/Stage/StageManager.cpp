@@ -109,47 +109,7 @@ void StageManeger::ParseJSON()
 		m_stage[i]->SetStageType(static_cast <Stage::StageType>(i + n));
 		i++;
 	}
-	// 頂点インデックス
-	int vertexIndex = 0;
-	// 検出フラグ
-	bool found = false;
-	//for (size_t index = 0; index < m_stageData.size(); index++)
-	//{
-	//	if (!found)
-	//	{
-	//		// 隣接リストの文字列を検索する
-	//		m_position = m_stageData[index].find("adjacency_list:");
-	//		// 文字列が見つからない場合
-	//		if (m_position == std::string::npos)
-	//			continue;
 
-
-	//		// 隣接リストの文字列が見つかった
-	//		found = true;
-	//		// インデックスをインクリメントする
-	//		if (index < m_stageData.size() - 1)
-	//			index++;
-	//		else
-	//			continue;
-	//	}
-	//	// 隣接リストの行末のコンマが存在する場合は削除する
-	//	if (m_stageData[index].at((m_stageData[index].size() - 1)) == ',')
-	//		m_stageData[index].erase(--m_stageData[index].end());
-
-	//	// ストリングストリームを生成する
-	//	std::stringstream ss(m_stageData[index].c_str());
-	//	// 頂点番号
-	//	std::string vertexNumber;
-	//	// コンマまでの文字列の取得を繰り返す
-	//	while (std::getline(ss, vertexNumber, ','))
-	//	{
-	//		// エッジの頂点番号を数値化する
-	//		int vertexIndexOfEdge = std::stoi(vertexNumber);
-	//		// 隣接リストにエッジの頂点を追加する
-	//	}
-	//	// 頂点インデックスをインクリメントする
-	//	vertexIndex++;
-	//}
 }
 
 void StageManeger::SetShadow(ShadowMap* shadow)
@@ -188,7 +148,7 @@ void StageManeger::Initialize(DirectX::CommonStates* commonState, StageSelect st
 
 	m_stageSelect = stage;
 
-	switch (stage)
+	switch (m_stageSelect)
 	{
 	case StageSelect::Stage1:
 		StageFileName = L"Resources/StageData/Stage1.json";
@@ -196,7 +156,7 @@ void StageManeger::Initialize(DirectX::CommonStates* commonState, StageSelect st
 		break;
 	case StageSelect::Stage2:
 		StageFileName = L"Resources/StageData/Stage2.json";
-		ModelFileName = L"Resources/Models/stage.cmo";
+		ModelFileName = L"Resources/Models/stage2.cmo";
 		break;
 	case StageSelect::Stage3:
 		StageFileName = L"";
@@ -303,46 +263,103 @@ void StageManeger::Finalize()
 
 bool StageManeger::PlayerStageAABBHitCheck(Actor* player)
 {
-	for (std::unique_ptr<Stage>& stage : m_stage)
+	switch (m_stageSelect)
 	{
-		if (stage->GetAABB()->HitCheck(player->GetAABB()))
+	case StageSelect::Stage1:
+		for (std::unique_ptr<Stage>& stage : m_stage)
 		{
-			DirectX::SimpleMath::Vector3 pos = player->GetPosition();
-			player->SetPosition(DirectX::SimpleMath::Vector3(pos.x, stage->GetPosition().y + 0.48f, pos.z));
+			if (stage->GetAABB()->HitCheck(player->GetAABB()))
+			{
+				DirectX::SimpleMath::Vector3 pos = player->GetPosition();
+				player->SetPosition(DirectX::SimpleMath::Vector3(pos.x, stage->GetPosition().y + 0.48f, pos.z));
 
-			return true;
+				return true;
+
+			}
+		}
+		break;
+	case StageSelect::Stage2:
+		for (std::unique_ptr<Stage>& stage : m_stage)
+		{
+			//プレイヤーとの距離を図る用の変数
+			DirectX::SimpleMath::Vector2 stagePosition = DirectX::SimpleMath::Vector2(stage->GetPosition().x, stage->GetPosition().z);
+			//ステージとの距離を図る用の変数
+			DirectX::SimpleMath::Vector2 playerPosition = DirectX::SimpleMath::Vector2(player->GetPosition().x, player->GetPosition().z);
+			//ステージとプレイヤーの距離
+			float distance = DirectX::SimpleMath::Vector2::Distance(stagePosition, playerPosition);
+			//範囲
+			static const float OUT_RANGE =14.5f;
+			static const float IN_RANGE  =4.0f;
+			//範囲内かつプレイヤーのY座標が０以上であればtrue
+			if ((distance <= OUT_RANGE && distance >= IN_RANGE) && player->GetPosition().y >= -2.0f&& player->GetPosition().y <= -1.0f)
+			{
+				player->SetPosition(DirectX::SimpleMath::Vector3(playerPosition.x, stage->GetPosition().y + 1.5f, playerPosition.y));
+				//範囲内
+				return true;
+			}
 
 		}
+
+
+
+		break;
+	case StageSelect::Stage3:
+		break;
+	default:
+		break;
 	}
+	
 	return false;
 }
 
-//bool StageManeger::StagePlayerHitCheck(Player* player)
-//{
-//	for (std::unique_ptr<Stage>& stage : m_stage)
-//	{
-//		if (stage->GetAABB()->HitCheck(player->GetAABB()))
-//		{
-//			DirectX::SimpleMath::Vector3 pos = player->GetPosition();
-//			player->SetPosition(DirectX::SimpleMath::Vector3(pos.x, stage->GetPosition().y + 0.48f, pos.z));
-//
-//			return true;
-//
-//		}
-//	}
-//	
-//	return false;
-//}
 
-bool StageManeger::ItemHitCheck(AABBFor3D* itemAABB)
+
+
+bool StageManeger::ItemHitCheck(Actor* item)
 {
-	for (std::unique_ptr<Stage>& stage : m_stage)
+	
+	switch (m_stageSelect)
 	{
-		if (stage->GetAABB()->HitCheck(itemAABB))
+	case StageSelect::Stage1:
+		for (std::unique_ptr<Stage>& stage : m_stage)
 		{
-			return true;
+			if (stage->GetAABB()->HitCheck(item->GetAABB()))
+			{
+				return true;
+
+			}
+		}
+		break;
+	case StageSelect::Stage2:
+		for (std::unique_ptr<Stage>& stage : m_stage)
+		{
+			//プレイヤーとの距離を図る用の変数
+			DirectX::SimpleMath::Vector2 stagePosition = DirectX::SimpleMath::Vector2(stage->GetPosition().x, stage->GetPosition().z);
+			//ステージとの距離を図る用の変数
+			DirectX::SimpleMath::Vector2 itemPosition = DirectX::SimpleMath::Vector2(item->GetPosition().x, item->GetPosition().z);
+			//ステージとプレイヤーの距離
+			float distance = DirectX::SimpleMath::Vector2::Distance(stagePosition, itemPosition);
+			//範囲
+			static const float OUT_RANGE = 100.0f;
+			static const float IN_RANGE = 1.0f;
+			//範囲内かつプレイヤーのY座標が０以上であればtrue
+			if ((distance <= OUT_RANGE && distance >= IN_RANGE) && item->GetPosition().y >= -1.0f && item->GetPosition().y <= -2.0f)
+			{
+				//範囲内
+				return true;
+			}
 
 		}
+
+
+
+		break;
+	case StageSelect::Stage3:
+		break;
+	default:
+		break;
 	}
+
+	return false;
 	return false;
 }

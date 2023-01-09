@@ -79,6 +79,7 @@ private:
 	std::vector<std::unique_ptr<Player>> m_players;
 	
 	GameMain::PlayerMode m_playerMode;
+	StageManeger::StageSelect m_stageNum;
 
 public:
 
@@ -110,4 +111,6 @@ public:
 	/// </summary>
 	/// <param name="mode">Player1=一人、Player2=二人、</param>
 	void SetPlayerMode(GameMain::PlayerMode mode) { m_playerMode = mode; }
+
+	void SetStageNum(int stage) { m_stageNum = static_cast<StageManeger::StageSelect>(stage); }
 };

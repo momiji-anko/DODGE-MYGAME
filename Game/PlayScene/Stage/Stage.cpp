@@ -111,6 +111,8 @@ void Stage::Update(const DX::StepTimer& timer)
 		m_endFlag = true;
 
 		break;
+	case Stage::StageType::Stage2_1:
+		break;
 	default:
 		break;
 	}
@@ -132,6 +134,10 @@ void Stage::Draw(Camera* camera)
 	DirectX::SimpleMath::Matrix trans = DirectX::SimpleMath::Matrix::CreateTranslation(m_position + m_offsetPosition);
 	DirectX::SimpleMath::Matrix rot = DirectX::SimpleMath::Matrix::CreateRotationY(m_rotation.y / 180.0f * 3.14f);
 	
+	if (m_type == Stage::StageType::Stage2_1)
+	{
+		world *= DirectX::SimpleMath::Matrix::CreateScale(0.012f);
+	}
 
 	world *= rot * trans;
 	//m_AABBObject->Draw(DirectX::SimpleMath::Matrix::Identity, camera->GetViewMatrix(), camera->GetProjectionMatrix(), DirectX::SimpleMath::Color(1, 1, 0, 1));
@@ -165,6 +171,7 @@ bool Stage::PlayerCheckGruondHit(AABBFor3D* playerAABB)
 	return m_AABBObject->HitCheck(playerAABB);
 
 }
+
 
 void Stage::Reset()
 {

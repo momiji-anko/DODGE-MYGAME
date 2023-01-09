@@ -43,7 +43,7 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>						m_pushTexture;
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>						m_blackTexture;
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>						m_CRIWARETexture;
-	std::vector<Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>>	m_modeSelectTextures;
+	std::vector<Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>>	        m_modeSelectTextures;
 	int   m_modeSelectNum;
 
 	float m_alpha;
@@ -68,10 +68,13 @@ private:
 	RECT m_size;
 
 	TitleState m_titleSelect;
-	StageSelect m_stageSelect;
 
 	int m_stageSelectInt;
 	GameMain::PlayerMode m_playerMode;
+
+	int m_stageNum;
+	std::vector<Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>> m_stageSelectTexture;
+
 public:
 
 	// コンストラクタ
@@ -105,6 +108,8 @@ public:
 		return 1 - pow(1 - x, 3);
 	}
 
-	StageSelect GetStageSelect() { return m_stageSelect; }
 	GameMain::PlayerMode  GetPlayerMode() { return m_playerMode; }
+
+	int GetStageNum() { return m_stageNum; }
+
 };

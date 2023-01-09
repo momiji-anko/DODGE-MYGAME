@@ -85,7 +85,7 @@ void ResultScene::Initialize()
 	ID3D11Device1* device = pDR->GetD3DDevice();
 	ID3D11DeviceContext1* context = pDR->GetD3DDeviceContext();
 	m_stageManeger = std::make_unique<StageManeger>();
-	m_stageManeger->Initialize(m_commonState.get(), StageSelect::Stage1);
+	m_stageManeger->Initialize(m_commonState.get(), StageManeger::StageSelect::Stage1);
 
 }
 

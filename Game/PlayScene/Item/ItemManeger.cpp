@@ -98,7 +98,7 @@ void ItemManeger::Update(const DX::StepTimer& timer)
 		
 		Item* i = dynamic_cast<Item*>(item.get());
 
-		bool isHit = m_stageManeger->ItemHitCheck(item->GetAABB());
+		bool isHit = m_stageManeger->ItemHitCheck(item.get());
 
 		i->SetGruondHit(isHit);
 		

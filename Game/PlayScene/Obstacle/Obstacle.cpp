@@ -125,8 +125,11 @@ void Obstacle::Draw(Camera* camera)
 	DirectX::SimpleMath::Matrix rot = DirectX::SimpleMath::Matrix::CreateRotationY(m_rotation.y);
 	DirectX::SimpleMath::Matrix scale = DirectX::SimpleMath::Matrix::CreateScale(0.005f);
 
-	
+#ifndef DEBUG
 	m_AABBObject->Draw(DirectX::SimpleMath::Matrix::Identity, camera->GetViewMatrix(), camera->GetProjectionMatrix(), DirectX::SimpleMath::Color(1, 1, 0, 1));
+#endif // DEBUG
+
+
 
 	switch (m_type)
 	{
