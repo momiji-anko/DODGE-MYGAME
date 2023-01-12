@@ -161,7 +161,6 @@ GAME_SCENE PlayScene::Update(const DX::StepTimer& timer)
 
 	m_aliveTime->Update(timer);
 
-	//m_actor->Update(timer);
 
 	for (std::vector<std::unique_ptr<Player>>::iterator player = m_players.begin(); player != m_players.end(); ++player)
 	{
