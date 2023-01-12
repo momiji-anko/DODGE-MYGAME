@@ -36,20 +36,17 @@ void Player::Initialize(const DirectX::SimpleMath::Vector3& velocity, const Dire
 	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
 	ID3D11DeviceContext1* context = pDR->GetD3DDeviceContext();
 	ID3D11Device1* device = pDR->GetD3DDevice();
-
+	//ステータスの初期化
 	m_commonState = commonState;
 	m_velocity = velocity;
 	m_position = position;
-
 	m_active = active;
-
 	m_angle = angle;
-
 	m_behavia = behavia;
-
 	m_pModel = model;
+	m_modelTime = 0.0f;
 
-
+	//IDに応じてモデルを変える
 	switch (m_playerID)
 	{
 	case 1:
@@ -62,20 +59,18 @@ void Player::Initialize(const DirectX::SimpleMath::Vector3& velocity, const Dire
 		break;
 	}
 	
-	m_modelTime = 0.0f;
 
 	m_AABBObject = std::make_unique<AABBFor3D>();
 	m_AABBObject->Initialize();
 	m_AABBObject->SetData(DirectX::SimpleMath::Vector3(m_position.x - 0.5f, m_position.y - 0.9f, m_position.z - 0.5f), DirectX::SimpleMath::Vector3(m_position.x + 0.5f, m_position.y + 0.5f, m_position.z + 0.5f));
 
+
 	m_effect = std::make_unique<EffectManager>();
-	
 	m_effect->Create();
 	m_effect->Initialize(3.0f, DirectX::SimpleMath::Vector3(m_position.x, m_position.y, m_position.z + 0.5f));
 	m_effect->SetStartPosition(DirectX::SimpleMath::Vector3(m_position.x, m_position.y, m_position.z + 0.5f));
 
 	m_pAdx2 = &ADX2::GetInstance();
-	
 
 	m_capsule = std::make_unique<Capsule>();
 	m_capsule->a = DirectX::SimpleMath::Vector3(m_position);
@@ -111,8 +106,6 @@ void Player::Update(const DX::StepTimer& timer)
 
 
 		InvalidCountUp();
-
-
 	}
 	
 	m_velocity.z += 0.0f;

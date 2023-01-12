@@ -42,10 +42,7 @@ private:
 
 	std::unique_ptr<EffectManager> m_effect;
 
-	//障害物ヒットフラグ
-	bool m_hit;
-	//アイテムヒットフラグ
-	bool m_itemHit;
+
 
 	//プレイヤーのモデル
 	std::map<int, std::unique_ptr<DirectX::Model>> m_playerModel;
@@ -71,6 +68,7 @@ private:
 	ItemManeger*       m_itemManger;
 	StageManeger*      m_stageManeger;
 
+	//プレイヤーの番号
 	int m_playerID;
 public:
 	//コンストラクタ
@@ -110,7 +108,6 @@ public:
 
 
 	void SetIteManeger(ItemManeger* itemManeger) { m_itemManger = itemManeger; }
-	//void SetObstacleManeger(ObstacleManeger* obstacleManeger) { m_obstacleManeger = obstacleManeger; }
 	void SetStageManeger(StageManeger* stageManeger) { m_stageManeger = stageManeger;  }
 
 	void InvalidCountUp();
