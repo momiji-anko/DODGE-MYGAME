@@ -10,9 +10,7 @@
 #include"../../../Helpers/CueSheet_0.h"
 #include"Helpers/DODGESound_acf.h"
 #include"../Objects.h"
-
 #include"../Item/ItemManeger.h"
-//#include"../Obstacle/ObstacleManeger.h"
 #include"../Stage/StageManager.h"
 
 enum class PlayerState
@@ -37,35 +35,41 @@ private:
 
 	//変数=====================================================
 
+	//プレイヤーの状態
 	PlayerState m_playerState;
+	//無敵時間
 	float m_invincbleTime;
+
 	std::unique_ptr<EffectManager> m_effect;
+
+	//障害物ヒットフラグ
 	bool m_hit;
+	//アイテムヒットフラグ
 	bool m_itemHit;
 
+	//プレイヤーのモデル
 	std::map<int, std::unique_ptr<DirectX::Model>> m_playerModel;
-	std::vector<int> m_playerModelNum;
-	float m_modelTime;
+	std::vector<int>                               m_playerModelNum;
+	float                                          m_modelTime;
 	
-
+	//音
 	ADX2* m_pAdx2;
-	int m_musicID;
-	int m_jumpmusicID;
+	int   m_musicID;
+	int   m_jumpmusicID;
 
 	float m_jumpVelcity;
-
+	//吹き飛ばす
 	DirectX::SimpleMath::Vector3 m_flyVelocity;
 	
-	//std::map<PlayerState,int>
-	int m_invalidCount;
-	float m_invalidCountCoolDownTime_s;
+	
+	int                                              m_invalidCount;
+	float                                            m_invalidCountCoolDownTime_s;
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_invalidTexture;
-	bool m_isInvalid;
+	bool                                             m_isInvalid;
 
 	//========
-	ItemManeger* m_itemManger;
-	//ObstacleManeger* m_obstacleManeger;
-	StageManeger* m_stageManeger;
+	ItemManeger*       m_itemManger;
+	StageManeger*      m_stageManeger;
 
 	int m_playerID;
 public:
@@ -88,15 +92,13 @@ public:
 
 	// 描画
 	void Draw(Camera* camera)override;
-
+	//盾の画像描画
 	void TextureDraw(DirectX::SpriteBatch* spriteBatch);
 
 	// 終了処理
 	void Finalize()override;
 
-	void SetGruondHit(bool hit) { m_hit = hit; }
 
-	void SetItemHit(bool hit) { m_itemHit = hit; }
 
 	PlayerState GetNowPlayerState() { return m_playerState; }
 

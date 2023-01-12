@@ -62,7 +62,6 @@ void Player::Initialize(const DirectX::SimpleMath::Vector3& velocity, const Dire
 		break;
 	}
 	
-	m_itemHit = false;
 	m_modelTime = 0.0f;
 
 	m_AABBObject = std::make_unique<AABBFor3D>();
@@ -113,7 +112,6 @@ void Player::Update(const DX::StepTimer& timer)
 
 		InvalidCountUp();
 
-		m_itemHit = false;
 
 	}
 	
@@ -233,6 +231,7 @@ void Player::Draw(Camera* camera)
 		m_playerModel[m_playerModelNum[m_modelTime]]->Draw(context, *m_commonState, m_world, camera->GetViewMatrix(), camera->GetProjectionMatrix());
 
 	}
+
 	if (m_playerState == PlayerState::INVINCIBLE)
 	{
 		m_effect->Render();

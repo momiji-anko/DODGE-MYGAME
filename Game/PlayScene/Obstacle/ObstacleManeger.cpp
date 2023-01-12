@@ -220,7 +220,7 @@ void ObstacleManeger::Update(const DX::StepTimer& timer)
 				
 				
 				CreateObstacle(m_normalSpawnePosition[type], Obstacle::ObstacleType::MEANDERING, rad);
-				//CreateObstacle(m_playerPosition+DirectX::SimpleMath::Vector3(0.0f,5.0f,0.0f), Obstacle::ObstacleType::METEORITE, rad);
+				//CreateObstacle(m_playerPosition+DirectX::SimpleMath::Vector3(0.0f,10.0f,0.0f), Obstacle::ObstacleType::METEORITE, rad);
 				break;
 			case 5:
 

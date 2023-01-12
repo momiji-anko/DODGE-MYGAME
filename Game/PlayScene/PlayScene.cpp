@@ -174,7 +174,6 @@ GAME_SCENE PlayScene::Update(const DX::StepTimer& timer)
 	m_itemManeger->Update(timer);
 	
 
-	//m_pDebugCamera->Update();
 
 	m_stageManeger->Update(timer);
 	
