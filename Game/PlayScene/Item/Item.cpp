@@ -23,7 +23,6 @@ Item:: ~Item()
  {
 
 	 DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
-	 ID3D11Device1* device = pDR->GetD3DDevice();
 	 ID3D11DeviceContext1* context = pDR->GetD3DDeviceContext();
 
 	 m_velocity = velocity;

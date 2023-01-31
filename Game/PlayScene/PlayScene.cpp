@@ -106,7 +106,7 @@ void PlayScene::Initialize()
 	{
 		playersStartPos[0] = DirectX::SimpleMath::Vector3(0.0f, 1.0f, 6.0f);
 	}
-	for (int i = 0; i < m_players.size(); i++)
+	for (int i = 0; i < static_cast<int>(m_playerMode); i++)
 	{
 
 		m_players[i]->SetID(i + 1);
@@ -204,7 +204,6 @@ GAME_SCENE PlayScene::Update(const DX::StepTimer& timer)
 	}
 
 	//
-	int playerFallCount = 0;
 	for (std::vector<std::unique_ptr<Player>>::iterator player = m_players.begin(); player != m_players.end(); ++player)
 	{
 		//死んでいた場合カウントを進める

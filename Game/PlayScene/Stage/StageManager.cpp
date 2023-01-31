@@ -50,7 +50,7 @@ bool StageManeger::LoadGraphDataByJSON(const std::wstring& fileName)
 // JSON 形式のデータをパースしオブジェクトに変換する
 void StageManeger::ParseJSON()
 {
-	int m_position;
+	
 	int i = 0;
 	// JSON データをパースする
 	for (size_t index = 0; index < m_stageData.size(); index++)
@@ -59,28 +59,28 @@ void StageManeger::ParseJSON()
 		float x;
 		float y;
 		float z;
-		int m_position;
+		int position;
 		// 書式：number:0,position:x:-40,y:20,z:10,
 		std::stringstream ss(m_stageData[index].c_str());
 		// 頂点番号の文字列を検索する
-		m_position = m_stageData[index].find("number:");
+		position = m_stageData[index].find("number:");
 		// 文字列が見つからない場合
-		if (m_position == std::string::npos)
+		if (position == std::string::npos)
 			continue;
 		// "vertex_number:"を削除する
-		m_stageData[index].replace(m_position, strlen("number:"), "");
+		m_stageData[index].replace(position, strlen("number:"), "");
 		// ",position:x:"を検索する
-		m_position = m_stageData[index].find(",position:x:");
+		position = m_stageData[index].find(",position:x:");
 		// ",position:x:"を空文字に置き換える
-		m_stageData[index].replace(m_position, strlen(",position:x:"), " ");
+		m_stageData[index].replace(position, strlen(",position:x:"), " ");
 		// ",y:"を探索する
-		m_position = m_stageData[index].find(",y:");
+		position = m_stageData[index].find(",y:");
 		// ",y:"を空文字に置き換える
-		m_stageData[index].replace(m_position, strlen(",y:"), " ");
+		m_stageData[index].replace(position, strlen(",y:"), " ");
 		// ",z:"を探索する
-		m_position = m_stageData[index].find(",z:");
+		position = m_stageData[index].find(",z:");
 		// ",z:"を空文字に置き換える
-		m_stageData[index].replace(m_position, strlen(",z:"), " ");
+		m_stageData[index].replace(position, strlen(",z:"), " ");
 		ss.clear();
 		ss.str(m_stageData[index]);
 		// 座標を取得する
@@ -138,7 +138,6 @@ StageManeger::~StageManeger()
 void StageManeger::Initialize(DirectX::CommonStates* commonState, StageSelect stage)
 {
 	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
-	ID3D11Device1* device = pDR->GetD3DDevice();
 	ID3D11DeviceContext1* context = pDR->GetD3DDeviceContext();
 
 	std::wstring StageFileName;

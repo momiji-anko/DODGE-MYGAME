@@ -68,6 +68,11 @@ void TitleScene::Initialize()
 	m_titleAlpha = 0.7f;
 
 
+	m_fadeInOut = std::make_unique<Fade>();
+	m_fadeInOut->Create();
+	m_fadeInOut->Initialize(DirectX::SimpleMath::Vector3::Zero,1.0f);
+	m_fadeInOut->FadeIn();
+
 	m_keyboardStateTracker = std::make_unique < DirectX::Keyboard::KeyboardStateTracker >();
 	
 }
@@ -82,6 +87,8 @@ GAME_SCENE TitleScene::Update(const DX::StepTimer& timer)
 	DirectX::Keyboard::State keyState = DirectX::Keyboard::Get().GetState();
 	//キーボードステートトラッカーの更新
 	m_keyboardStateTracker->Update(keyState);
+	
+	// TODO:m_fadeInOut->Update(timer);
 	
 	// マウス入力情報を取得する
 	DirectX::Mouse::State mouseState = DirectX::Mouse::Get().GetState();
@@ -242,8 +249,7 @@ void TitleScene::Draw()
 {
 	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
 
-	// D3Dデバイスとデバイスコンテキストの取得
-	ID3D11Device1* device = pDR->GetD3DDevice();
+	// デバイスコンテキストの取得
 	ID3D11DeviceContext1* context = pDR->GetD3DDeviceContext();
 
 	
@@ -362,6 +368,7 @@ void TitleScene::Draw()
 
 	m_spriteBatch->End();
 
+	//TODO:m_fadeInOut->Render();
 
 }
 

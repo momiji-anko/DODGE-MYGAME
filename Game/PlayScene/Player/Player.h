@@ -54,16 +54,17 @@ private:
 	int   m_musicID;
 	int   m_jumpmusicID;
 
+	//ジャンプ
 	float m_jumpVelcity;
 	//吹き飛ばす
 	DirectX::SimpleMath::Vector3 m_flyVelocity;
 	
-	
-	int                                              m_invalidCount;
-	float                                            m_invalidCountCoolDownTime_s;
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_invalidTexture;
-	bool                                             m_isInvalid;
+	//
+	int   m_invalidCount;
+	float m_invalidCountCoolDownTime_s;
+	bool  m_isInvalid;
 
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_invalidTexture;
 	//========
 	ItemManeger*       m_itemManger;
 	StageManeger*      m_stageManeger;

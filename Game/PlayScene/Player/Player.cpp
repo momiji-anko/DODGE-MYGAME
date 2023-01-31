@@ -102,7 +102,6 @@ void Player::Update(const DX::StepTimer& timer)
 
 	if (itemType != Item::ItemType::NONE)
 	{
-		int playerStateInt = static_cast<int>(itemType);
 
 
 		InvalidCountUp();
@@ -537,7 +536,6 @@ void Player::Player1CreateModel()
 {
 
 	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
-	ID3D11Device1* device = pDR->GetD3DDevice();
 
 	//	エフェクトファクトリの作成
 	DirectX::EffectFactory* factory0 = new DirectX::EffectFactory(pDR->GetD3DDevice());
@@ -603,7 +601,6 @@ void Player::Player1CreateModel()
 void Player::Player2CreateModel()
 {
 	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
-	ID3D11Device1* device = pDR->GetD3DDevice();
 	//	エフェクトファクトリの作成
 	DirectX::EffectFactory* factory0 = new DirectX::EffectFactory(pDR->GetD3DDevice());
 

@@ -170,7 +170,6 @@ void GameMain::CreateScene()
 	{
 		m_pScene = new ResultScene();
 
-		ResultScene* resultScene = dynamic_cast<ResultScene*> (m_pScene);
 
 	
 

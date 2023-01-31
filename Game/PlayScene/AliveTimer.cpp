@@ -58,7 +58,6 @@ void AliveTimer::Update(const DX::StepTimer& timer)
 void AliveTimer::Draw()
 {
 	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
-	ID3D11Device1* device = pDR->GetD3DDevice();
 	ID3D11DeviceContext1* context = pDR->GetD3DDeviceContext();
 
 	//	ウィンドウサイズの取得

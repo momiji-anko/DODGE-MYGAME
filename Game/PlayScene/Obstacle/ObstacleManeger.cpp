@@ -53,7 +53,6 @@ ObstacleManeger::~ObstacleManeger()
 void ObstacleManeger::Initialize(DirectX::CommonStates* commonState, StageManeger::StageSelect stage)
 {
 	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
-	ID3D11Device1* device = pDR->GetD3DDevice();
 	ID3D11DeviceContext1* context = pDR->GetD3DDeviceContext();
 
 	m_commonState = commonState;
@@ -109,12 +108,7 @@ void ObstacleManeger::Initialize(DirectX::CommonStates* commonState, StageManege
 		L"Resources/Models/star.cmo",
 		*factory
 	);
-	////	ファイルを指定してモデルデータ読み込み
-	//m_models[Obstacle::ObstacleType::NORMAL ] = DirectX::Model::CreateFromCMO(
-	//	pDR->GetD3DDevice(),
-	//	L"Resources/Models/fireShadow.cmo",
-	//	*factory
-	//);
+
 
 	delete factory;
 		//	エフェクトファクトリの作成
@@ -210,6 +204,7 @@ void ObstacleManeger::Update(const DX::StepTimer& timer)
 
 		if (m_time_s <= 50)
 		{
+			float  angle = (DirectX::XM_PI / 2.0f) * type;
 			switch (MyRandom::GetIntRange(0, 4))
 			{
 			case 0:
@@ -218,15 +213,18 @@ void ObstacleManeger::Update(const DX::StepTimer& timer)
 			case 3:
 			case 4:
 				
-				
-				CreateObstacle(m_normalSpawnePosition[type], Obstacle::ObstacleType::MEANDERING, rad);
+
+				CreateObstacle(m_stickSpawnePosition[type], Obstacle::ObstacleType::STICK, angle);
+
+
+				//CreateObstacle(m_normalSpawnePosition[type], Obstacle::ObstacleType::NORMAL, rad);
+				//CreateObstacle(m_normalSpawnePosition[type], Obstacle::ObstacleType::MEANDERING, rad);
 				//CreateObstacle(m_playerPosition+DirectX::SimpleMath::Vector3(0.0f,10.0f,0.0f), Obstacle::ObstacleType::METEORITE, rad);
 				break;
 			case 5:
 
 
 
-				float  angle = (DirectX::XM_PI / 2.0f) * type;
 
 				CreateObstacle(m_stickSpawnePosition[type], Obstacle::ObstacleType::STICK, angle);
 
@@ -325,7 +323,7 @@ void ObstacleManeger::CreateSpawner()
 void ObstacleManeger::CreateBehavior()
 {
 	m_behavior[Obstacle::ObstacleType::NORMAL] = std::make_unique<NormalBehavior>();
-	m_behavior[Obstacle::ObstacleType::STICK] = std::make_unique<NormalBehavior>();
+	m_behavior[Obstacle::ObstacleType::STICK] = std::make_unique<StickBehavior>();
 	m_behavior[Obstacle::ObstacleType::METEORITE] = std::make_unique<MeteoriteBehavior>();
 	m_behavior[Obstacle::ObstacleType::ROTATESTICK] = std::make_unique<RotateStickBehavior>();
 	m_behavior[Obstacle::ObstacleType::REVERSE_ROTATESTICK] = std::make_unique<ReverseRotateStickBehavior>();
@@ -475,7 +473,7 @@ bool ObstacleManeger::PlayerCapsuleHitCheck(Player* player)
 					 DirectX::SimpleMath::Vector3 playerVec = player->GetVelocity();
 					 player->SetVelocity(DirectX::SimpleMath::Vector3(playerVec.x, -0.1f, playerVec.z));
 				}
-				else //if(sita >= 0.0897f)
+				else 
 				{
 					m_hitvel = m_capsuleHitC2 - m_capsuleHitC1;
 
@@ -504,8 +502,6 @@ bool ObstacleManeger::PlayerCapsuleHitCheck(Player* player)
 				}
 
 			}
-
-
 			return true;
 		}
 

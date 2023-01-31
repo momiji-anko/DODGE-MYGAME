@@ -68,6 +68,12 @@
     <Filter Include="Helpers">
       <UniqueIdentifier>{0184e31e-088f-4cbd-9a39-35ad8bbfea87}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game\Shader">
+      <UniqueIdentifier>{e1b0122f-b521-464f-b7a4-b05940b43e84}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Shader\HLSL">
+      <UniqueIdentifier>{dfa45790-4584-45e3-8b98-b99d56e3036c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -195,6 +201,9 @@
     <ClInclude Include="Helpers\DODGESound_acf.h">
       <Filter>Helpers</Filter>
     </ClInclude>
+    <ClInclude Include="Game\Shader\Fade.h">
+      <Filter>Game\Shader</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -302,6 +311,9 @@
     <ClCompile Include="Game\PlayScene\AliveTimer.cpp">
       <Filter>Game\PlayScene</Filter>
     </ClCompile>
+    <ClCompile Include="Game\Shader\Fade.cpp">
+      <Filter>Game\Shader</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />
@@ -334,6 +346,9 @@
     </None>
     <None Include="Game\Particle.hlsli">
       <Filter>Game</Filter>
+    </None>
+    <None Include="Game\Shader\HLSL\Fade.hlsli">
+      <Filter>Game\Shader\HLSL</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -410,6 +425,15 @@
     </FxCompile>
     <FxCompile Include="Game\ParticleVS.hlsl">
       <Filter>Game</Filter>
+    </FxCompile>
+    <FxCompile Include="Game\Shader\HLSL\FadeGS.hlsl">
+      <Filter>Game\Shader\HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="Game\Shader\HLSL\FadePS.hlsl">
+      <Filter>Game\Shader\HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="Game\Shader\HLSL\FadeVS.hlsl">
+      <Filter>Game\Shader\HLSL</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

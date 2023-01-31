@@ -32,7 +32,6 @@ void Stage::Initialize(const DirectX::SimpleMath::Vector3& velocity,const Direct
 
 
 	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
-	ID3D11Device1* device = pDR->GetD3DDevice();
 	ID3D11DeviceContext1* context = pDR->GetD3DDeviceContext();
 
 	m_commonState = commonState;
@@ -126,7 +125,6 @@ void Stage::Draw(Camera* camera)
 {
 
 	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
-	ID3D11Device1* device = pDR->GetD3DDevice();
 	ID3D11DeviceContext1* context = pDR->GetD3DDeviceContext();
 	
 	DirectX::SimpleMath::Matrix world = DirectX::SimpleMath::Matrix::Identity;
