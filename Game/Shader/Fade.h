@@ -14,6 +14,7 @@ class Fade
 {
 public:
 
+
 	struct ConstBuffer
 	{
 		DirectX::SimpleMath::Matrix		matWorld;
@@ -43,7 +44,7 @@ public:
 	void FadeOut() { m_fadeState = State::FADE_OUT; }
 
 
-	bool ISCrose() { return m_fadeTime_s >= 1; }
+	bool ISClose() { return m_fadeTime_s >= 1; }
 	bool ISOpen()  { return m_fadeTime_s <= 0; }
 
 private:

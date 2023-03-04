@@ -214,10 +214,9 @@ void ObstacleManeger::Update(const DX::StepTimer& timer)
 			case 4:
 				
 
-				CreateObstacle(m_stickSpawnePosition[type], Obstacle::ObstacleType::STICK, angle);
 
 
-				//CreateObstacle(m_normalSpawnePosition[type], Obstacle::ObstacleType::NORMAL, rad);
+				CreateObstacle(m_normalSpawnePosition[type], Obstacle::ObstacleType::NORMAL, rad);
 				//CreateObstacle(m_normalSpawnePosition[type], Obstacle::ObstacleType::MEANDERING, rad);
 				//CreateObstacle(m_playerPosition+DirectX::SimpleMath::Vector3(0.0f,10.0f,0.0f), Obstacle::ObstacleType::METEORITE, rad);
 				break;
@@ -440,7 +439,6 @@ bool ObstacleManeger::PlayerCapsuleHitCheck(Player* player)
 
 				if (dot > 0.0f)
 				{
-					m_hitvel.y += 1.1f;
 					player->SetFlyVelocity(DirectX::SimpleMath::Vector3(m_hitvel) * (0.5f + (speed * 2.0f)));
 
 				}
@@ -485,7 +483,7 @@ bool ObstacleManeger::PlayerCapsuleHitCheck(Player* player)
 						speed *= -1;
 					}
 
-					m_hitvel.y += 1.1f;
+					//m_hitvel.y += 1.1f;
 					player->SetFlyVelocity(DirectX::SimpleMath::Vector3(m_hitvel) * (0.5f + (speed * 2.0f)));
 				}
 

@@ -63,6 +63,7 @@ private:
 	int   m_invalidCount;
 	float m_invalidCountCoolDownTime_s;
 	bool  m_isInvalid;
+	std::unique_ptr<DirectX::Model> m_barrierModel;
 
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_invalidTexture;
 	//========

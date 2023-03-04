@@ -13,6 +13,8 @@ public:
 		Stage1_4,
 
 		Stage2_1,
+
+		Stage3_1,
 		
 		
 		NONE
@@ -64,7 +66,7 @@ public:
 	 {
 		 return start + (end - start) * t;
 	 }
-	 void Setshader(ShadowMap* shadowMap) { m_shadowMap = shadowMap; }
+	 void SetShadow(ShadowMap* shadowMap) { m_shadowMap = shadowMap; }
 
 	 bool GetEndFlag() { return m_endFlag; }
 

@@ -86,6 +86,11 @@ void ResultScene::Initialize()
 	m_stageManeger = std::make_unique<StageManeger>();
 	m_stageManeger->Initialize(m_commonState.get(), StageManeger::StageSelect::Stage1);
 
+	m_fadeInOut = std::make_unique<Fade>();
+	m_fadeInOut->Create();
+	m_fadeInOut->Initialize(DirectX::SimpleMath::Vector3::Zero, 1.0f);
+	m_fadeInOut->FadeIn();
+
 }
 
 /*--------------------------------------------------
@@ -99,6 +104,9 @@ GAME_SCENE ResultScene::Update(const DX::StepTimer& timer)
 
 	// ƒ}ƒEƒX“ü—Íî•ñ‚ðŽæ“¾‚·‚é
 	DirectX::Mouse::State mouseState = DirectX::Mouse::Get().GetState();
+
+	
+
 
 	if (!m_flagFadeIn)
 	{
@@ -119,24 +127,16 @@ GAME_SCENE ResultScene::Update(const DX::StepTimer& timer)
 	{
 		m_fade += 0.03f;
 	}
-	switch (m_scene)
-	{
-	case ResultScene::ResultState::TIME:
 
-		break;
-	case ResultScene::ResultState::RANK:
-		break;
-	case ResultScene::ResultState::SCENET:
-		break;
-	default:
-		break;
-	}
-	if (keyState.Space && m_flagFadeIn == true)
+	if (keyState.Space && m_fadeInOut->ISOpen())
 	{
 		m_flag = true;
+		m_fadeInOut->FadeOut();
 	}
 
-	if (m_fade > 1)
+	m_fadeInOut->Update(timer);
+
+	if (m_fadeInOut->ISClose()&& m_flag == true)
 	{
 		return GAME_SCENE::TITLE;
 	}
@@ -275,9 +275,11 @@ void ResultScene::Draw()
 	
 
 	DirectX::SimpleMath::Vector4 fadeColor{ 1.0f,1.0f,1.0f,m_fade };
-	m_spriteBatch->Draw(m_blackTexture.Get(), pos, nullptr, fadeColor, 0.0f, DirectX::SimpleMath::Vector2::Zero);
 
 	m_spriteBatch->End();
+
+	m_fadeInOut->Render();
+
 }
 
 /*--------------------------------------------------

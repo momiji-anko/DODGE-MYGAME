@@ -58,7 +58,10 @@ void PlayScene::Initialize()
 	ID3D11Device1* device = pDR->GetD3DDevice();
 	ID3D11DeviceContext1* context = pDR->GetD3DDeviceContext();
 
-
+	m_fadeInOut = std::make_unique<Fade>();
+	m_fadeInOut->Create();
+	m_fadeInOut->Initialize(DirectX::SimpleMath::Vector3::Zero, 1.0f);
+	m_fadeInOut->FadeIn();
 
 
 	m_obstacleManeger = std::make_unique< ObstacleManeger>();
@@ -105,6 +108,7 @@ void PlayScene::Initialize()
 	if (m_playerMode == GameMain::PlayerMode::Player1)
 	{
 		playersStartPos[0] = DirectX::SimpleMath::Vector3(0.0f, 1.0f, 6.0f);
+		playersStartPos[0] = DirectX::SimpleMath::Vector3(0.0f, 10.0f, 6.0f);
 	}
 	for (int i = 0; i < static_cast<int>(m_playerMode); i++)
 	{
@@ -128,9 +132,9 @@ GAME_SCENE PlayScene::Update(const DX::StepTimer& timer)
 	float time = timer.GetElapsedSeconds();
 
 	
-
+	m_fadeInOut->Update(timer);
 	
-	if (m_fade > 1)
+	if (m_flag && m_fadeInOut->ISClose())
 	{
 		return GAME_SCENE::RESULT;
 	}
@@ -144,10 +148,10 @@ GAME_SCENE PlayScene::Update(const DX::StepTimer& timer)
 	if (!m_flagFadeIn)
 		m_fade -= 0.03f;
 
-	if (m_fade <= 0)
+	if (m_fadeInOut->ISOpen())
 		m_flagFadeIn = true;
 
-	if (m_flagFadeIn == false && m_fade <= 0)
+	if (m_fadeInOut->ISOpen() == false)
 		return GAME_SCENE::NONE;
 
 
@@ -225,6 +229,7 @@ GAME_SCENE PlayScene::Update(const DX::StepTimer& timer)
 	}
 	if (count == m_players.size())
 	{
+		m_fadeInOut->FadeOut();
 		m_flag = true;
 	}
 
@@ -320,7 +325,7 @@ void PlayScene::Draw()
 			numPos.x -= 170 / 2;
 		}
 
-		m_spriteBatch->Draw(m_numTexture.Get(), numPos, &numRect[static_cast<int>(m_waitTime)], Colors::White, 0.0f, { 0.0f,0.0f }, 2.0f, SpriteEffects_None, 0);
+		m_spriteBatch->Draw(m_numTexture.Get(), numPos, &numRect[static_cast<int>(m_waitTime)], Colors::White, 0.0f, { 0.0f,0.0f }, 2.0f);
 
 	}
 
@@ -333,11 +338,13 @@ void PlayScene::Draw()
 
 	SimpleMath::Vector2 blackpos(0, 0);
 	DirectX::SimpleMath::Vector4 fadeColor{ 1.0f,1.0f,1.0f,m_fade };
-	m_spriteBatch->Draw(m_blackTexture.Get(), blackpos, nullptr, fadeColor, 0.0f, DirectX::SimpleMath::Vector2::Zero);
+//	m_spriteBatch->Draw(m_blackTexture.Get(), blackpos, nullptr, fadeColor, 0.0f, DirectX::SimpleMath::Vector2::Zero);
 
 	
+
 	m_spriteBatch->End();
 	
+	m_fadeInOut->Render();
 
 	
 	//シャドウマップ
@@ -347,8 +354,7 @@ void PlayScene::Draw()
 	DirectX::SimpleMath::Vector3 lightPos(-10.1f, 15.0f,10.1f);
 
 	DirectX::SimpleMath::Matrix lightView = DirectX::SimpleMath::Matrix::CreateLookAt(lightPos, DirectX::SimpleMath::Vector3::UnitY, DirectX::SimpleMath::Vector3::Up);
-	DirectX::SimpleMath::Matrix projection = DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(
-	DirectX::XMConvertToRadians(90.0f), 1.0f, 1.0f, 400.0f);
+	DirectX::SimpleMath::Matrix projection = DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(DirectX::XMConvertToRadians(90.0f), 1.0f, 1.0f, 400.0f);
 
 	m_obstacleManeger->ObstacleShadow(m_shadowMap.get(), lightView, projection);
 
@@ -359,7 +365,7 @@ void PlayScene::Draw()
 	
 	m_itemManeger->Shadow(m_shadowMap.get(),lightView,projection);
 	m_shadowMap->End(context, lightView * projection);
-	
+
 
 }
 

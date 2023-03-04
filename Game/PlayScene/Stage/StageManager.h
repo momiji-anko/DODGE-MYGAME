@@ -6,6 +6,7 @@
 #include<Model.h>
 #include <string>
 
+#include<GeometricPrimitive.h>
 
 class StageManeger
 {
@@ -21,6 +22,7 @@ public:
 private:
 
 	std::unique_ptr<DirectX::Model>           m_stageModel;
+	std::unique_ptr<DirectX::GeometricPrimitive>           m_geo;
 
 	std::vector<DirectX::SimpleMath::Vector3> m_stagePositions;
 
@@ -34,6 +36,10 @@ private:
 
 	float m_time_s;
 	std::vector<bool> m_flag;
+
+	std::vector<DirectX::SimpleMath::Vector3> m_baseVertices;
+	std::vector<DirectX::SimpleMath::Vector3> m_nowVertices;
+	std::vector<std::vector<int>> m_indices;
 public:
 
 	StageManeger();
@@ -101,5 +107,15 @@ public:
 		// dist2 が radius の 2 乗の結果以下となっていれば、当たっている
 		return dist2 <= radius * radius;
 	}
+
+	/// <summary>
+	/// 線分と板ポリゴンの当たり判定
+	/// </summary>
+	/// <param name="vertices">頂点座標</param>
+	/// <param name="linePos">線分の両端座標</param>
+	/// <param name="normalVector">法線ベクトルのポインタ</param>
+	/// <returns>true=当たっている　false=当っていない</returns>
+	bool StageHitCheck(std::vector<DirectX::SimpleMath::Vector3> vertices, std::vector<DirectX::SimpleMath::Vector3> linePos, DirectX::SimpleMath::Vector3* normalVector);
+
 
 };

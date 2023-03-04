@@ -20,6 +20,8 @@
 #include"../PlayScene/Obstacle/ObstacleManeger.h"
 #include"../PlayScene/Item/ItemManeger.h"
 
+#include"Game/Shader/Fade.h"
+
 class ResultScene : public IScene
 {
 private:
@@ -50,6 +52,8 @@ private:
 	std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
 	// スプライトフォント
 	std::unique_ptr<DirectX::SpriteFont> m_spriteFont;
+
+	std::unique_ptr<Fade> m_fadeInOut;
 
 	// テクスチャ
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_numTexture;

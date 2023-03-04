@@ -2,6 +2,10 @@
 #include"Stage.h"
 #include"../MyRandom.h"
 #include"DeviceResources.h"
+
+//HACK::TEST
+#include<Keyboard.h>
+
 const float  Stage::MOVE_SPEED = 4.0f;
 const float  Stage::MOVE_TIME = 5.0f;
 
@@ -53,7 +57,7 @@ void Stage::Initialize(const DirectX::SimpleMath::Vector3& velocity,const Direct
 	m_AABBObject->SetData(DirectX::SimpleMath::Vector3(m_position.x - 6.0f, m_position.y - 0.5f, m_position.z - 6.0f), DirectX::SimpleMath::Vector3(m_position.x + 6.0f, m_position.y + 0.5f, m_position.z + 6.0f));
 
 
-
+	//m_rotation.z = -45.0f;
 }
 
 // 更新
@@ -61,7 +65,10 @@ void Stage::Update(const DX::StepTimer& timer)
 {
 	float time = timer.GetElapsedSeconds();
 
-	static const float MOVE_TIME = 5.0f;
+	//HACK::TEST キー入力情報を取得する
+	DirectX::Keyboard::State keyState = DirectX::Keyboard::Get().GetState();
+	static const float ROT_SPEED = 5.0f;
+
 	m_time += time;
 
 	switch (m_type)
@@ -111,7 +118,54 @@ void Stage::Update(const DX::StepTimer& timer)
 
 		break;
 	case Stage::StageType::Stage2_1:
+		//HACK::TEST
+		
+		if (keyState.J)
+		{
+			m_rotation.z += ROT_SPEED * time;
+
+		}
+		if (keyState.L)
+		{
+			m_rotation.z -= ROT_SPEED * time;
+
+		}
+
+		if (keyState.K)
+		{
+			m_rotation.x += ROT_SPEED * time;
+
+		}
+		if (keyState.I)
+		{
+			m_rotation.x -= ROT_SPEED * time;
+
+		}
+
 		break;
+		case Stage::StageType::Stage3_1:
+			if (keyState.J)
+			{
+				m_rotation.z += ROT_SPEED * time;
+
+			}
+			if (keyState.L)
+			{
+				m_rotation.z -= ROT_SPEED * time;
+
+			}
+
+			if (keyState.K)
+			{
+				m_rotation.x += ROT_SPEED * time;
+
+			}
+			if (keyState.I)
+			{
+				m_rotation.x -= ROT_SPEED * time;
+
+			}
+			break;
 	default:
 		break;
 	}
@@ -130,13 +184,15 @@ void Stage::Draw(Camera* camera)
 	DirectX::SimpleMath::Matrix world = DirectX::SimpleMath::Matrix::Identity;
 
 	DirectX::SimpleMath::Matrix trans = DirectX::SimpleMath::Matrix::CreateTranslation(m_position + m_offsetPosition);
-	DirectX::SimpleMath::Matrix rot = DirectX::SimpleMath::Matrix::CreateRotationY(m_rotation.y / 180.0f * 3.14f);
+	DirectX::SimpleMath::Matrix rot = DirectX::SimpleMath::Matrix::CreateRotationX(m_rotation.x / 180.0f * 3.14f) * DirectX::SimpleMath::Matrix::CreateRotationZ(m_rotation.z / 180.0f * 3.14f) * DirectX::SimpleMath::Matrix::CreateRotationY(m_rotation.y / 180.0f * 3.14f);
 	
 	if (m_type == Stage::StageType::Stage2_1)
 	{
-		world *= DirectX::SimpleMath::Matrix::CreateScale(0.012f);
+		world *= DirectX::SimpleMath::Matrix::CreateScale(0.32f);
 	}
 
+
+	
 	world *= rot * trans;
 	//m_AABBObject->Draw(DirectX::SimpleMath::Matrix::Identity, camera->GetViewMatrix(), camera->GetProjectionMatrix(), DirectX::SimpleMath::Color(1, 1, 0, 1));
 
@@ -362,6 +418,8 @@ void Stage::Stage1_1()
 		{
 			m_time = MOVE_TIME;
 			m_routine++;
+			m_endFlag = true;
+
 		}
 		if (m_position.x < 0)
 		{
@@ -371,7 +429,6 @@ void Stage::Stage1_1()
 		{
 			m_position.x = Lerp(100.0f, 6.0f, m_time / MOVE_TIME);
 		}
-		m_endFlag = true;
 		break;
 	}
 
@@ -566,6 +623,8 @@ void Stage::Stage1_2()
 		{
 			m_time = MOVE_TIME;
 			m_routine++;
+			m_endFlag = true;
+
 		}
 
 		if (m_position.x < 0)
@@ -576,7 +635,6 @@ void Stage::Stage1_2()
 		{
 			m_position.x = Lerp(100.0f, 6.0f, m_time / MOVE_TIME);
 		}
-		m_endFlag = true;
 		break;
 
 	}
@@ -773,9 +831,10 @@ void Stage::Stage1_3()
 		{
 			m_time = MOVE_TIME;
 			m_routine++;
+			m_endFlag = true;
+
 		}
 
-		m_endFlag = true;
 
 		break;
 	case 27:

@@ -24,6 +24,7 @@
 #include"../../Helpers/CueSheet_0.h"
 #include"../../Helpers/DODGESound_acf.h"
 #include"Objects.h"
+#include"Game/Shader/Fade.h"
 
 class GridFloor;
 class Camera;
@@ -71,6 +72,7 @@ private:
 	std::unique_ptr<StageManeger>                    m_stageManeger;
 
 	std::unique_ptr<DirectX::Model>                  m_model[2];
+	std::unique_ptr<Fade>                  m_fadeInOut;
 	
 	bool                                             m_stratFlag;
 

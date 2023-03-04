@@ -177,10 +177,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             }
             s_in_suspend = false;
         }
-        else if (!s_in_sizemove && game)
+       //ŽÀs‰æ–Ê‚ðÅ‘å‰»‚µ‚Ä‚àˆá˜aŠ´‚ª‚È‚¢‚æ‚¤‚É‚·‚é
+     /*   else if (!s_in_sizemove && game)
         {
             game->OnWindowSizeChanged(LOWORD(lParam), HIWORD(lParam));
-        }
+        }*/
         break;
 
     case WM_ENTERSIZEMOVE:

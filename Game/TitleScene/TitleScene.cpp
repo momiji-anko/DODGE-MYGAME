@@ -88,7 +88,7 @@ GAME_SCENE TitleScene::Update(const DX::StepTimer& timer)
 	//キーボードステートトラッカーの更新
 	m_keyboardStateTracker->Update(keyState);
 	
-	// TODO:m_fadeInOut->Update(timer);
+	m_fadeInOut->Update(timer);
 	
 	// マウス入力情報を取得する
 	DirectX::Mouse::State mouseState = DirectX::Mouse::Get().GetState();
@@ -172,6 +172,7 @@ GAME_SCENE TitleScene::Update(const DX::StepTimer& timer)
 
 		break;
 	case TitleScene::TitleState::FADEOUT:
+		m_fadeInOut->FadeOut();
 		break;
 	default:
 		break;
@@ -234,7 +235,7 @@ GAME_SCENE TitleScene::Update(const DX::StepTimer& timer)
 	if (m_alpha < 0 || m_alpha > 1)
 		m_alphaVel *= -1.0f;
 
-	if (m_fade > 1)
+	if (m_fadeInOut->ISClose() && TitleScene::TitleState::FADEOUT == m_titleSelect)
 	{
 		m_pAdx2->Stop(m_musicID);
 		return GAME_SCENE::PLAY;
@@ -363,12 +364,12 @@ void TitleScene::Draw()
 
 	}
 	
-	m_spriteBatch->Draw(m_blackTexture.Get(), pos, nullptr, fadeColor, 0.0f, DirectX::SimpleMath::Vector2::Zero);
+	//m_spriteBatch->Draw(m_blackTexture.Get(), pos, nullptr, fadeColor, 0.0f, DirectX::SimpleMath::Vector2::Zero);
 
 
 	m_spriteBatch->End();
 
-	//TODO:m_fadeInOut->Render();
+	m_fadeInOut->Render();
 
 }
 
@@ -465,7 +466,7 @@ void TitleScene::LoadResources()
 		stage = std::make_unique<Stage>();
 		stage->Initialize(DirectX::SimpleMath::Vector3::Zero, m_stagePosition[num], true, 0, nullptr, m_stageModel.get(), m_commonState.get());
 		stage->SetStageType(static_cast <Stage::StageType>(num));
-		stage->Setshader(nullptr);
+		stage->SetShadow(nullptr);
 		num++;
 	}
 

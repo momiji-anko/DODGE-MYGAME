@@ -100,15 +100,14 @@ void Player::Update(const DX::StepTimer& timer)
 	if (!m_active)
 		return;
 
-	if (itemType != Item::ItemType::NONE)
+	if (itemType == Item::ItemType::INVINCIBLE_ITEM)
 	{
-
 
 		InvalidCountUp();
 	}
 	
-	m_velocity.z += 0.0f;
-	m_velocity.x += 0.0f;
+	m_velocity.z = 0.0f;
+	m_velocity.x = 0.0f;
 	switch (m_playerID)
 	{
 	case 1:
@@ -129,7 +128,7 @@ void Player::Update(const DX::StepTimer& timer)
 	{
 		m_position += m_flyVelocity;
 
-		m_flyVelocity *= DirectX::SimpleMath::Vector3(0.93f, 0.9f, 0.93f);
+		m_flyVelocity *= DirectX::SimpleMath::Vector3(0.91f, 0.91f, 0.91f);
 
 	}
 
@@ -193,6 +192,22 @@ void Player::Update(const DX::StepTimer& timer)
 		m_active = false;
 
 	}
+
+
+
+	m_barrierModel->UpdateEffects([&](DirectX::IEffect* effect)
+		{
+			
+			auto fog = dynamic_cast<DirectX::IEffectFog*>(effect);
+			if (fog)
+			{
+				fog->SetFogEnabled(true);
+				fog->SetFogStart(6); // assuming RH coordiantes
+				fog->SetFogEnd(8);
+				fog->SetFogColor(DirectX::Colors::Black);
+			}
+		});
+
 }
 
 // 描画
@@ -216,6 +231,15 @@ void Player::Draw(Camera* camera)
 	DirectX::SimpleMath::Matrix rot = DirectX::SimpleMath::Matrix::CreateRotationY(m_rotation.y / 180.0f * 3.14f);
 	DirectX::SimpleMath::Matrix scale= DirectX::SimpleMath::Matrix::CreateScale(2);
 	
+	
+	context->OMSetBlendState(m_commonState->AlphaBlend(), nullptr, 0xFFFFFFFF);
+	if (true)//m_invalidCount > 0)
+	{
+		DirectX::SimpleMath::Matrix world = DirectX::SimpleMath::Matrix::Identity;
+		world *= trans;
+
+		m_barrierModel->Draw(context, *m_commonState, world, camera->GetViewMatrix(), camera->GetProjectionMatrix());
+	}
 
 	m_world *= rot * scale * trans;
 	if (m_isInvalid)
@@ -223,6 +247,7 @@ void Player::Draw(Camera* camera)
 		m_playerModel[m_playerModelNum[m_modelTime]]->Draw(context, *m_commonState, m_world, camera->GetViewMatrix(), camera->GetProjectionMatrix());
 
 	}
+
 
 	if (m_playerState == PlayerState::INVINCIBLE)
 	{
@@ -334,7 +359,7 @@ void Player::InvalidCountDown()
 		m_invalidCount--;
 		m_pAdx2->Play(CRI_CUESHEET_0_DAMAGE1);
 		m_invalidCountCoolDownTime_s = 3.0f;
-		if (m_invalidCount <= 0)
+		if (m_invalidCount <= -1)
 		{
 			m_active = false;
 		}
@@ -447,7 +472,7 @@ void Player::Player2Move(const DX::StepTimer& timer)
 
 	if (keyState.D)
 	{
-		m_position.x += MOVE_SPEED * time;
+		m_velocity.x += MOVE_SPEED * time;
 
 		m_rotation.y = -90;
 
@@ -455,21 +480,21 @@ void Player::Player2Move(const DX::StepTimer& timer)
 
 	if (keyState.A)
 	{
-		m_position.x -= MOVE_SPEED * time;
+		m_velocity.x -= MOVE_SPEED * time;
 
 		m_rotation.y = 90;
 	}
 
 	if (keyState.S)
 	{
-		m_position.z += MOVE_SPEED * time;
+		m_velocity.z += MOVE_SPEED * time;
 
 		m_rotation.y = 180;
 	}
 
 	if (keyState.W)
 	{
-		m_position.z -= MOVE_SPEED * time;
+		m_velocity.z -= MOVE_SPEED * time;
 
 		m_rotation.y = 0;
 	}
@@ -564,7 +589,7 @@ void Player::Player1CreateModel()
 		L"Resources/Models/playerhidari.cmo",
 		*factory1
 	);
-
+	
 	delete factory1;
 
 	//	エフェクトファクトリの作成
@@ -596,6 +621,21 @@ void Player::Player1CreateModel()
 	);
 
 	delete factory3;
+
+	//	エフェクトファクトリの作成
+	DirectX::EffectFactory* factory4 = new DirectX::EffectFactory(pDR->GetD3DDevice());
+
+	//	テクスチャの読み込みパス指定
+	factory4->SetDirectory(L"Resources/Models");
+
+	//	ファイルを指定してモデルデータ読み込み
+	m_barrierModel = DirectX::Model::CreateFromCMO(
+		pDR->GetD3DDevice(),
+		L"Resources/Models/barrier.cmo",
+		*factory4
+	);
+
+	delete factory4;
 }
 
 void Player::Player2CreateModel()
