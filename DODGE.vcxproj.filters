@@ -74,6 +74,9 @@
     <Filter Include="Game\Shader\HLSL">
       <UniqueIdentifier>{dfa45790-4584-45e3-8b98-b99d56e3036c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game\PlayScene\Obstacle\ObstacelBhaviors">
+      <UniqueIdentifier>{82714bdc-6f91-4b5b-a6a0-10cfbb4e804d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -204,6 +207,24 @@
     <ClInclude Include="Game\Shader\Fade.h">
       <Filter>Game\Shader</Filter>
     </ClInclude>
+    <ClInclude Include="Game\PlayScene\Obstacle\ObstacelBhaviors\BirdBehavior.h">
+      <Filter>Game\PlayScene\Obstacle\ObstacelBhaviors</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\PlayScene\Obstacle\ObstacelBhaviors\MeteoriteBehavior.h">
+      <Filter>Game\PlayScene\Obstacle\ObstacelBhaviors</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\PlayScene\Obstacle\ObstacelBhaviors\NormalBehavior.h">
+      <Filter>Game\PlayScene\Obstacle\ObstacelBhaviors</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\PlayScene\Obstacle\ObstacelBhaviors\ReverseRotateStickBehavior.h">
+      <Filter>Game\PlayScene\Obstacle\ObstacelBhaviors</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\PlayScene\Obstacle\ObstacelBhaviors\RotateStickBehavior.h">
+      <Filter>Game\PlayScene\Obstacle\ObstacelBhaviors</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\PlayScene\Obstacle\ObstacelBhaviors\StickBehavior.h">
+      <Filter>Game\PlayScene\Obstacle\ObstacelBhaviors</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -313,6 +334,24 @@
     </ClCompile>
     <ClCompile Include="Game\Shader\Fade.cpp">
       <Filter>Game\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\PlayScene\Obstacle\ObstacelBhaviors\BirdBehavior.cpp">
+      <Filter>Game\PlayScene\Obstacle\ObstacelBhaviors</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\PlayScene\Obstacle\ObstacelBhaviors\MeteoriteBehavior.cpp">
+      <Filter>Game\PlayScene\Obstacle\ObstacelBhaviors</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\PlayScene\Obstacle\ObstacelBhaviors\NormalBehavior.cpp">
+      <Filter>Game\PlayScene\Obstacle\ObstacelBhaviors</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\PlayScene\Obstacle\ObstacelBhaviors\ReverseRotateStickBehavior.cpp">
+      <Filter>Game\PlayScene\Obstacle\ObstacelBhaviors</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\PlayScene\Obstacle\ObstacelBhaviors\RotateStickBehavior.cpp">
+      <Filter>Game\PlayScene\Obstacle\ObstacelBhaviors</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\PlayScene\Obstacle\ObstacelBhaviors\StickBehavior.cpp">
+      <Filter>Game\PlayScene\Obstacle\ObstacelBhaviors</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -238,7 +238,7 @@ void Player::Draw(Camera* camera)
 		DirectX::SimpleMath::Matrix world = DirectX::SimpleMath::Matrix::Identity;
 		world *= trans;
 
-		m_barrierModel->Draw(context, *m_commonState, world, camera->GetViewMatrix(), camera->GetProjectionMatrix());
+		//m_barrierModel->Draw(context, *m_commonState, world, camera->GetViewMatrix(), camera->GetProjectionMatrix());
 	}
 
 	m_world *= rot * scale * trans;

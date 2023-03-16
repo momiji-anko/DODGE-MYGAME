@@ -216,6 +216,12 @@
     <ClInclude Include="Game\PlayScene\Item\ItemSpawner.h" />
     <ClInclude Include="Game\PlayScene\MyRandom.h" />
     <ClInclude Include="Game\PlayScene\Objects.h" />
+    <ClInclude Include="Game\PlayScene\Obstacle\ObstacelBhaviors\BirdBehavior.h" />
+    <ClInclude Include="Game\PlayScene\Obstacle\ObstacelBhaviors\MeteoriteBehavior.h" />
+    <ClInclude Include="Game\PlayScene\Obstacle\ObstacelBhaviors\NormalBehavior.h" />
+    <ClInclude Include="Game\PlayScene\Obstacle\ObstacelBhaviors\ReverseRotateStickBehavior.h" />
+    <ClInclude Include="Game\PlayScene\Obstacle\ObstacelBhaviors\RotateStickBehavior.h" />
+    <ClInclude Include="Game\PlayScene\Obstacle\ObstacelBhaviors\StickBehavior.h" />
     <ClInclude Include="Game\PlayScene\Obstacle\Obstacle.h" />
     <ClInclude Include="Game\PlayScene\Obstacle\ObstacleBehavior.h" />
     <ClInclude Include="Game\PlayScene\Obstacle\ObstacleManeger.h" />
@@ -260,6 +266,12 @@
     <ClCompile Include="Game\PlayScene\Item\ItemManeger.cpp" />
     <ClCompile Include="Game\PlayScene\Item\ItemSpawner.cpp" />
     <ClCompile Include="Game\PlayScene\MyRandom.cpp" />
+    <ClCompile Include="Game\PlayScene\Obstacle\ObstacelBhaviors\BirdBehavior.cpp" />
+    <ClCompile Include="Game\PlayScene\Obstacle\ObstacelBhaviors\MeteoriteBehavior.cpp" />
+    <ClCompile Include="Game\PlayScene\Obstacle\ObstacelBhaviors\NormalBehavior.cpp" />
+    <ClCompile Include="Game\PlayScene\Obstacle\ObstacelBhaviors\ReverseRotateStickBehavior.cpp" />
+    <ClCompile Include="Game\PlayScene\Obstacle\ObstacelBhaviors\RotateStickBehavior.cpp" />
+    <ClCompile Include="Game\PlayScene\Obstacle\ObstacelBhaviors\StickBehavior.cpp" />
     <ClCompile Include="Game\PlayScene\Obstacle\Obstacle.cpp" />
     <ClCompile Include="Game\PlayScene\Obstacle\ObstacleBehavior.cpp" />
     <ClCompile Include="Game\PlayScene\Obstacle\ObstacleManeger.cpp" />
