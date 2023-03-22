@@ -77,6 +77,9 @@
     <Filter Include="Game\PlayScene\Obstacle\ObstacelBhaviors">
       <UniqueIdentifier>{82714bdc-6f91-4b5b-a6a0-10cfbb4e804d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game\PlayScene\Obstacle\ObstacleSpawners">
+      <UniqueIdentifier>{f7862f8c-46a6-476b-9a83-4be2821daa3c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -147,33 +150,6 @@
     <ClInclude Include="Game\PlayScene\MyRandom.h">
       <Filter>Game\PlayScene</Filter>
     </ClInclude>
-    <ClInclude Include="Game\PlayScene\Obstacle\ObstacleSpawner.h">
-      <Filter>Game\PlayScene\Obstacle</Filter>
-    </ClInclude>
-    <ClInclude Include="Game\PlayScene\Obstacle\ObstacleBehavior.h">
-      <Filter>Game\PlayScene\Obstacle</Filter>
-    </ClInclude>
-    <ClInclude Include="Game\BinaryFile.h">
-      <Filter>Game</Filter>
-    </ClInclude>
-    <ClInclude Include="Game\EffectManager.h">
-      <Filter>Game</Filter>
-    </ClInclude>
-    <ClInclude Include="Game\EffectManager2.h">
-      <Filter>Game</Filter>
-    </ClInclude>
-    <ClInclude Include="Game\EffectManager3.h">
-      <Filter>Game</Filter>
-    </ClInclude>
-    <ClInclude Include="Game\ShaderSample.h">
-      <Filter>Game</Filter>
-    </ClInclude>
-    <ClInclude Include="Game\ShaderSample2.h">
-      <Filter>Game</Filter>
-    </ClInclude>
-    <ClInclude Include="Game\ShaderSample3.h">
-      <Filter>Game</Filter>
-    </ClInclude>
     <ClInclude Include="Game\ResultScene\ResultScene.h">
       <Filter>Game\ResultScene</Filter>
     </ClInclude>
@@ -224,6 +200,39 @@
     </ClInclude>
     <ClInclude Include="Game\PlayScene\Obstacle\ObstacelBhaviors\StickBehavior.h">
       <Filter>Game\PlayScene\Obstacle\ObstacelBhaviors</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\PlayScene\Obstacle\ObstacelBhaviors\MeanderingeBehavior.h">
+      <Filter>Game\PlayScene\Obstacle\ObstacelBhaviors</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Shader\BinaryFile.h">
+      <Filter>Game\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Shader\FireEffectManager.h">
+      <Filter>Game\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Shader\FireShader.h">
+      <Filter>Game\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\PlayScene\Obstacle\ObstacleSpawners\MeanderingObstacleSpawner.h">
+      <Filter>Game\PlayScene\Obstacle\ObstacleSpawners</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\PlayScene\Obstacle\ObstacleSpawners\MeteoriteObstacleSpawner.h">
+      <Filter>Game\PlayScene\Obstacle\ObstacleSpawners</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\PlayScene\Obstacle\ObstacleSpawners\NormalObstacleSpawner.h">
+      <Filter>Game\PlayScene\Obstacle\ObstacleSpawners</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\PlayScene\Obstacle\ObstacleSpawners\ReverseRotateStickObstacleSpawner.h">
+      <Filter>Game\PlayScene\Obstacle\ObstacleSpawners</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\PlayScene\Obstacle\ObstacleSpawners\RotateStickObstacleSpawner.h">
+      <Filter>Game\PlayScene\Obstacle\ObstacleSpawners</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\PlayScene\Obstacle\ObstacleSpawners\StickObstacleSpawner.h">
+      <Filter>Game\PlayScene\Obstacle\ObstacleSpawners</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\PlayScene\Obstacle\ObstacleSpawners\BirdObstacleSpawner.h">
+      <Filter>Game\PlayScene\Obstacle\ObstacleSpawners</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -287,33 +296,6 @@
     <ClCompile Include="Game\PlayScene\MyRandom.cpp">
       <Filter>Game\PlayScene</Filter>
     </ClCompile>
-    <ClCompile Include="Game\PlayScene\Obstacle\ObstacleSpawner.cpp">
-      <Filter>Game\PlayScene\Obstacle</Filter>
-    </ClCompile>
-    <ClCompile Include="Game\PlayScene\Obstacle\ObstacleBehavior.cpp">
-      <Filter>Game\PlayScene\Obstacle</Filter>
-    </ClCompile>
-    <ClCompile Include="Game\BinaryFile.cpp">
-      <Filter>Game</Filter>
-    </ClCompile>
-    <ClCompile Include="Game\EffectManager.cpp">
-      <Filter>Game</Filter>
-    </ClCompile>
-    <ClCompile Include="Game\EffectManager2.cpp">
-      <Filter>Game</Filter>
-    </ClCompile>
-    <ClCompile Include="Game\EffectManager3.cpp">
-      <Filter>Game</Filter>
-    </ClCompile>
-    <ClCompile Include="Game\ShaderSample.cpp">
-      <Filter>Game</Filter>
-    </ClCompile>
-    <ClCompile Include="Game\ShaderSample2.cpp">
-      <Filter>Game</Filter>
-    </ClCompile>
-    <ClCompile Include="Game\ShaderSample3.cpp">
-      <Filter>Game</Filter>
-    </ClCompile>
     <ClCompile Include="Game\ResultScene\ResultScene.cpp">
       <Filter>Game\ResultScene</Filter>
     </ClCompile>
@@ -353,6 +335,39 @@
     <ClCompile Include="Game\PlayScene\Obstacle\ObstacelBhaviors\StickBehavior.cpp">
       <Filter>Game\PlayScene\Obstacle\ObstacelBhaviors</Filter>
     </ClCompile>
+    <ClCompile Include="Game\PlayScene\Obstacle\ObstacelBhaviors\MeanderingeBehavior.cpp">
+      <Filter>Game\PlayScene\Obstacle\ObstacelBhaviors</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Shader\BinaryFile.cpp">
+      <Filter>Game\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Shader\FireEffectManager.cpp">
+      <Filter>Game\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Shader\FireShader.cpp">
+      <Filter>Game\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\PlayScene\Obstacle\ObstacleSpawners\MeteoriteObstacleSpawner.cpp">
+      <Filter>Game\PlayScene\Obstacle\ObstacleSpawners</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\PlayScene\Obstacle\ObstacleSpawners\NormalObstacleSpawner.cpp">
+      <Filter>Game\PlayScene\Obstacle\ObstacleSpawners</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\PlayScene\Obstacle\ObstacleSpawners\ReverseRotateStickObstacleSpawner .cpp">
+      <Filter>Game\PlayScene\Obstacle\ObstacleSpawners</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\PlayScene\Obstacle\ObstacleSpawners\RotateStickObstacleSpawner.cpp">
+      <Filter>Game\PlayScene\Obstacle\ObstacleSpawners</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\PlayScene\Obstacle\ObstacleSpawners\StickObstacleSpawner.cpp">
+      <Filter>Game\PlayScene\Obstacle\ObstacleSpawners</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\PlayScene\Obstacle\ObstacleSpawners\BirdObstacleSpawner.cpp">
+      <Filter>Game\PlayScene\Obstacle\ObstacleSpawners</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\PlayScene\Obstacle\ObstacleSpawners\MeanderingObstacleSpawner.cpp">
+      <Filter>Game\PlayScene\Obstacle\ObstacleSpawners</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />
@@ -383,23 +398,14 @@
     <None Include="Resources\Fonts\SegoeUI_18.spritefont">
       <Filter>Resources\Fonts</Filter>
     </None>
-    <None Include="Game\Particle.hlsli">
-      <Filter>Game</Filter>
-    </None>
     <None Include="Game\Shader\HLSL\Fade.hlsli">
+      <Filter>Game\Shader\HLSL</Filter>
+    </None>
+    <None Include="Game\Shader\HLSL\Particle.hlsli">
       <Filter>Game\Shader\HLSL</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Game\ParticleGS.hlsl">
-      <Filter>Game</Filter>
-    </FxCompile>
-    <FxCompile Include="Game\ParticlePS.hlsl">
-      <Filter>Game</Filter>
-    </FxCompile>
-    <FxCompile Include="Game\ParticleVS.hlsl">
-      <Filter>Game</Filter>
-    </FxCompile>
     <FxCompile Include="Game\Shader\HLSL\FadeGS.hlsl">
       <Filter>Game\Shader\HLSL</Filter>
     </FxCompile>
@@ -407,6 +413,15 @@
       <Filter>Game\Shader\HLSL</Filter>
     </FxCompile>
     <FxCompile Include="Game\Shader\HLSL\FadeVS.hlsl">
+      <Filter>Game\Shader\HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="Game\Shader\HLSL\ParticleVS.hlsl">
+      <Filter>Game\Shader\HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="Game\Shader\HLSL\ParticleGS.hlsl">
+      <Filter>Game\Shader\HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="Game\Shader\HLSL\ParticlePS.hlsl">
       <Filter>Game\Shader\HLSL</Filter>
     </FxCompile>
   </ItemGroup>

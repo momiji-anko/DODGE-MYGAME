@@ -36,8 +36,7 @@ void ItemManeger::Initialize(DirectX::CommonStates* commonState)
 		
 	}
 
-	m_spawners[Item::ItemType::INVINCIBLE_ITEM] = std::make_unique<ItemSpawner>();
-	m_spawners[Item::ItemType::SLIP_ITEM] = std::make_unique<SlipItemSpawner>();
+	m_spawners[Item::ItemType::SHIELD_ITEM] = std::make_unique<ItemSpawner>();
 
 	//	エフェクトファクトリの作成
 	DirectX::EffectFactory* factory = new DirectX::EffectFactory(pDR->GetD3DDevice());
@@ -46,20 +45,14 @@ void ItemManeger::Initialize(DirectX::CommonStates* commonState)
 	factory->SetDirectory(L"Resources/Models");
 
 	//	ファイルを指定してモデルデータ読み込み
-	m_pModel[Item::ItemType::INVINCIBLE_ITEM] = DirectX::Model::CreateFromCMO(
+	m_pModel[Item::ItemType::SHIELD_ITEM] = DirectX::Model::CreateFromCMO(
 		pDR->GetD3DDevice(),
 		L"Resources/Models/shield.cmo",
 		*factory
 	);
-	//	ファイルを指定してモデルデータ読み込み
-	m_pModel[Item::ItemType::SLIP_ITEM] = DirectX::Model::CreateFromCMO(
-		pDR->GetD3DDevice(),
-		L"Resources/Models/star.cmo",
-		*factory
-	);
+
 
 	delete factory;
-	//CreateItem(DirectX::SimpleMath::Vector3(MyRandom::GetFloatRange(-7.0f, 6.0f), 10.0f, MyRandom::GetFloatRange(-7.0f, 7.0f)), Item::ItemType::INVINCIBLE_ITEM, 0.0f);
 
 	m_spawneTime_s=15.0f;
 	m_spawneCoolTime=15.0f;
@@ -75,7 +68,7 @@ void ItemManeger::Update(const DX::StepTimer& timer)
 		
 		m_spawneTime_s = m_spawneCoolTime;
 		
-		CreateItem(DirectX::SimpleMath::Vector3(MyRandom::GetFloatRange(-7.0f, 6.0f), 15.0f, MyRandom::GetFloatRange(-7.0f, 7.0f)), Item::ItemType::INVINCIBLE_ITEM, 0.0f);
+		CreateItem(DirectX::SimpleMath::Vector3(MyRandom::GetFloatRange(-7.0f, 6.0f), 15.0f, MyRandom::GetFloatRange(-7.0f, 7.0f)), Item::ItemType::SHIELD_ITEM, 0.0f);
 	
 	}
 

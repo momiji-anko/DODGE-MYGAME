@@ -80,8 +80,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\DirectXTK\Inc;$(ProjectDir)\cri\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\DirectXTK\Bin\Desktop_2019\x64\Debug;$(ProjectDir)\cri\libs\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)\DirectXTK\Inc;$(ProjectDir)\cri\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)\DirectXTK\Libs;$(ProjectDir)\cri\libs\x64;$(WindowsSDK_LibraryPath_x64);$(VC_LibraryPath_x64);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -131,7 +131,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>d3d11.lib;dxgi.lib;dxguid.lib;uuid.lib;kernel32.lib;user32.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;DirectXTK.lib;cri_ware_pcx64_le_import.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;dxgi.lib;dxguid.lib;uuid.lib;kernel32.lib;user32.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;DirectXTK_Debug.lib;cri_ware_pcx64_le_import.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
     </Link>
@@ -200,10 +200,6 @@
   <ItemGroup>
     <ClInclude Include="DeviceResources.h" />
     <ClInclude Include="Game.h" />
-    <ClInclude Include="Game\BinaryFile.h" />
-    <ClInclude Include="Game\EffectManager.h" />
-    <ClInclude Include="Game\EffectManager2.h" />
-    <ClInclude Include="Game\EffectManager3.h" />
     <ClInclude Include="Game\GameMain.h" />
     <ClInclude Include="Game\IScene.h" />
     <ClInclude Include="Game\LoadingScreen\LoadingScreen.h" />
@@ -217,15 +213,21 @@
     <ClInclude Include="Game\PlayScene\MyRandom.h" />
     <ClInclude Include="Game\PlayScene\Objects.h" />
     <ClInclude Include="Game\PlayScene\Obstacle\ObstacelBhaviors\BirdBehavior.h" />
+    <ClInclude Include="Game\PlayScene\Obstacle\ObstacelBhaviors\MeanderingeBehavior.h" />
     <ClInclude Include="Game\PlayScene\Obstacle\ObstacelBhaviors\MeteoriteBehavior.h" />
     <ClInclude Include="Game\PlayScene\Obstacle\ObstacelBhaviors\NormalBehavior.h" />
     <ClInclude Include="Game\PlayScene\Obstacle\ObstacelBhaviors\ReverseRotateStickBehavior.h" />
     <ClInclude Include="Game\PlayScene\Obstacle\ObstacelBhaviors\RotateStickBehavior.h" />
     <ClInclude Include="Game\PlayScene\Obstacle\ObstacelBhaviors\StickBehavior.h" />
     <ClInclude Include="Game\PlayScene\Obstacle\Obstacle.h" />
-    <ClInclude Include="Game\PlayScene\Obstacle\ObstacleBehavior.h" />
     <ClInclude Include="Game\PlayScene\Obstacle\ObstacleManeger.h" />
-    <ClInclude Include="Game\PlayScene\Obstacle\ObstacleSpawner.h" />
+    <ClInclude Include="Game\PlayScene\Obstacle\ObstacleSpawners\BirdObstacleSpawner.h" />
+    <ClInclude Include="Game\PlayScene\Obstacle\ObstacleSpawners\MeanderingObstacleSpawner.h" />
+    <ClInclude Include="Game\PlayScene\Obstacle\ObstacleSpawners\MeteoriteObstacleSpawner.h" />
+    <ClInclude Include="Game\PlayScene\Obstacle\ObstacleSpawners\NormalObstacleSpawner.h" />
+    <ClInclude Include="Game\PlayScene\Obstacle\ObstacleSpawners\ReverseRotateStickObstacleSpawner.h" />
+    <ClInclude Include="Game\PlayScene\Obstacle\ObstacleSpawners\RotateStickObstacleSpawner.h" />
+    <ClInclude Include="Game\PlayScene\Obstacle\ObstacleSpawners\StickObstacleSpawner.h" />
     <ClInclude Include="Game\PlayScene\Player\Player.h" />
     <ClInclude Include="Game\PlayScene\PlayScene.h" />
     <ClInclude Include="Game\PlayScene\ShadowMap.h" />
@@ -233,10 +235,10 @@
     <ClInclude Include="Game\PlayScene\Stage\StageManager.h" />
     <ClInclude Include="Game\PlayScene\AliveTimer.h" />
     <ClInclude Include="Game\ResultScene\ResultScene.h" />
-    <ClInclude Include="Game\ShaderSample.h" />
-    <ClInclude Include="Game\ShaderSample2.h" />
-    <ClInclude Include="Game\ShaderSample3.h" />
+    <ClInclude Include="Game\Shader\BinaryFile.h" />
     <ClInclude Include="Game\Shader\Fade.h" />
+    <ClInclude Include="Game\Shader\FireEffectManager.h" />
+    <ClInclude Include="Game\Shader\FireShader.h" />
     <ClInclude Include="Game\TitleScene\TitleScene.h" />
     <ClInclude Include="Helpers\CueSheet_0.h" />
     <ClInclude Include="Helpers\DODGESound_acf.h" />
@@ -252,10 +254,6 @@
   <ItemGroup>
     <ClCompile Include="DeviceResources.cpp" />
     <ClCompile Include="Game.cpp" />
-    <ClCompile Include="Game\BinaryFile.cpp" />
-    <ClCompile Include="Game\EffectManager.cpp" />
-    <ClCompile Include="Game\EffectManager2.cpp" />
-    <ClCompile Include="Game\EffectManager3.cpp" />
     <ClCompile Include="Game\GameMain.cpp" />
     <ClCompile Include="Game\LoadingScreen\LoadingScreen.cpp" />
     <ClCompile Include="Game\PlayScene\AABBFor3D\AABBFor3D.cpp" />
@@ -267,15 +265,21 @@
     <ClCompile Include="Game\PlayScene\Item\ItemSpawner.cpp" />
     <ClCompile Include="Game\PlayScene\MyRandom.cpp" />
     <ClCompile Include="Game\PlayScene\Obstacle\ObstacelBhaviors\BirdBehavior.cpp" />
+    <ClCompile Include="Game\PlayScene\Obstacle\ObstacelBhaviors\MeanderingeBehavior.cpp" />
     <ClCompile Include="Game\PlayScene\Obstacle\ObstacelBhaviors\MeteoriteBehavior.cpp" />
     <ClCompile Include="Game\PlayScene\Obstacle\ObstacelBhaviors\NormalBehavior.cpp" />
     <ClCompile Include="Game\PlayScene\Obstacle\ObstacelBhaviors\ReverseRotateStickBehavior.cpp" />
     <ClCompile Include="Game\PlayScene\Obstacle\ObstacelBhaviors\RotateStickBehavior.cpp" />
     <ClCompile Include="Game\PlayScene\Obstacle\ObstacelBhaviors\StickBehavior.cpp" />
     <ClCompile Include="Game\PlayScene\Obstacle\Obstacle.cpp" />
-    <ClCompile Include="Game\PlayScene\Obstacle\ObstacleBehavior.cpp" />
     <ClCompile Include="Game\PlayScene\Obstacle\ObstacleManeger.cpp" />
-    <ClCompile Include="Game\PlayScene\Obstacle\ObstacleSpawner.cpp" />
+    <ClCompile Include="Game\PlayScene\Obstacle\ObstacleSpawners\BirdObstacleSpawner.cpp" />
+    <ClCompile Include="Game\PlayScene\Obstacle\ObstacleSpawners\MeanderingObstacleSpawner.cpp" />
+    <ClCompile Include="Game\PlayScene\Obstacle\ObstacleSpawners\MeteoriteObstacleSpawner.cpp" />
+    <ClCompile Include="Game\PlayScene\Obstacle\ObstacleSpawners\NormalObstacleSpawner.cpp" />
+    <ClCompile Include="Game\PlayScene\Obstacle\ObstacleSpawners\ReverseRotateStickObstacleSpawner .cpp" />
+    <ClCompile Include="Game\PlayScene\Obstacle\ObstacleSpawners\RotateStickObstacleSpawner.cpp" />
+    <ClCompile Include="Game\PlayScene\Obstacle\ObstacleSpawners\StickObstacleSpawner.cpp" />
     <ClCompile Include="Game\PlayScene\Player\Player.cpp" />
     <ClCompile Include="Game\PlayScene\PlayScene.cpp" />
     <ClCompile Include="Game\PlayScene\ShadowMap.cpp" />
@@ -283,10 +287,10 @@
     <ClCompile Include="Game\PlayScene\Stage\StageManager.cpp" />
     <ClCompile Include="Game\PlayScene\AliveTimer.cpp" />
     <ClCompile Include="Game\ResultScene\ResultScene.cpp" />
-    <ClCompile Include="Game\ShaderSample.cpp" />
-    <ClCompile Include="Game\ShaderSample2.cpp" />
-    <ClCompile Include="Game\ShaderSample3.cpp" />
+    <ClCompile Include="Game\Shader\BinaryFile.cpp" />
     <ClCompile Include="Game\Shader\Fade.cpp" />
+    <ClCompile Include="Game\Shader\FireEffectManager.cpp" />
+    <ClCompile Include="Game\Shader\FireShader.cpp" />
     <ClCompile Include="Game\TitleScene\TitleScene.cpp" />
     <ClCompile Include="Libraries\AXD2\Adx2.cpp" />
     <ClCompile Include="Libraries\MyLibraries\Camera.cpp" />
@@ -316,40 +320,12 @@
     </Manifest>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Game\Particle.hlsli" />
     <None Include="Game\Shader\HLSL\Fade.hlsli" />
+    <None Include="Game\Shader\HLSL\Particle.hlsli" />
     <None Include="Resources\Fonts\myfile.spritefont" />
     <None Include="Resources\Fonts\SegoeUI_18.spritefont" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Game\ParticleGS.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Geometry</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.0</ShaderModel>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Resources\Shaders\%(Filename).cso</ObjectFileOutput>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Geometry</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Geometry</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Geometry</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.0</ShaderModel>
-    </FxCompile>
-    <FxCompile Include="Game\ParticlePS.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Resources\Shaders\%(Filename).cso</ObjectFileOutput>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
-    </FxCompile>
-    <FxCompile Include="Game\ParticleVS.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Resources\Shaders\%(Filename).cso</ObjectFileOutput>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Resources\Shaders\%(Filename).cso</ObjectFileOutput>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Resources\Shaders\%(Filename).cso</ObjectFileOutput>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Resources\Shaders\%(Filename).cso</ObjectFileOutput>
-    </FxCompile>
     <FxCompile Include="Game\Shader\HLSL\FadeGS.hlsl">
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Resources\Shaders\%(Filename).cso</ObjectFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Resources\Shaders\%(Filename).cso</ObjectFileOutput>
@@ -369,6 +345,26 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Resources\Shaders\%(Filename).cso</ObjectFileOutput>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Game\Shader\HLSL\ParticleGS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Geometry</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Geometry</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.0</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Resources\Shaders\%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Resources\Shaders\%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Game\Shader\HLSL\ParticlePS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Resources\Shaders\%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Resources\Shaders\%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Game\Shader\HLSL\ParticleVS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Resources\Shaders\%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Resources\Shaders\%(Filename).cso</ObjectFileOutput>
     </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

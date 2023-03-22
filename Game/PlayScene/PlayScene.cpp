@@ -186,7 +186,7 @@ GAME_SCENE PlayScene::Update(const DX::StepTimer& timer)
 	for (std::vector<std::unique_ptr<Player>>::iterator player = m_players.begin(); player != m_players.end(); ++player)
 	{
 		//死んでいた場合カウントを進める
-		if (m_obstacleManeger->PlayerHitCheck((*player)->GetAABB()) && (*player)->GetNowPlayerState() == PlayerState::NORMAL)
+		if (m_obstacleManeger->PlayerHitCheck((*player)->GetAABB()) && (*player)->GetNowPlayerState() == Player::PlayerState::NORMAL)
 		{
 			if ((*player)->GetInvalidCount() <= -1)
 			{

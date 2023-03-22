@@ -3,13 +3,30 @@
 #include<map>
 #include<vector>
 #include"Obstacle.h"
-#include"ObstacleSpawner.h"
-#include"ObstacleBehavior.h"
 #include<Model.h>
 #include"../ShadowMap.h"
 
-#include"../../EffectManager3.h"
+#include"../../Shader/FireEffectManager.h"
 #include"Game/PlayScene/Stage/StageManager.h"
+
+//ビヘイビアーインクルード
+#include"ObstacelBhaviors/BirdBehavior.h"
+#include"ObstacelBhaviors/MeanderingeBehavior.h"
+#include"ObstacelBhaviors/MeteoriteBehavior.h"
+#include"ObstacelBhaviors/NormalBehavior.h"
+#include"ObstacelBhaviors/ReverseRotateStickBehavior.h"
+#include"ObstacelBhaviors/RotateStickBehavior.h"
+#include"ObstacelBhaviors/StickBehavior.h"
+
+//スポナーインクルード
+#include"ObstacleSpawners/BirdObstacleSpawner.h"
+#include"ObstacleSpawners/MeanderingObstacleSpawner.h"
+#include"ObstacleSpawners/MeteoriteObstacleSpawner.h"
+#include"ObstacleSpawners/NormalObstacleSpawner.h"
+#include"ObstacleSpawners/ReverseRotateStickObstacleSpawner.h"
+#include"ObstacleSpawners/RotateStickObstacleSpawner.h"
+#include"ObstacleSpawners/StickObstacleSpawner.h"
+
 
 class Player;
 
@@ -32,7 +49,7 @@ private:
 
 	DirectX::SimpleMath::Vector3                                       m_playerPosition;
 
-	std::vector<std::unique_ptr<EffectManager3>>                       m_effectlist;
+	std::vector<std::unique_ptr<FireEffectManager>>                       m_effectlist;
 
 	DirectX::SimpleMath::Vector3                                       m_hitvel;
 	DirectX::SimpleMath::Vector3                                       m_capsuleHitC1;

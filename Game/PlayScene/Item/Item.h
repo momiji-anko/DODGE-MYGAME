@@ -7,8 +7,8 @@ public:
 	//—ñ‹“‘Ì
 	enum class ItemType
 	{
-		INVINCIBLE_ITEM,
-		SLIP_ITEM,
+		SHIELD_ITEM,
+		
 		NONE,
 	};
 

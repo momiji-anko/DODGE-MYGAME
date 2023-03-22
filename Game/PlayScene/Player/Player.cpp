@@ -17,10 +17,9 @@ Player::Player()
 	m_invincbleTime(0.0f),
 	m_playerState(PlayerState::NORMAL),
 	m_playerModelNum{0,1,0,2,3},
-	m_jumpVelcity(0),
 	m_flyVelocity{}, 
-	m_invalidCount(0),
-	m_isInvalid(true)
+	m_shieldCount(0),
+	m_isShield(true)
 {
 
 }
@@ -30,11 +29,23 @@ Player::~Player()
 	
 }
 
-// 初期化
+/// <summary>
+/// 初期化
+/// </summary>
+/// <param name="velocity">移動量</param>
+/// <param name="position">初期座標</param>
+/// <param name="active">存在しているか</param>
+/// <param name="angle">角度</param>
+/// <param name="behavia">ビヘイビアー（NULLでOK）</param>
+/// <param name="model">プレイヤーのモデルだがNULLでOK</param>
+/// <param name="commonState">コモンステート</param>
 void Player::Initialize(const DirectX::SimpleMath::Vector3& velocity, const DirectX::SimpleMath::Vector3& position, bool active, float angle, IBehavior* behavia, DirectX::Model* model, DirectX::CommonStates* commonState)
 {
+	//デバイスリソースの取得
 	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
+	//デバイスコンテキストの取得
 	ID3D11DeviceContext1* context = pDR->GetD3DDeviceContext();
+	//デバイスの取得
 	ID3D11Device1* device = pDR->GetD3DDevice();
 	//ステータスの初期化
 	m_commonState = commonState;
@@ -44,49 +55,55 @@ void Player::Initialize(const DirectX::SimpleMath::Vector3& velocity, const Dire
 	m_angle = angle;
 	m_behavia = behavia;
 	m_pModel = model;
-	m_modelTime = 0.0f;
+	m_modelTime_s = 0.0f;
 
 	//IDに応じてモデルを変える
 	switch (m_playerID)
 	{
 	case 1:
+		//１Pのモデル生成
 		Player1CreateModel();
 		break;
 	case 2:
+		//２Pのモデル生成
 		Player2CreateModel();
 		break;
 	default:
 		break;
 	}
 	
-
+	//当たり判定AABBの作成
 	m_AABBObject = std::make_unique<AABBFor3D>();
+	//AABBの初期化
 	m_AABBObject->Initialize();
+	//当たり判定の領域の設定
 	m_AABBObject->SetData(DirectX::SimpleMath::Vector3(m_position.x - 0.5f, m_position.y - 0.9f, m_position.z - 0.5f), DirectX::SimpleMath::Vector3(m_position.x + 0.5f, m_position.y + 0.5f, m_position.z + 0.5f));
 
 
-	m_effect = std::make_unique<EffectManager>();
-	m_effect->Create();
-	m_effect->Initialize(3.0f, DirectX::SimpleMath::Vector3(m_position.x, m_position.y, m_position.z + 0.5f));
-	m_effect->SetStartPosition(DirectX::SimpleMath::Vector3(m_position.x, m_position.y, m_position.z + 0.5f));
-
+	//ADX2のインスタンス取得
 	m_pAdx2 = &ADX2::GetInstance();
 
+	//当たり判定カプセルの作成
 	m_capsule = std::make_unique<Capsule>();
-	m_capsule->a = DirectX::SimpleMath::Vector3(m_position);
-	m_capsule->b = DirectX::SimpleMath::Vector3(m_position);
+	//当たり判定の領域の設定
+	m_capsule->a = DirectX::SimpleMath::Vector3(m_position.x, m_position.y + 0.5f, m_position.z);
+	m_capsule->b = DirectX::SimpleMath::Vector3(m_position.x, m_position.y + 1.5f, m_position.z);
+	//カプセルの半径
 	m_capsule->r = 0.5f;
 
-
+	//盾のテクスチャ読み込み
 	DirectX::CreateWICTextureFromFile(
 		device,
 		L"Resources/Textures/haet.png",
 		nullptr,
-		m_invalidTexture.ReleaseAndGetAddressOf()
+		m_shieldTexture.ReleaseAndGetAddressOf()
 	);
 }
 
-// 更新
+/// <summary>
+/// 更新
+/// </summary>
+/// <param name="timer">タイマー</param>
 void Player::Update(const DX::StepTimer& timer)
 {
 
@@ -100,7 +117,7 @@ void Player::Update(const DX::StepTimer& timer)
 	if (!m_active)
 		return;
 
-	if (itemType == Item::ItemType::INVINCIBLE_ITEM)
+	if (itemType == Item::ItemType::SHIELD_ITEM)
 	{
 
 		InvalidCountUp();
@@ -136,37 +153,10 @@ void Player::Update(const DX::StepTimer& timer)
 	if (m_playerState == PlayerState::INVINCIBLE)
 	{
 		m_invincbleTime += timer.GetElapsedSeconds();
-		m_effect->Update(timer);
-
-
-
 
 		if (m_invincbleTime > INVINCIBLE_TIME_SECONDS)
 		{
 			m_playerState = PlayerState::NORMAL;
-		
-			m_pModel->UpdateEffects([&](DirectX::IEffect* effect)
-				{
-					DirectX::IEffectLights* lights = dynamic_cast<DirectX::IEffectLights*>(effect);
-					if (lights)
-					{
-						// ライトの影響をなくす
-						lights->SetAmbientLightColor(DirectX::SimpleMath::Vector3(0.5f, 0.5f, 0.0f));
-						lights->SetLightEnabled(0, false);
-						lights->SetLightEnabled(1, false);
-						lights->SetLightEnabled(2, false);
-					}
-					DirectX::BasicEffect* basicEffect = dynamic_cast<DirectX::BasicEffect*>(effect);
-					if (basicEffect)
-					{
-						// エミッション色を白に設定する
-						basicEffect->SetEmissiveColor(DirectX::SimpleMath::Vector3(1.0f, 1.0f, 1.0f));
-						
-					}
-				});
-
-			m_pAdx2->Stop(m_musicID);
-			
 		}
 
 	}
@@ -181,9 +171,9 @@ void Player::Update(const DX::StepTimer& timer)
 	m_capsule->a = DirectX::SimpleMath::Vector3(m_position.x, m_position.y+0.5f, m_position.z);
 	m_capsule->b = DirectX::SimpleMath::Vector3(m_position.x, m_position.y + 1.5f, m_position.z);
 
-	if (m_invalidCountCoolDownTime_s >= 0.0f)
+	if (m_invincibleCountCoolDownTime_s >= 0.0f)
 	{
-		m_invalidCountCoolDownTime_s -= time;
+		m_invincibleCountCoolDownTime_s -= time;
 		InvalidTime();
 	}
 
@@ -220,11 +210,7 @@ void Player::Draw(Camera* camera)
 	if (!m_active)
 		return;
 
-	m_effect->SetRenderState(
-		camera->GetEyePosition(),
-		camera->GetViewMatrix(),
-		camera->GetProjectionMatrix());
-	m_effect->SetStartPosition(DirectX::SimpleMath::Vector3(m_position.x, m_position.y - 0.05, m_position.z + 0.5f));
+	
 
 	m_world = DirectX::SimpleMath::Matrix::Identity;
 	DirectX::SimpleMath::Matrix trans = DirectX::SimpleMath::Matrix::CreateTranslation(m_position);
@@ -242,17 +228,13 @@ void Player::Draw(Camera* camera)
 	}
 
 	m_world *= rot * scale * trans;
-	if (m_isInvalid)
+	if (m_isShield)
 	{
-		m_playerModel[m_playerModelNum[m_modelTime]]->Draw(context, *m_commonState, m_world, camera->GetViewMatrix(), camera->GetProjectionMatrix());
+		m_playerModel[m_playerModelNum[m_modelTime_s]]->Draw(context, *m_commonState, m_world, camera->GetViewMatrix(), camera->GetProjectionMatrix());
 
 	}
 
 
-	if (m_playerState == PlayerState::INVINCIBLE)
-	{
-		m_effect->Render();
-	}
 
 
 
@@ -260,9 +242,9 @@ void Player::Draw(Camera* camera)
 
 void Player::TextureDraw(DirectX::SpriteBatch* spriteBatch)
 {
-	for (int i = 0; i < m_invalidCount; i++)
+	for (int i = 0; i < m_shieldCount; i++)
 	{
-		spriteBatch->Draw(m_invalidTexture.Get(), DirectX::SimpleMath::Vector2(20.0f, 10.0f + (i * 64.0f)), nullptr);
+		spriteBatch->Draw(m_shieldTexture.Get(), DirectX::SimpleMath::Vector2(20.0f, 10.0f + (i * 64.0f)), nullptr);
 	}
 
 
@@ -279,10 +261,10 @@ void Player::PlayerShadow( ShadowMap* shadowMap, DirectX::SimpleMath::Matrix vie
 	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
 	ID3D11DeviceContext1* context = pDR->GetD3DDeviceContext();
 
-	if (m_isInvalid)
+	if (m_isShield)
 	{
 
-		m_playerModel[m_playerModelNum[m_modelTime]]->Draw(context, *m_commonState, m_world, view, projection, false, [&]()
+		m_playerModel[m_playerModelNum[m_modelTime_s]]->Draw(context, *m_commonState, m_world, view, projection, false, [&]()
 			{
 				shadowMap->DrawShadowMap(context);
 			}
@@ -293,53 +275,53 @@ void Player::PlayerShadow( ShadowMap* shadowMap, DirectX::SimpleMath::Matrix vie
 void Player::InvalidTime()
 {
 
-	if (m_invalidCountCoolDownTime_s>=2.75f)
+	if (m_invincibleCountCoolDownTime_s>=2.75f)
 	{
-		m_isInvalid = false;
+		m_isShield = false;
 	}
-	else if (m_invalidCountCoolDownTime_s >= 2.5f)
+	else if (m_invincibleCountCoolDownTime_s >= 2.5f)
 	{
-		m_isInvalid = true;
+		m_isShield = true;
 	}
-	else if (m_invalidCountCoolDownTime_s >= 2.25f)
+	else if (m_invincibleCountCoolDownTime_s >= 2.25f)
 	{
-		m_isInvalid = false;
+		m_isShield = false;
 	}
-	else if (m_invalidCountCoolDownTime_s >= 2.0f)
+	else if (m_invincibleCountCoolDownTime_s >= 2.0f)
 	{
-		m_isInvalid = true;
+		m_isShield = true;
 	}
-	else if (m_invalidCountCoolDownTime_s >= 1.75f)
+	else if (m_invincibleCountCoolDownTime_s >= 1.75f)
 	{
-		m_isInvalid = false;
+		m_isShield = false;
 	}
-	else if (m_invalidCountCoolDownTime_s >= 1.5f)
+	else if (m_invincibleCountCoolDownTime_s >= 1.5f)
 	{
-		m_isInvalid = true;
+		m_isShield = true;
 	}
-	else if (m_invalidCountCoolDownTime_s >= 1.25f)
+	else if (m_invincibleCountCoolDownTime_s >= 1.25f)
 	{
-		m_isInvalid = false;
+		m_isShield = false;
 	}
-	else if (m_invalidCountCoolDownTime_s >= 1.0f)
+	else if (m_invincibleCountCoolDownTime_s >= 1.0f)
 	{
-		m_isInvalid = true;
+		m_isShield = true;
 	}
-	else if (m_invalidCountCoolDownTime_s >= 0.75f)
+	else if (m_invincibleCountCoolDownTime_s >= 0.75f)
 	{
-		m_isInvalid = false;
+		m_isShield = false;
 	}
-	else if (m_invalidCountCoolDownTime_s >= 0.5f)
+	else if (m_invincibleCountCoolDownTime_s >= 0.5f)
 	{
-		m_isInvalid = true;
+		m_isShield = true;
 	}
-	else if (m_invalidCountCoolDownTime_s >= 0.25f)
+	else if (m_invincibleCountCoolDownTime_s >= 0.25f)
 	{
-		m_isInvalid = false;
+		m_isShield = false;
 	}
 	else
 	{
-		m_isInvalid = true;
+		m_isShield = true;
 	}
 
 
@@ -349,17 +331,17 @@ void Player::InvalidTime()
 void Player::InvalidCountUp()
 {
 	m_pAdx2->Play(CRI_CUESHEET_0_COIN04_);
-	m_invalidCount++;
+	m_shieldCount++;
 }
 
 void Player::InvalidCountDown()
 {
-	if (m_invalidCountCoolDownTime_s <= 0.0f)
+	if (m_invincibleCountCoolDownTime_s <= 0.0f)
 	{
-		m_invalidCount--;
+		m_shieldCount--;
 		m_pAdx2->Play(CRI_CUESHEET_0_DAMAGE1);
-		m_invalidCountCoolDownTime_s = 3.0f;
-		if (m_invalidCount <= -1)
+		m_invincibleCountCoolDownTime_s = 3.0f;
+		if (m_shieldCount <= -1)
 		{
 			m_active = false;
 		}
@@ -423,16 +405,16 @@ void Player::Player1Move(const DX::StepTimer& timer)
 
 	if (keyState.Right || keyState.Left || keyState.Down || keyState.Up)
 	{
-		m_modelTime += time * 10;
+		m_modelTime_s += time * 10;
 
-		if (m_modelTime >= 4.0f)
+		if (m_modelTime_s >= 4.0f)
 		{
-			m_modelTime = 0;
+			m_modelTime_s = 0;
 		}
 	}
 	else
 	{
-		m_modelTime = 0;
+		m_modelTime_s = 0;
 	}
 
 
@@ -455,7 +437,7 @@ void Player::Player1Move(const DX::StepTimer& timer)
 	}
 	else
 	{
-		m_modelTime = 4;
+		m_modelTime_s = 4;
 		m_velocity.y += GRAVITY_FORCE * timer.GetElapsedSeconds();
 
 	}
@@ -518,16 +500,16 @@ void Player::Player2Move(const DX::StepTimer& timer)
 
 	if (keyState.D || keyState.A || keyState.S || keyState.W)
 	{
-		m_modelTime += time * 10;
+		m_modelTime_s += time * 10;
 
-		if (m_modelTime >= 4.0f)
+		if (m_modelTime_s >= 4.0f)
 		{
-			m_modelTime = 0;
+			m_modelTime_s = 0;
 		}
 	}
 	else
 	{
-		m_modelTime = 0;
+		m_modelTime_s = 0;
 	}
 
 
@@ -550,7 +532,7 @@ void Player::Player2Move(const DX::StepTimer& timer)
 	}
 	else
 	{
-		m_modelTime = 4;
+		m_modelTime_s = 4;
 		m_velocity.y += GRAVITY_FORCE * timer.GetElapsedSeconds();
 
 	}

@@ -59,16 +59,11 @@ void ObstacleManeger::Initialize(DirectX::CommonStates* commonState, StageManege
 
 	m_effectlist.resize(EFFECT_MAX_NUM);
 
-	//for (auto& effect : m_effectlist)
-	//{
-	//	effect = std::make_unique<EffectManager3>();
-	//	effect->Create();
-	//	effect->Initialize(2.0f, DirectX::SimpleMath::Vector3::Zero);
-	//}
+
 
 	for (int i = 0; i < m_effectlist.size(); i++)
 	{
-		m_effectlist[i] = std::make_unique<EffectManager3>();
+		m_effectlist[i] = std::make_unique<FireEffectManager>();
 		m_effectlist[i]->Create();
 		m_effectlist[i]->Initialize(2.0f, DirectX::SimpleMath::Vector3::Zero);
 	}
@@ -97,90 +92,79 @@ void ObstacleManeger::Initialize(DirectX::CommonStates* commonState, StageManege
 	m_spawneTime_s = 0.0f;
 
 	//	エフェクトファクトリの作成
-	DirectX::EffectFactory* factory = new DirectX::EffectFactory(pDR->GetD3DDevice());
+	DirectX::EffectFactory* meteoriteFactory = new DirectX::EffectFactory(pDR->GetD3DDevice());
 
 	//	テクスチャの読み込みパス指定
-	factory->SetDirectory(L"Resources/Models");
+	meteoriteFactory->SetDirectory(L"Resources/Models");
 
 	//	ファイルを指定してモデルデータ読み込み
 	m_models[Obstacle::ObstacleType::METEORITE] = DirectX::Model::CreateFromCMO(
 		pDR->GetD3DDevice(),
 		L"Resources/Models/star.cmo",
-		*factory
+		*meteoriteFactory
 	);
 
 
-	delete factory;
+	delete meteoriteFactory;
 		//	エフェクトファクトリの作成
-	DirectX::EffectFactory* factory1 = new DirectX::EffectFactory(pDR->GetD3DDevice());
+	DirectX::EffectFactory* stickFactory = new DirectX::EffectFactory(pDR->GetD3DDevice());
 
 	//	テクスチャの読み込みパス指定
-	factory1->SetDirectory(L"Resources/Models");
+	stickFactory->SetDirectory(L"Resources/Models");
 
 	//	ファイルを指定してモデルデータ読み込み
 	m_models[Obstacle::ObstacleType::STICK] = DirectX::Model::CreateFromCMO(
 		pDR->GetD3DDevice(),
 		L"Resources/Models/stickObstale.cmo",
-		*factory1
+		*stickFactory
 	);
 
-	m_models[Obstacle::ObstacleType::STRAIGHT_MOVE_RIGHT_LEFT] = DirectX::Model::CreateFromCMO(
-		pDR->GetD3DDevice(),
-		L"Resources/Models/stickObstale.cmo",
-		*factory1
-	);
-	m_models[Obstacle::ObstacleType::STRAIGHT_MOVE_LEFT_RIGHT] = DirectX::Model::CreateFromCMO(
-		pDR->GetD3DDevice(),
-		L"Resources/Models/stickObstale.cmo",
-		*factory1
-	);
-
-	delete factory1;
+	delete stickFactory;
 
 	//	エフェクトファクトリの作成
-	DirectX::EffectFactory* factory2 = new DirectX::EffectFactory(pDR->GetD3DDevice());
+	DirectX::EffectFactory* rotateStickFactory = new DirectX::EffectFactory(pDR->GetD3DDevice());
 
 	//	テクスチャの読み込みパス指定
-	factory2->SetDirectory(L"Resources/Models");
+	rotateStickFactory->SetDirectory(L"Resources/Models");
 
 	//	ファイルを指定してモデルデータ読み込み
 	m_models[Obstacle::ObstacleType::ROTATESTICK] = DirectX::Model::CreateFromCMO(
 		pDR->GetD3DDevice(),
 		L"Resources/Models/roll.cmo",
-		*factory2
+		*rotateStickFactory
 	);
 	
 
 
-	delete factory2;
+	delete rotateStickFactory;
 	//	エフェクトファクトリの作成
-	DirectX::EffectFactory* factory3 = new DirectX::EffectFactory(pDR->GetD3DDevice());
+	DirectX::EffectFactory* birdFactory = new DirectX::EffectFactory(pDR->GetD3DDevice());
 
 	//	テクスチャの読み込みパス指定
-	factory3->SetDirectory(L"Resources/Models");
+	birdFactory->SetDirectory(L"Resources/Models");
 
 	//	ファイルを指定してモデルデータ読み込み
 	m_models[Obstacle::ObstacleType::BIRD] = DirectX::Model::CreateFromCMO(
 		pDR->GetD3DDevice(),
 		L"Resources/Models/bule.cmo",
-		*factory3
+		*birdFactory
 	);
 
-	delete factory3;
+	delete birdFactory;
 	//	エフェクトファクトリの作成
-	DirectX::EffectFactory* factory4 = new DirectX::EffectFactory(pDR->GetD3DDevice());
+	DirectX::EffectFactory* reverceRotateStickFactory = new DirectX::EffectFactory(pDR->GetD3DDevice());
 
 	//	テクスチャの読み込みパス指定
-	factory4->SetDirectory(L"Resources/Models");
+	reverceRotateStickFactory->SetDirectory(L"Resources/Models");
 
 	//	ファイルを指定してモデルデータ読み込み
 	m_models[Obstacle::ObstacleType::REVERSE_ROTATESTICK] = DirectX::Model::CreateFromCMO(
 		pDR->GetD3DDevice(),
 		L"Resources/Models/roll2.cmo",
-		*factory4
+		*reverceRotateStickFactory
 	);
 
-	delete factory4;
+	delete reverceRotateStickFactory;
 
 	CreateObstacle(DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f), Obstacle::ObstacleType::ROTATESTICK, 0);
 	CreateObstacle(DirectX::SimpleMath::Vector3(0.0f, 3.0f, 0.0f), Obstacle::ObstacleType::REVERSE_ROTATESTICK, 0);
@@ -205,7 +189,7 @@ void ObstacleManeger::Update(const DX::StepTimer& timer)
 		if (m_time_s <= 50)
 		{
 			float  angle = (DirectX::XM_PI / 2.0f) * type;
-			switch (MyRandom::GetIntRange(0, 4))
+			switch (MyRandom::GetIntRange(0, 5))
 			{
 			case 0:
 			case 1:
@@ -314,8 +298,6 @@ void ObstacleManeger::CreateSpawner()
 	m_spawners[Obstacle::ObstacleType::ROTATESTICK] = std::make_unique<RotateStickObstacleSpawner>();
 	m_spawners[Obstacle::ObstacleType::REVERSE_ROTATESTICK] = std::make_unique<ReverseRotateStickObstacleSpawner>();
 	m_spawners[Obstacle::ObstacleType::MEANDERING] = std::make_unique<MeanderingObstacleSpawner>();
-	m_spawners[Obstacle::ObstacleType::STRAIGHT_MOVE_RIGHT_LEFT] = std::make_unique<StraightMoveRightObstacleSpawner>();
-	m_spawners[Obstacle::ObstacleType::STRAIGHT_MOVE_LEFT_RIGHT] = std::make_unique<StraightMoveLeftObstacleSpawner>();
 	m_spawners[Obstacle::ObstacleType::BIRD] = std::make_unique<BirdObstacleSpawner>();
 }
 
@@ -326,9 +308,7 @@ void ObstacleManeger::CreateBehavior()
 	m_behavior[Obstacle::ObstacleType::METEORITE] = std::make_unique<MeteoriteBehavior>();
 	m_behavior[Obstacle::ObstacleType::ROTATESTICK] = std::make_unique<RotateStickBehavior>();
 	m_behavior[Obstacle::ObstacleType::REVERSE_ROTATESTICK] = std::make_unique<ReverseRotateStickBehavior>();
-	m_behavior[Obstacle::ObstacleType::MEANDERING] = std::make_unique<MeanderingeBehavior>();
-	m_behavior[Obstacle::ObstacleType::STRAIGHT_MOVE_RIGHT_LEFT] = std::make_unique<StraightMoveBehavior>();
-	m_behavior[Obstacle::ObstacleType::STRAIGHT_MOVE_LEFT_RIGHT] = std::make_unique<StraightMoveBehavior>();
+	m_behavior[Obstacle::ObstacleType::MEANDERING] = std::make_unique<MeanderingBehavior>();
 	m_behavior[Obstacle::ObstacleType::BIRD] = std::make_unique<BirdBehavior>();
 
 }

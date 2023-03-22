@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "Fade.h"
-#include"Game/BinaryFile.h"
+#include"BinaryFile.h"
 #include <SimpleMath.h>
 #include <Effects.h>
 #include <PrimitiveBatch.h>

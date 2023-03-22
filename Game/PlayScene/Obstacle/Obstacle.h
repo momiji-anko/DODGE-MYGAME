@@ -1,6 +1,6 @@
 #pragma once 
 #include"../Actor/Actor.h"
-#include"../../EffectManager3.h"
+#include"../../Shader/FireEffectManager.h"
 #include"../ShadowMap.h"
 #include"../Objects.h"
 #include <GeometricPrimitive.h>
@@ -19,11 +19,7 @@ public:
 		REVERSE_ROTATESTICK,
 		MEANDERING,
 		
-		STRAIGHT_MOVE_RIGHT_LEFT,
-		STRAIGHT_MOVE_LEFT_RIGHT,
 		
-		STRAIGHT_MOVE_TOP_BOTTOM,
-		STRAIGHT_MOVE_BOTTOM_TOP,
 
 		BIRD,
 		
@@ -33,29 +29,29 @@ private:
 	static const float MOVE_SPEED;
 
 	//変数
-	ObstacleType                                                       m_type;
-	EffectManager3*                                                    m_effect;
-	std::unique_ptr<DirectX::GeometricPrimitive>                       m_geo;
+	ObstacleType                                 m_type;
+	FireEffectManager*                           m_effect;
+	std::unique_ptr<DirectX::GeometricPrimitive> m_geo;
 
-	DirectX::SimpleMath::Vector3                                       m_scale;
+	DirectX::SimpleMath::Vector3                 m_scale;
 
-	float                                                              m_rotSpeed;
-	float                                                              m_meanderingSpeed;
+	float                                        m_rotSpeed;
+	float                                        m_meanderingSpeed;
 
 
-	float                                                              m_mass;           // 質量
-	float                                                              m_maxSpeed;       // 最大移動速度(スピード)
-	float                                                              m_maxForce;       // 適用される最大の力
+	float                                        m_mass;           // 質量
+	float                                        m_maxSpeed;       // 最大移動速度(スピード)
+	float                                        m_maxForce;       // 適用される最大の力
 
-	DirectX::SimpleMath::Vector3                                       m_force;       // 物体に加わる力
+	DirectX::SimpleMath::Vector3                 m_force;       // 物体に加わる力
 
 		// 徘徊行動用パラメータ
-	float                                                              m_wanderRadius;
-	float                                                              m_wanderDistance;
-	float                                                              m_wanderAngularVelocity;
-	float                                                              m_wanderAngle;
-	DirectX::SimpleMath::Vector3                                       m_playerPosition;
-	float m_seekTime_s;
+	float                                        m_wanderRadius;
+	float                                        m_wanderDistance;
+	float                                        m_wanderAngularVelocity;
+	float                                        m_wanderAngle;
+	DirectX::SimpleMath::Vector3                 m_playerPosition;
+	float                                        m_seekTime_s;
 public :
 	//コンストラクタ
 	Obstacle();
@@ -90,7 +86,7 @@ public :
 
 	void ObstacleShadow(ShadowMap* shadow, DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix projection);
 
-	void SetEffect(EffectManager3* effect) { m_effect = effect; }
+	void SetEffect(FireEffectManager* effect) { m_effect = effect; }
 
 	ObstacleType GetObstacleType() { return m_type; }
 
@@ -109,7 +105,6 @@ public :
 	void SetPlayerPosition(DirectX::SimpleMath::Vector3 playerPos) { m_playerPosition = playerPos; }
 
 
-	DirectX::SimpleMath::Vector3 Wander();
 	DirectX::SimpleMath::Vector3 Seek(const DirectX::SimpleMath::Vector3& targetPosition);
 
 	float GetMaxSpeed() const { return m_maxSpeed; }

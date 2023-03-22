@@ -151,14 +151,6 @@ void Obstacle::Draw(Camera* camera)
 		m_pModel->Draw(context, *m_commonState, m_world, camera->GetViewMatrix(), camera->GetProjectionMatrix());
 
 		break;
-	case Obstacle::ObstacleType::STRAIGHT_MOVE_BOTTOM_TOP:
-	case Obstacle::ObstacleType::STRAIGHT_MOVE_LEFT_RIGHT:
-	case Obstacle::ObstacleType::STRAIGHT_MOVE_RIGHT_LEFT:
-	case Obstacle::ObstacleType::STRAIGHT_MOVE_TOP_BOTTOM:
-		m_world *= rot * scale * trans;
-
-		m_pModel->Draw(context, *m_commonState, m_world, camera->GetViewMatrix(), camera->GetProjectionMatrix());
-		break;
 	case Obstacle::ObstacleType::BIRD:
 		scale = DirectX::SimpleMath::Matrix::CreateScale(0.010f);
 		m_world *= scale * rot  * trans;
@@ -208,28 +200,7 @@ void Obstacle::ObstacleShadow(ShadowMap* shadow, DirectX::SimpleMath::Matrix vie
 
 }
 
-DirectX::SimpleMath::Vector3 Obstacle::Wander()
-{
-	//ÉâÉìÉ_ÉÄÇÃêßçÏÇÃèÄîı
-	static std::random_device seedGenerator;
-	static std::mt19937 randomGenerator{ seedGenerator() };
-	static std::uniform_real_distribution<float> distribution{ -1.0f,1.0f };
 
-
-	float displaceAngle = distribution(randomGenerator) * m_wanderAngularVelocity;
-	m_wanderAngle += displaceAngle;
-	float x = std::cos(m_wanderAngle);
-	float z = std::sin(m_wanderAngle);
-	DirectX::SimpleMath::Vector3 direction{ x,0.0f,z };
-	direction.Normalize();
-	DirectX::SimpleMath::Vector3 wanderCenter = Forward() * m_wanderDistance;
-	DirectX::SimpleMath::Vector3 displacement = direction * m_wanderRadius;
-	DirectX::SimpleMath::Vector3 wanderTarget = wanderCenter + displacement;
-
-	DirectX::SimpleMath::Vector3 wanderVec = Seek(wanderTarget + GetPosition());
-
-	return wanderVec;
-}
 
 DirectX::SimpleMath::Vector3 Obstacle::Seek(const DirectX::SimpleMath::Vector3& targetPosition)
 {
