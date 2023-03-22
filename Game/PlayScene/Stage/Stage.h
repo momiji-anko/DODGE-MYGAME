@@ -32,6 +32,8 @@ private:
 	ShadowMap* m_shadowMap;
 	bool m_endFlag;
 
+	float m_rotetionTime_s;
+
 	//std::unique_ptr<Sphere> sphere;
 public:
 	//コンストラクタ

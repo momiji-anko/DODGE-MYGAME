@@ -19,7 +19,8 @@ Stage::Stage()
 	m_time(0.0f),
 	m_shadowMap(nullptr),
 	m_routine(0),
-	m_endFlag(false)
+	m_endFlag(false),
+	m_rotetionTime_s(0)
 {
 
 }
@@ -119,28 +120,8 @@ void Stage::Update(const DX::StepTimer& timer)
 		break;
 	case Stage::StageType::Stage2_1:
 		//HACK::TEST
+		static const float COUNT_TIME_S;
 		
-		if (keyState.J)
-		{
-			m_rotation.z += ROT_SPEED * time;
-
-		}
-		if (keyState.L)
-		{
-			m_rotation.z -= ROT_SPEED * time;
-
-		}
-
-		if (keyState.K)
-		{
-			m_rotation.x += ROT_SPEED * time;
-
-		}
-		if (keyState.I)
-		{
-			m_rotation.x -= ROT_SPEED * time;
-
-		}
 
 		break;
 		case Stage::StageType::Stage3_1:
