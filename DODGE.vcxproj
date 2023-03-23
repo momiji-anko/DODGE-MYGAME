@@ -205,6 +205,7 @@
     <ClInclude Include="Game\LoadingScreen\LoadingScreen.h" />
     <ClInclude Include="Game\PlayScene\AABBFor3D\AABBFor3D.h" />
     <ClInclude Include="Game\PlayScene\Actor\Actor.h" />
+    <ClInclude Include="Game\PlayScene\Blink.h" />
     <ClInclude Include="Game\PlayScene\IBehavior.h" />
     <ClInclude Include="Game\PlayScene\ISpawner.h" />
     <ClInclude Include="Game\PlayScene\Item\Item.h" />
@@ -258,6 +259,7 @@
     <ClCompile Include="Game\LoadingScreen\LoadingScreen.cpp" />
     <ClCompile Include="Game\PlayScene\AABBFor3D\AABBFor3D.cpp" />
     <ClCompile Include="Game\PlayScene\Actor\Actor.cpp" />
+    <ClCompile Include="Game\PlayScene\Blink.cpp" />
     <ClCompile Include="Game\PlayScene\IBehavior.cpp" />
     <ClCompile Include="Game\PlayScene\ISpawner.cpp" />
     <ClCompile Include="Game\PlayScene\Item\Item.cpp" />
