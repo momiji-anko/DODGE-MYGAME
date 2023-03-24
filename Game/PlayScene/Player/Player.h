@@ -145,7 +145,7 @@ public:
 	void PlayerShadow(ShadowMap* shadowMap,DirectX::SimpleMath::Matrix view,DirectX::SimpleMath::Matrix projection);
 
 	/// <summary>
-	/// 無敵時間さん！？
+	/// 無敵時間
 	/// </summary>
 	void InvalidTime();
 

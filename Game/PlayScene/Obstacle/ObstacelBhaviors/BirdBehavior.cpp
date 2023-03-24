@@ -4,7 +4,6 @@
 * –ƒ¶@•–
 * ’¹‚ÌáŠQ•¨‚Ì“®‚«
 */
-
 #include"pch.h"
 #include"../../Actor/Actor.h"
 #include"../Obstacle.h"

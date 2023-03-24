@@ -234,6 +234,9 @@
     <ClInclude Include="Game\PlayScene\Obstacle\ObstacleSpawners\BirdObstacleSpawner.h">
       <Filter>Game\PlayScene\Obstacle\ObstacleSpawners</Filter>
     </ClInclude>
+    <ClInclude Include="Game\PlayScene\Blink.h">
+      <Filter>Game\PlayScene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -367,6 +370,9 @@
     </ClCompile>
     <ClCompile Include="Game\PlayScene\Obstacle\ObstacleSpawners\MeanderingObstacleSpawner.cpp">
       <Filter>Game\PlayScene\Obstacle\ObstacleSpawners</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\PlayScene\Blink.cpp">
+      <Filter>Game\PlayScene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
