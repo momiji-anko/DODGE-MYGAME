@@ -32,8 +32,9 @@ private:
 	ShadowMap* m_shadowMap;
 	bool m_endFlag;
 
-	float m_rotetionTime_s;
-
+	float m_rotationTime_s;
+	DirectX::SimpleMath::Vector3 m_previousRotetion;
+	bool m_isRotetion;
 	//std::unique_ptr<Sphere> sphere;
 public:
 	//コンストラクタ

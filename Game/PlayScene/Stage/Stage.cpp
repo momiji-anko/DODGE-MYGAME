@@ -20,7 +20,7 @@ Stage::Stage()
 	m_shadowMap(nullptr),
 	m_routine(0),
 	m_endFlag(false),
-	m_rotetionTime_s(0)
+	m_rotationTime_s(0)
 {
 
 }
@@ -57,7 +57,7 @@ void Stage::Initialize(const DirectX::SimpleMath::Vector3& velocity,const Direct
 	m_AABBObject->Initialize();
 	m_AABBObject->SetData(DirectX::SimpleMath::Vector3(m_position.x - 6.0f, m_position.y - 0.5f, m_position.z - 6.0f), DirectX::SimpleMath::Vector3(m_position.x + 6.0f, m_position.y + 0.5f, m_position.z + 6.0f));
 
-
+	m_previousRotetion = m_rotation;
 	//m_rotation.z = -45.0f;
 }
 
@@ -69,7 +69,9 @@ void Stage::Update(const DX::StepTimer& timer)
 	//HACK::TEST ÉLÅ[ì¸óÕèÓïÒÇéÊìæÇ∑ÇÈ
 	DirectX::Keyboard::State keyState = DirectX::Keyboard::Get().GetState();
 	static const float ROT_SPEED = 5.0f;
-
+	static float ROTATION_ANGLE_coefficient = DirectX::XMConvertToRadians(15.0f);
+	static int rotdis;
+	static float rotang;
 	m_time += time;
 
 	switch (m_type)
@@ -121,7 +123,62 @@ void Stage::Update(const DX::StepTimer& timer)
 	case Stage::StageType::Stage2_1:
 		//HACK::TEST
 		static const float COUNT_TIME_S;
-		
+
+		m_rotationTime_s -= time;
+
+		if (m_rotationTime_s <= 0)
+		{
+			
+	/*		int rotationDirection;
+			float rotationAngle;*/
+			if (!m_isRotetion)
+			{
+
+				//âÒì]Ç∑ÇÈï˚å¸ÇåàÇﬂÇÈÅiÇOÇ™âúÇ…âÒì]ÅAÇPÇ™âEÇ…âÒì]ÅAÇQÇ™éËä‘Ç…âÒì]ÅAÇRÇ™ç∂Ç…âÒì]Åj
+				rotdis = 0;// MyRandom::GetIntRange(0, 3);
+				//âÒì]äpìx
+				rotang = ROTATION_ANGLE_coefficient * 3;// MyRandom::GetIntRange(0, 3);
+			}
+
+			m_isRotetion = true;
+			switch (rotdis)
+			{
+			case 0:
+				m_rotation.x = Lerp(m_previousRotetion.x, m_previousRotetion.x - rotang, m_time / MOVE_TIME);
+				
+				break;
+			case 1:
+
+				m_rotation.z = Lerp(m_previousRotetion.z, m_previousRotetion.z + rotang, m_time / MOVE_TIME);
+
+				break;
+
+			case 2:
+
+				m_rotation.x = Lerp(m_previousRotetion.x, m_previousRotetion.x + rotang, m_time / MOVE_TIME);
+
+				break;
+
+			case 3:
+
+				m_rotation.z = Lerp(m_previousRotetion.z, m_previousRotetion.z - rotang, m_time / MOVE_TIME);
+
+				break;
+			default:
+				break;
+			}
+
+			if (m_time > MOVE_TIME)
+			{
+				m_rotationTime_s = 10.0f;
+				m_previousRotetion = m_rotation;
+				m_time = 0;
+				m_isRotetion = false;
+
+			}
+		}
+
+
 
 		break;
 		case Stage::StageType::Stage3_1:
@@ -147,8 +204,6 @@ void Stage::Update(const DX::StepTimer& timer)
 
 			}
 			break;
-	default:
-		break;
 	}
 
 
