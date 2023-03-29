@@ -2,6 +2,7 @@
 #include"Item.h"
 #include"DeviceResources.h"
 
+const float Item::ITEM_DELETE_TIME_S = 20.0f;
 
 //コンストラクタ
 Item::Item()
@@ -38,11 +39,13 @@ Item:: ~Item()
 	 m_AABBObject = std::make_unique<AABBFor3D>();
 	 m_AABBObject->Initialize();
 	 m_AABBObject->SetData(DirectX::SimpleMath::Vector3(m_position.x + 0.5f, m_position.y + 0.5f, m_position.z + 0.5f), DirectX::SimpleMath::Vector3(m_position.x - 0.5f, m_position.y - 0.5f, m_position.z - 0.5f));
-	 m_hoge = 1;
-	 m_deleteTime_s = 20;
+	 m_deleteTime_s = ITEM_DELETE_TIME_S;
 	 m_hit = false;
 
 	 m_rotation.y = 180.0f;
+
+	 m_blink = std::make_unique<Blink>();
+	 m_blink->Initialize(0.3, 30, true, 0.003f);
 
  }
 
@@ -56,21 +59,11 @@ void Item::Update(const DX::StepTimer& timer)
 
 	m_AABBObject->SetData(DirectX::SimpleMath::Vector3(m_position.x - 0.5f, m_position.y , m_position.z - 0.5f), DirectX::SimpleMath::Vector3(m_position.x + 0.5f, m_position.y + 1.0f, m_position.z + 0.5f));
 
-
+	m_blink->Update(timer);
 
 	if (m_deleteTime_s < 5.0f)
 	{
-		if (timer.GetFrameCount() % 10 == 0)
-		{
-			if (m_hoge == 0)
-			{
-				m_hoge = 1;
-			}
-			else
-			{
-				m_hoge = 0;
-			}
-		}
+		m_blink->Start();
 	}
 
 	if(!m_hit)
@@ -79,8 +72,7 @@ void Item::Update(const DX::StepTimer& timer)
 	}
 	else
 	{
-		int a = 0;
-		a++;
+
 	}
 
 	if (m_deleteTime_s <= 0)
@@ -108,7 +100,7 @@ void Item::Update(const DX::StepTimer& timer)
 	 m_world *= scale * rot * trans;
 	/// m_AABBObject->Draw(DirectX::SimpleMath::Matrix::Identity, camera->GetViewMatrix(), camera->GetProjectionMatrix(), DirectX::SimpleMath::Color(1, 1, 0, 1));
 
-	 if (m_hoge)
+	 if (m_blink->IsBlink())
 	 {
 		
 		m_pModel->Draw(context, *m_commonState, m_world, camera->GetViewMatrix(), camera->GetProjectionMatrix());
@@ -156,13 +148,5 @@ void Item::Update(const DX::StepTimer& timer)
 		 }
 	 );
 
- }
-
- void Item::InvincibleItemUpdete(const DX::StepTimer& timer)
- {
- }
-
- void Item::SlipItemUpdete(const DX::StepTimer& timer)
- {
  }
 

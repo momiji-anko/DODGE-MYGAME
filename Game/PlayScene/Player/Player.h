@@ -12,7 +12,7 @@
 #include"../Item/ItemManeger.h"
 #include"../Stage/StageManager.h"
 #include<WICTextureLoader.h>
-
+#include"Game/PlayScene/Blink.h"
 
 
 class Player :public Actor
@@ -81,6 +81,9 @@ private:
 
 	//プレイヤーの番号
 	int m_playerID;
+
+
+	std::unique_ptr<Blink> m_blink;
 public:
 
 	//コンストラクタ
@@ -144,10 +147,6 @@ public:
 	/// <param name="projection">プロジェクション行列</param>
 	void PlayerShadow(ShadowMap* shadowMap,DirectX::SimpleMath::Matrix view,DirectX::SimpleMath::Matrix projection);
 
-	/// <summary>
-	/// 無敵時間
-	/// </summary>
-	void InvalidTime();
 
 	/// <summary>
 	/// 回転する棒の障害物に当たった時に吹き飛ばされる用のベロシティ
@@ -176,6 +175,8 @@ public:
 	/// 持っている盾の数を１減らす　盾を一個も持っていない場合死亡させる
 	/// </summary>
 	void InvalidCountDown();
+
+	void ShieldNumCheck();
 
 	/// <summary>
 	/// プレイヤーが持っている盾の数を取得

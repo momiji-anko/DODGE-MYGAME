@@ -81,8 +81,6 @@ void ResultScene::Initialize()
 
 	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
 
-	// デバイスコンテキストの取得
-	ID3D11DeviceContext1* context = pDR->GetD3DDeviceContext();
 	m_stageManeger = std::make_unique<StageManeger>();
 	m_stageManeger->Initialize(m_commonState.get(), StageManeger::StageSelect::Stage1);
 
@@ -151,8 +149,6 @@ void ResultScene::Draw()
 {
 	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
 	RECT rect = pDR->GetOutputSize();
-	// デバイスコンテキストの取得
-	ID3D11DeviceContext1* context = pDR->GetD3DDeviceContext();
 
 	//	ウィンドウサイズの取得
 	float width = static_cast<float>(pDR->GetOutputSize().right);

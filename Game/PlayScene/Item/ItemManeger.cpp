@@ -54,6 +54,9 @@ void ItemManeger::Initialize(DirectX::CommonStates* commonState)
 
 	delete factory;
 
+	CreateItem(DirectX::SimpleMath::Vector3(MyRandom::GetFloatRange(-7.0f, 6.0f), 15.0f, MyRandom::GetFloatRange(-7.0f, 7.0f)), Item::ItemType::SHIELD_ITEM, 0.0f);
+
+
 	m_spawneTime_s=15.0f;
 	m_spawneCoolTime=15.0f;
 }

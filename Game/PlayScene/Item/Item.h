@@ -1,6 +1,8 @@
 #pragma once
 #include"../Actor/Actor.h"
 #include"../ShadowMap.h"
+#include"Game/PlayScene/Blink.h"
+
 class Item :public Actor
 {
 public:
@@ -13,6 +15,8 @@ public:
 	};
 
 protected:
+	static const float ITEM_DELETE_TIME_S;
+
 	ItemType m_itemType;
 	bool m_hit;
 
@@ -21,9 +25,9 @@ protected:
 
 	float m_timer;
 
-	int m_hoge;
 	ShadowMap* m_shadowMap;
 
+	std::unique_ptr<Blink> m_blink;
 
 public:
 	//コンストラクタ
@@ -67,8 +71,6 @@ public:
 
 private:
 	
-	void InvincibleItemUpdete(const DX::StepTimer& timer);
-
-	void SlipItemUpdete(const DX::StepTimer& timer);
+	
 
 };

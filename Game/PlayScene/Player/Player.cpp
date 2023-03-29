@@ -19,7 +19,8 @@ Player::Player()
 	m_playerModelNum{0,1,0,2,3},
 	m_flyVelocity{}, 
 	m_shieldCount(0),
-	m_isShield(true)
+	m_isShield(true),
+	m_blink(nullptr)
 {
 
 }
@@ -98,6 +99,10 @@ void Player::Initialize(const DirectX::SimpleMath::Vector3& velocity, const Dire
 		nullptr,
 		m_shieldTexture.ReleaseAndGetAddressOf()
 	);
+
+	m_blink = std::make_unique<Blink>();
+	m_blink->Initialize(0.15f, 12, 0.01f, true);
+
 }
 
 /// <summary>
@@ -171,18 +176,14 @@ void Player::Update(const DX::StepTimer& timer)
 	m_capsule->a = DirectX::SimpleMath::Vector3(m_position.x, m_position.y+0.5f, m_position.z);
 	m_capsule->b = DirectX::SimpleMath::Vector3(m_position.x, m_position.y + 1.5f, m_position.z);
 
-	if (m_invincibleCountCoolDownTime_s >= 0.0f)
-	{
-		m_invincibleCountCoolDownTime_s -= time;
-		InvalidTime();
-	}
+
 
 	if (GetPosition().y < -50.0f)
 	{
 		m_active = false;
 
 	}
-
+	m_blink->Update(timer);
 
 
 	m_barrierModel->UpdateEffects([&](DirectX::IEffect* effect)
@@ -214,7 +215,7 @@ void Player::Draw(Camera* camera)
 
 	m_world = DirectX::SimpleMath::Matrix::Identity;
 	DirectX::SimpleMath::Matrix trans = DirectX::SimpleMath::Matrix::CreateTranslation(m_position);
-	DirectX::SimpleMath::Matrix rot = DirectX::SimpleMath::Matrix::CreateRotationY(m_rotation.y / 180.0f * 3.14f);
+	DirectX::SimpleMath::Matrix rot = DirectX::SimpleMath::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_rotation.y));
 	DirectX::SimpleMath::Matrix scale= DirectX::SimpleMath::Matrix::CreateScale(2);
 	
 	
@@ -228,7 +229,7 @@ void Player::Draw(Camera* camera)
 	}
 
 	m_world *= rot * scale * trans;
-	if (m_isShield)
+	if (m_blink->IsBlink())
 	{
 		m_playerModel[m_playerModelNum[m_modelTime_s]]->Draw(context, *m_commonState, m_world, camera->GetViewMatrix(), camera->GetProjectionMatrix());
 
@@ -247,7 +248,6 @@ void Player::TextureDraw(DirectX::SpriteBatch* spriteBatch)
 		spriteBatch->Draw(m_shieldTexture.Get(), DirectX::SimpleMath::Vector2(20.0f, 10.0f + (i * 64.0f)), nullptr);
 	}
 
-
 }
 
 // I—¹ˆ—
@@ -261,7 +261,7 @@ void Player::PlayerShadow( ShadowMap* shadowMap, DirectX::SimpleMath::Matrix vie
 	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
 	ID3D11DeviceContext1* context = pDR->GetD3DDeviceContext();
 
-	if (m_isShield)
+	if (m_blink->IsBlink())
 	{
 
 		m_playerModel[m_playerModelNum[m_modelTime_s]]->Draw(context, *m_commonState, m_world, view, projection, false, [&]()
@@ -272,60 +272,7 @@ void Player::PlayerShadow( ShadowMap* shadowMap, DirectX::SimpleMath::Matrix vie
 	}
 }
 
-void Player::InvalidTime()
-{
 
-	if (m_invincibleCountCoolDownTime_s>=2.75f)
-	{
-		m_isShield = false;
-	}
-	else if (m_invincibleCountCoolDownTime_s >= 2.5f)
-	{
-		m_isShield = true;
-	}
-	else if (m_invincibleCountCoolDownTime_s >= 2.25f)
-	{
-		m_isShield = false;
-	}
-	else if (m_invincibleCountCoolDownTime_s >= 2.0f)
-	{
-		m_isShield = true;
-	}
-	else if (m_invincibleCountCoolDownTime_s >= 1.75f)
-	{
-		m_isShield = false;
-	}
-	else if (m_invincibleCountCoolDownTime_s >= 1.5f)
-	{
-		m_isShield = true;
-	}
-	else if (m_invincibleCountCoolDownTime_s >= 1.25f)
-	{
-		m_isShield = false;
-	}
-	else if (m_invincibleCountCoolDownTime_s >= 1.0f)
-	{
-		m_isShield = true;
-	}
-	else if (m_invincibleCountCoolDownTime_s >= 0.75f)
-	{
-		m_isShield = false;
-	}
-	else if (m_invincibleCountCoolDownTime_s >= 0.5f)
-	{
-		m_isShield = true;
-	}
-	else if (m_invincibleCountCoolDownTime_s >= 0.25f)
-	{
-		m_isShield = false;
-	}
-	else
-	{
-		m_isShield = true;
-	}
-
-
-}
 
 
 void Player::InvalidCountUp()
@@ -341,6 +288,7 @@ void Player::InvalidCountDown()
 		m_shieldCount--;
 		m_pAdx2->Play(CRI_CUESHEET_0_DAMAGE1);
 		m_invincibleCountCoolDownTime_s = 3.0f;
+		m_blink->Start();
 		if (m_shieldCount <= -1)
 		{
 			m_active = false;

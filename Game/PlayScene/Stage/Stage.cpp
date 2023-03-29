@@ -59,6 +59,8 @@ void Stage::Initialize(const DirectX::SimpleMath::Vector3& velocity,const Direct
 
 	m_previousRotetion = m_rotation;
 	//m_rotation.z = -45.0f;
+	m_isRotetion = false;
+	m_rotationTime_s = 10;
 }
 
 // XV
@@ -69,24 +71,30 @@ void Stage::Update(const DX::StepTimer& timer)
 	//HACK::TEST ƒL[“ü—Íî•ñ‚ğæ“¾‚·‚é
 	DirectX::Keyboard::State keyState = DirectX::Keyboard::Get().GetState();
 	static const float ROT_SPEED = 5.0f;
-	static float ROTATION_ANGLE_coefficient = DirectX::XMConvertToRadians(15.0f);
-	static int rotdis;
+
+	static float ROTATION_ANGLE_coefficient = (5.0f);
+	
+	static int rotdis = 0;
+	
 	static float rotang;
-	m_time += time;
 
 	switch (m_type)
 	{
 	case Stage::StageType::Stage1_1:
+		m_time += time;
 
 		Stage1_1();
 
 		break;
 	case Stage::StageType::Stage1_2:
+		m_time += time;
+
 		Stage1_2();
 
 		break;
 	case Stage::StageType::Stage1_3:
-	
+		m_time += time;
+
 		Stage1_3();
 
 		break;
@@ -129,18 +137,20 @@ void Stage::Update(const DX::StepTimer& timer)
 		if (m_rotationTime_s <= 0)
 		{
 			
-	/*		int rotationDirection;
-			float rotationAngle;*/
+	
 			if (!m_isRotetion)
 			{
 
 				//‰ñ“]‚·‚é•ûŒü‚ğŒˆ‚ß‚éi‚O‚ª‰œ‚É‰ñ“]A‚P‚ª‰E‚É‰ñ“]A‚Q‚ªèŠÔ‚É‰ñ“]A‚R‚ª¶‚É‰ñ“]j
-				rotdis = 0;// MyRandom::GetIntRange(0, 3);
+				rotdis =  MyRandom::GetIntRange(0, 3);
 				//‰ñ“]Šp“x
-				rotang = ROTATION_ANGLE_coefficient * 3;// MyRandom::GetIntRange(0, 3);
+				rotang = ROTATION_ANGLE_coefficient * MyRandom::GetIntRange(1, 2);
 			}
+			
+			m_time += time;
 
 			m_isRotetion = true;
+			
 			switch (rotdis)
 			{
 			case 0:
@@ -267,6 +277,9 @@ void Stage::Reset()
 {
 	m_endFlag = false;
 	m_routine = 0;
+	m_time = 0;
+	m_offsetPosition = DirectX::SimpleMath::Vector3::Zero;
+	
 }
 
 void Stage::Stage1_1()
@@ -848,14 +861,7 @@ void Stage::Stage1_3()
 			m_routine++;
 		}
 
-		if (m_position.x < 0)
-		{
-			m_position.x = Lerp(-100.0f, -6.0f, m_time / MOVE_TIME);
-		}
-		else
-		{
-			m_position.x = Lerp(100.0f, 6.0f, m_time / MOVE_TIME);
-		}
+	
 
 		break;
 	case 25:
@@ -869,6 +875,14 @@ void Stage::Stage1_3()
 			m_routine++;
 			m_endFlag = true;
 
+		}
+		if (m_position.x < 0)
+		{
+			m_position.x = Lerp(-100.0f, -6.0f, m_time / MOVE_TIME);
+		}
+		else
+		{
+			m_position.x = Lerp(100.0f, 6.0f, m_time / MOVE_TIME);
 		}
 
 
