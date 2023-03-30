@@ -71,13 +71,13 @@ void ThirdFloorToFallBhavior::Execute(const DX::StepTimer& timer, Actor* actor)
 		break;
 	case 7:
 		time_s = 0;
-		routine++; ;
+		routine++;
 	case 8:
 	
 		break;
 	case 9:
 		time_s = 0;
-		routine++; ;
+		routine++;
 	case 10:
 
 		break;
@@ -99,14 +99,14 @@ void ThirdFloorToFallBhavior::Execute(const DX::StepTimer& timer, Actor* actor)
 		break;
 	case 15:
 		time_s = 0;
-		routine++; ;
+		routine++;
 	case 16:
 
 
 		break;
 	case 17:
 		time_s = 0;
-		routine++; ;
+		routine++;
 
 	case 18:
 
@@ -117,7 +117,7 @@ void ThirdFloorToFallBhavior::Execute(const DX::StepTimer& timer, Actor* actor)
 		break;
 	case 19:
 		time_s = 0;
-		routine++; ;
+		routine++;
 	case 20:
 
 	
@@ -130,7 +130,7 @@ void ThirdFloorToFallBhavior::Execute(const DX::StepTimer& timer, Actor* actor)
 		break;
 	case 21:
 		time_s = 0;
-		routine++; ;
+		routine++;
 	case 22:
 
 
@@ -148,7 +148,7 @@ void ThirdFloorToFallBhavior::Execute(const DX::StepTimer& timer, Actor* actor)
 		break;
 	case 23:
 		time_s = 0;
-		routine++; ;
+		routine++;
 	case 24:
 
 
@@ -156,7 +156,7 @@ void ThirdFloorToFallBhavior::Execute(const DX::StepTimer& timer, Actor* actor)
 		break;
 	case 25:
 		time_s = 0;
-		routine++; ;
+		routine++;
 	case 26:
 
 		if (time_s > MOVE_TIME_S)

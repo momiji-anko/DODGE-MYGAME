@@ -12,6 +12,7 @@
 /// </summary>
 class ThirdFloorToFallBhavior : public IBehavior
 {
+public:
 	ThirdFloorToFallBhavior() = default;
 	~ThirdFloorToFallBhavior()override = default;
 

@@ -2,6 +2,8 @@
 #include"../Actor/Actor.h"
 #include"../ShadowMap.h"
 #include"Game/PlayScene/Objects.h"
+#include"Game/PlayScene/IBehavior.h"
+
 class Stage :public Actor
 {
 public:
@@ -36,7 +38,9 @@ private:
 	DirectX::SimpleMath::Vector3 m_previousRotetion;
 	bool m_isRotetion;
 	
-	//std::unique_ptr<Sphere> sphere;
+	IBehavior* m_behavior;
+
+	
 public:
 	void SetTime(float time) { m_time = time; }
 	float GetTime() { return m_time; }

@@ -80,7 +80,7 @@
     <Filter Include="Game\PlayScene\Obstacle\ObstacleSpawners">
       <UniqueIdentifier>{f7862f8c-46a6-476b-9a83-4be2821daa3c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Game\PlayScene\Stage\FloorBahviors">
+    <Filter Include="Game\PlayScene\Stage\StageBahviors">
       <UniqueIdentifier>{12c9c9d9-f7d6-42f7-afcf-4400877f2796}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -240,14 +240,14 @@
     <ClInclude Include="Game\PlayScene\Blink.h">
       <Filter>Game\PlayScene</Filter>
     </ClInclude>
-    <ClInclude Include="Game\PlayScene\Stage\FloorBahviors\FirstFloorToFallBhavior.h">
-      <Filter>Game\PlayScene\Stage\FloorBahviors</Filter>
+    <ClInclude Include="Game\PlayScene\Stage\StageBahviors\FirstFloorToFallBhavior.h">
+      <Filter>Game\PlayScene\Stage\StageBahviors</Filter>
     </ClInclude>
-    <ClInclude Include="Game\PlayScene\Stage\FloorBahviors\SecondFloorToFallBhavior.h">
-      <Filter>Game\PlayScene\Stage\FloorBahviors</Filter>
+    <ClInclude Include="Game\PlayScene\Stage\StageBahviors\SecondFloorToFallBhavior.h">
+      <Filter>Game\PlayScene\Stage\StageBahviors</Filter>
     </ClInclude>
-    <ClInclude Include="Game\PlayScene\Stage\FloorBahviors\ThirdFloorToFallBhavior.h">
-      <Filter>Game\PlayScene\Stage\FloorBahviors</Filter>
+    <ClInclude Include="Game\PlayScene\Stage\StageBahviors\ThirdFloorToFallBhavior.h">
+      <Filter>Game\PlayScene\Stage\StageBahviors</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -386,14 +386,14 @@
     <ClCompile Include="Game\PlayScene\Blink.cpp">
       <Filter>Game\PlayScene</Filter>
     </ClCompile>
-    <ClCompile Include="Game\PlayScene\Stage\FloorBahviors\FirstFloorToFallBhavior.cpp">
-      <Filter>Game\PlayScene\Stage\FloorBahviors</Filter>
+    <ClCompile Include="Game\PlayScene\Stage\StageBahviors\FirstFloorToFallBhavior.cpp">
+      <Filter>Game\PlayScene\Stage\StageBahviors</Filter>
     </ClCompile>
-    <ClCompile Include="Game\PlayScene\Stage\FloorBahviors\SecondFloorToFallBhavior.cpp">
-      <Filter>Game\PlayScene\Stage\FloorBahviors</Filter>
+    <ClCompile Include="Game\PlayScene\Stage\StageBahviors\SecondFloorToFallBhavior.cpp">
+      <Filter>Game\PlayScene\Stage\StageBahviors</Filter>
     </ClCompile>
-    <ClCompile Include="Game\PlayScene\Stage\FloorBahviors\ThirdFloorToFallBhavior.cpp">
-      <Filter>Game\PlayScene\Stage\FloorBahviors</Filter>
+    <ClCompile Include="Game\PlayScene\Stage\StageBahviors\ThirdFloorToFallBhavior.cpp">
+      <Filter>Game\PlayScene\Stage\StageBahviors</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

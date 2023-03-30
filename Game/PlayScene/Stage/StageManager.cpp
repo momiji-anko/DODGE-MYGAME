@@ -7,6 +7,11 @@
 #include"DeviceResources.h"
 #include"../MyRandom.h"
 
+#include"StageBahviors/FirstFloorToFallBhavior.h"
+#include"StageBahviors/SecondFloorToFallBhavior.h"
+#include"StageBahviors/ThirdFloorToFallBhavior.h"
+
+
 // JSON 形式でグラフデータを読み込む
 bool StageManeger::LoadGraphDataByJSON(const std::wstring& fileName)
 {
@@ -119,6 +124,8 @@ void StageManeger::SetShadow(ShadowMap* shadow)
 		stage->SetShadow(shadow);
 	}
 }
+
+
 
 StageManeger::StageManeger()
 	:
@@ -334,6 +341,17 @@ void StageManeger::Finalize()
 
 
 }
+
+void StageManeger::CreateBehavior()
+{
+	m_behavior.resize(3);
+	m_behavior[0] = std::make_unique<FirstFloorToFallBhavior>();
+	m_behavior[1] = std::make_unique<SecondFloorToFallBhavior>();
+	m_behavior[2] = std::make_unique<ThirdFloorToFallBhavior>();
+
+
+}
+
 
 bool StageManeger::PlayerStageAABBHitCheck(Actor* player)
 {

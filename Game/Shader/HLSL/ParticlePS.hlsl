@@ -20,7 +20,6 @@ float4 main(PS_INPUT input) : SV_TARGET
 	float4 b = float4(0.5f, 0.5f, 0.5f, 1.0f);
 	float4 fire = float4(1.0f, 1.0f, 0.1f, 1.0f);
 	float4 sand = tex.Sample(samLinear, input.Tex);
-	float m = tex2.Sample(samLinear, input.Tex);
 	
 	sand.a = sand.rgb;
 
@@ -29,9 +28,7 @@ float4 main(PS_INPUT input) : SV_TARGET
 	
 	sand.rgb = diffuse.rgb;
 	
-	/*m = red;
-
-	sand = m;*/
+	
 
 	return sand;
 }

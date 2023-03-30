@@ -44,14 +44,11 @@ void SecondFloorToFallBhavior::Execute(const DX::StepTimer& timer, Actor* actor)
 	{
 	case 0:
 
-
 		break;
 	case 1:
 		time_s = 0;
 		routine++;
 	case 2:
-
-
 
 		break;
 	case 3:
@@ -64,18 +61,16 @@ void SecondFloorToFallBhavior::Execute(const DX::StepTimer& timer, Actor* actor)
 		routine++;
 	case 6:
 
-
 		break;
 	case 7:
 		time_s = 0;
-		routine++; ;
+		routine++;
 	case 8:
-
 
 		break;
 	case 9:
 		time_s = 0;
-		routine++; ;
+		routine++;
 	case 10:
 
 
@@ -88,13 +83,14 @@ void SecondFloorToFallBhavior::Execute(const DX::StepTimer& timer, Actor* actor)
 		time_s = 0;
 		routine++;
 	case 12:
+
 		position.y = stage->Lerp(-1.0f, -100.0f, time_s / MOVE_TIME_S);
 		offsetPosition.x = 0.0f;
 		offsetPosition.y = 0.0f;
 		offsetPosition.z = 0.0f;
+
 		break;
 	case 13:
-
 		time_s = 0;
 		routine++;
 	case 14:
@@ -110,49 +106,40 @@ void SecondFloorToFallBhavior::Execute(const DX::StepTimer& timer, Actor* actor)
 			position.x = 100.0f;
 
 		}
+
 	case 15:
 		time_s = 0;
-		routine++; ;
+		routine++;
 	case 16:
-
 
 		break;
 	case 17:
 		time_s = 0;
-		routine++; ;
+		routine++;
 	case 18:
 
 		break;
-
 	case 19:
 		time_s = 0;
-		routine++; ;
+		routine++;
 	case 20:
-
-
 
 		break;
 	case 21:
 		time_s = 0;
-		routine++; ;
+		routine++;
 	case 22:
-
-
-
 
 		break;
 	case 23:
 		time_s = 0;
-		routine++; ;
+		routine++;
 	case 24:
-
-
-
 
 		break;
 	case 25:
 		time_s = 0;
-		routine++; ;
+		routine++;
 	case 26:
 
 		if (time_s > MOVE_TIME_S)

@@ -6,6 +6,8 @@
 #include<Model.h>
 #include <string>
 
+#include"../IBehavior.h"
+
 #include<GeometricPrimitive.h>
 
 class StageManeger
@@ -40,6 +42,9 @@ private:
 	std::vector<DirectX::SimpleMath::Vector3> m_baseVertices;
 	std::vector<DirectX::SimpleMath::Vector3> m_nowVertices;
 	std::vector<std::vector<int>> m_indices;
+
+	std::vector<std::unique_ptr<IBehavior>> m_behavior;
+
 public:
 
 	StageManeger();
@@ -67,6 +72,7 @@ public:
 
 	void SetShadow(ShadowMap* shadow);
 
+	void CreateBehavior();
 
 	// 点 c と線分 ab の間の距離の平方（2 乗した値）を返す関数
 	// a: 線分の始点

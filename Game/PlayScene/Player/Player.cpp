@@ -231,7 +231,9 @@ void Player::Draw(Camera* camera)
 	m_world *= rot * scale * trans;
 	if (m_blink->IsBlink())
 	{
-		m_playerModel[m_playerModelNum[m_modelTime_s]]->Draw(context, *m_commonState, m_world, camera->GetViewMatrix(), camera->GetProjectionMatrix());
+		int modelTime = static_cast<int>(m_modelTime_s);
+
+		m_playerModel[m_playerModelNum[modelTime]]->Draw(context, *m_commonState, m_world, camera->GetViewMatrix(), camera->GetProjectionMatrix());
 
 	}
 
@@ -263,8 +265,9 @@ void Player::PlayerShadow( ShadowMap* shadowMap, DirectX::SimpleMath::Matrix vie
 
 	if (m_blink->IsBlink())
 	{
+		int modelTime = static_cast<int >(m_modelTime_s);
 
-		m_playerModel[m_playerModelNum[m_modelTime_s]]->Draw(context, *m_commonState, m_world, view, projection, false, [&]()
+		m_playerModel[m_playerModelNum[modelTime]]->Draw(context, *m_commonState, m_world, view, projection, false, [&]()
 			{
 				shadowMap->DrawShadowMap(context);
 			}

@@ -11,6 +11,7 @@
 /// </summary>
 class SecondFloorToFallBhavior : public IBehavior
 {
+public:
 	SecondFloorToFallBhavior() = default;
 	~SecondFloorToFallBhavior()override = default;
 
