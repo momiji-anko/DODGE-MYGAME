@@ -3,7 +3,7 @@
 */
 #pragma once
 
-//TODO :atmicmutex
+
 #include <thread>
 #include <atomic>
 #include <SpriteBatch.h>

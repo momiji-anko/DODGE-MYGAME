@@ -10,6 +10,8 @@
 
 #include<GeometricPrimitive.h>
 
+#include"Libraries/Json/json.hpp"
+
 class StageManeger
 {
 public:
@@ -69,6 +71,7 @@ public:
 
 	void ParseJSON();
 
+	void LoadJson(nlohmann::json json);
 
 	void SetShadow(ShadowMap* shadow);
 

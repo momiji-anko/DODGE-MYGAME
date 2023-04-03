@@ -83,6 +83,9 @@
     <Filter Include="Game\PlayScene\Stage\StageBahviors">
       <UniqueIdentifier>{12c9c9d9-f7d6-42f7-afcf-4400877f2796}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Libraries\Json">
+      <UniqueIdentifier>{2a47e6da-e9c9-491b-951e-70dd21ed8af3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -248,6 +251,9 @@
     </ClInclude>
     <ClInclude Include="Game\PlayScene\Stage\StageBahviors\ThirdFloorToFallBhavior.h">
       <Filter>Game\PlayScene\Stage\StageBahviors</Filter>
+    </ClInclude>
+    <ClInclude Include="Libraries\Json\json.hpp">
+      <Filter>Libraries\Json</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

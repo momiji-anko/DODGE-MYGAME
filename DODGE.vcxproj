@@ -247,6 +247,7 @@
     <ClInclude Include="Helpers\CueSheet_0.h" />
     <ClInclude Include="Helpers\DODGESound_acf.h" />
     <ClInclude Include="Libraries\AXD2\Adx2.h" />
+    <ClInclude Include="Libraries\Json\json.hpp" />
     <ClInclude Include="Libraries\MyLibraries\Camera.h" />
     <ClInclude Include="Libraries\MyLibraries\DebugCamera.h" />
     <ClInclude Include="Libraries\MyLibraries\GridFloor.h" />

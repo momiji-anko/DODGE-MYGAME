@@ -7,6 +7,7 @@
 #include"DeviceResources.h"
 #include"../MyRandom.h"
 
+//ビヘイビアーのインクルード
 #include"StageBahviors/FirstFloorToFallBhavior.h"
 #include"StageBahviors/SecondFloorToFallBhavior.h"
 #include"StageBahviors/ThirdFloorToFallBhavior.h"
@@ -117,6 +118,26 @@ void StageManeger::ParseJSON()
 
 }
 
+void StageManeger::LoadJson(nlohmann::json json)
+{
+	switch (m_stageSelect)
+	{
+	case StageManeger::StageSelect::Stage1:
+
+
+		break;
+	case StageManeger::StageSelect::Stage2:
+	case StageManeger::StageSelect::Stage3:
+
+
+		break;
+	default:
+		break;
+	}
+
+
+}
+
 void StageManeger::SetShadow(ShadowMap* shadow)
 {
 	for (std::unique_ptr<Stage>& stage : m_stage)
@@ -149,12 +170,14 @@ void StageManeger::Initialize(DirectX::CommonStates* commonState, StageSelect st
 	std::wstring StageFileName;
 	std::wstring ModelFileName;
 
+	std::fstream StageFile;
+	
 	m_commonState = commonState;
 
 	m_stageSelect = stage;
 
 	//HACK::TEST
-	//m_stageSelect = StageSelect::Stage3;
+	m_stageSelect = StageSelect::Stage3;
 	
 	switch (m_stageSelect)
 	{
@@ -262,7 +285,15 @@ void StageManeger::Initialize(DirectX::CommonStates* commonState, StageSelect st
 
 	m_flag.resize(m_stage.size());
 	m_geo= DirectX::GeometricPrimitive::CreateBox(context, DirectX::SimpleMath::Vector3(0.3f, 0.3f, 0.3f));
+	
+	StageFileName = L"Resources/StageData/StageTest.json";
 
+	std::fstream file(StageFileName, std::ifstream::in);
+
+	nlohmann::json stageJson= nlohmann::json::parse(file);
+	file.close();
+
+	
 }
 
 void StageManeger::Update(const DX::StepTimer& timer)
@@ -509,7 +540,7 @@ bool StageManeger::StageHitCheck(std::vector<DirectX::SimpleMath::Vector3> verti
 	DirectX::SimpleMath::Vector3 polygonPosAverageToEndLine = endLine - polygonPosAverage;
 
 	///線分を平面の衝突判定========================================================================
-	//http://marupeke296.com/COL_3D_No3_LineToPlane.html
+	
 	//ポリゴンの中心点から線分の両端へのベクトルと法線ベクトルで内積を算出する
 	float dot1 = polygonPosAverageToStartLine.Dot(normal);
 	float dot2 = polygonPosAverageToEndLine.Dot(normal);
@@ -517,7 +548,6 @@ bool StageManeger::StageHitCheck(std::vector<DirectX::SimpleMath::Vector3> verti
 	if (dot1 * dot2 <= 0)
 	{
 
-		//http://marupeke296.com/COL_Basic_No2_ShortTec.html#%E3%81%82%E3%82%8B%E7%82%B9%E3%81%8B%E3%82%89%E5%B9%B3%E9%9D%A2%E3%81%BE%E3%81%A7%E3%81%AE%E8%B7%9D%E9%9B%A2
 		//ポリゴンから線分の両端の距離の計算
 		float d1 = std::abs(polygonPosAverageToStartLine.Dot(normal));
 		float d2 = std::abs(polygonPosAverageToEndLine.Dot(normal));
@@ -533,8 +563,7 @@ bool StageManeger::StageHitCheck(std::vector<DirectX::SimpleMath::Vector3> verti
 		DirectX::SimpleMath::Vector3 v3Pos = vertex0 + v3;
 
 		//ポリゴン上に点があるか判定する
-		//http://marupeke296.com/COL_Basic_No2_ShortTec.html#%E3%83%9D%E3%83%AA%E3%82%B4%E3%83%B3%E4%B8%8A%E3%81%AB%E7%82%B9%E3%81%8C%E5%90%AB%E3%81%BE%E3%82%8C%E3%82%8B%E3%81%8B%E3%82%92%E5%88%A4%E5%AE%9A
-
+		
 		//V3Posから各頂点の座標へのベクトル作成
 		DirectX::SimpleMath::Vector3 vertex0ToV3Pos = v3;
 		DirectX::SimpleMath::Vector3 vertex1ToV3Pos = v3Pos - vertex1;
