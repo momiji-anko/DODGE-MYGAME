@@ -19,8 +19,7 @@ public:
 	};
 private:
 	float m_timer_s;
-	//プレイヤーのタイム
-	std::vector<float> m_playersAliveTime_s;
+
 	// スプライトバッチ
 	std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
 
@@ -33,7 +32,7 @@ public:
 	~AliveTimer();
 
 	// 初期化
-	void Initialize(DirectX::CommonStates* commonState, int playerNum);
+	void Initialize(DirectX::CommonStates* commonState);
 
 	// 更新
 	void Update(const DX::StepTimer& timer);
@@ -46,6 +45,5 @@ public:
 
 	float GetTimer() { return m_timer_s; }
 
-	std::vector<float> GetPlayerAliveTime() { return m_playersAliveTime_s; }
 
 };

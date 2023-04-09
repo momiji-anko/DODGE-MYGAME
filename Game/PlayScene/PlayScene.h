@@ -13,9 +13,9 @@
 #include "Game/GameMain.h"
 #include"Player/Player.h"
 #include"Actor/Actor.h"
-#include"Obstacle/ObstacleManeger.h"
+#include"Obstacle/ObstacleManager.h"
 #include"Stage/Stage.h"
-#include"Item/ItemManeger.h"
+#include"Item/ItemManager.h"
 #include"ShadowMap.h"
 #include"Stage/StageManager.h"
 #include"AliveTimer.h"
@@ -40,7 +40,7 @@ private:
 	
 	std::unique_ptr<Player>                          m_actor;
 	std::unique_ptr<ObstacleManeger>                 m_obstacleManeger;
-	std::unique_ptr<ItemManeger>                     m_itemManeger;
+	std::unique_ptr<ItemManager>                     m_itemManeger;
 
 	DebugCamera*                                     m_pDebugCamera;
 	GridFloor*                                       m_pGridFloor;
@@ -69,7 +69,7 @@ private:
 	int                                              m_musicID;
 
 
-	std::unique_ptr<StageManeger>                    m_stageManeger;
+	std::unique_ptr<StageManager>                    m_stageManeger;
 
 	std::unique_ptr<DirectX::Model>                  m_model[2];
 	std::unique_ptr<Fade>                  m_fadeInOut;
@@ -81,7 +81,7 @@ private:
 	std::vector<std::unique_ptr<Player>> m_players;
 	
 	GameMain::PlayerMode m_playerMode;
-	StageManeger::StageSelect m_stageNum;
+	StageManager::StageSelect m_stageNum;
 
 public:
 
@@ -114,5 +114,5 @@ public:
 	/// <param name="mode">Player1=一人、Player2=二人、</param>
 	void SetPlayerMode(GameMain::PlayerMode mode) { m_playerMode = mode; }
 
-	void SetStageNum(int stage) { m_stageNum = static_cast<StageManeger::StageSelect>(stage); }
+	void SetStageNum(int stage) { m_stageNum = static_cast<StageManager::StageSelect>(stage); }
 };

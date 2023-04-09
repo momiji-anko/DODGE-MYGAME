@@ -1,11 +1,11 @@
 #include"pch.h"
-#include"ItemManeger.h"
+#include"ItemManager.h"
 #include"../MyRandom.h"
 #include"DeviceResources.h"
-const int ItemManeger::ITEM_MAX_NUM = 30;
+const int ItemManager::ITEM_MAX_NUM = 30;
 
 //コンストラクタ
-ItemManeger::ItemManeger()
+ItemManager::ItemManager()
 	:
 	m_items{},
 	m_spawners{},
@@ -16,13 +16,13 @@ ItemManeger::ItemManeger()
 }
 
 //デストラクタ
-ItemManeger::~ItemManeger()
+ItemManager::~ItemManager()
 {
 
 }
 
 // 初期化
-void ItemManeger::Initialize(DirectX::CommonStates* commonState)
+void ItemManager::Initialize(DirectX::CommonStates* commonState)
 {
 	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
 	ID3D11DeviceContext1* context = pDR->GetD3DDeviceContext();
@@ -50,8 +50,6 @@ void ItemManeger::Initialize(DirectX::CommonStates* commonState)
 		L"Resources/Models/shield.cmo",
 		*factory
 	);
-
-
 	delete factory;
 
 
@@ -61,7 +59,7 @@ void ItemManeger::Initialize(DirectX::CommonStates* commonState)
 }
 
 // 更新
-void ItemManeger::Update(const DX::StepTimer& timer)
+void ItemManager::Update(const DX::StepTimer& timer)
 {
 	float time = timer.GetElapsedSeconds();
 	m_spawneTime_s -= time;
@@ -101,7 +99,7 @@ void ItemManeger::Update(const DX::StepTimer& timer)
 }
 
 // 描画
-void ItemManeger::Draw(Camera* camera)
+void ItemManager::Draw(Camera* camera)
 {
 
 	for (std::unique_ptr<Actor>& item : m_items)
@@ -115,11 +113,11 @@ void ItemManeger::Draw(Camera* camera)
 }
 
 // 終了処理
-void ItemManeger::Finalize()
+void ItemManager::Finalize()
 {
 }
 
-void ItemManeger::StageHitCheck(AABBFor3D* stage)
+void ItemManager::StageHitCheck(AABBFor3D* stage)
 {
 
 	for (std::unique_ptr<Actor>& item : m_items)
@@ -145,7 +143,7 @@ void ItemManeger::StageHitCheck(AABBFor3D* stage)
 	}
 }
 
-bool ItemManeger::PlayerHitItem(AABBFor3D* player)
+bool ItemManager::PlayerHitItem(AABBFor3D* player)
 {
 
 	for (std::unique_ptr<Actor>& item : m_items)
@@ -169,7 +167,7 @@ bool ItemManeger::PlayerHitItem(AABBFor3D* player)
 	return false;
 }
 
-Item::ItemType ItemManeger::PlayerHitItemType(AABBFor3D* player)
+Item::ItemType ItemManager::PlayerHitItemType(AABBFor3D* player)
 {
 	for (std::unique_ptr<Actor>& item : m_items)
 	{
@@ -193,7 +191,7 @@ Item::ItemType ItemManeger::PlayerHitItemType(AABBFor3D* player)
 	return Item::ItemType::NONE;
 }
 
-void ItemManeger::StageHIt(std::vector<std::unique_ptr<Stage>>& stage)
+void ItemManager::StageHIt(std::vector<std::unique_ptr<Stage>>& stage)
 {
 	
 
@@ -225,7 +223,7 @@ void ItemManeger::StageHIt(std::vector<std::unique_ptr<Stage>>& stage)
 
 }
 
-void ItemManeger::SetShader(ShadowMap* shadowMap, DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix projection)
+void ItemManager::SetShader(ShadowMap* shadowMap, DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix projection)
 {
 
 	for (std::unique_ptr<Actor>& item : m_items)
@@ -236,7 +234,7 @@ void ItemManeger::SetShader(ShadowMap* shadowMap, DirectX::SimpleMath::Matrix vi
 
 }
 
-void ItemManeger::Shadow(ShadowMap* shadowMap, DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix projection)
+void ItemManager::Shadow(ShadowMap* shadowMap, DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix projection)
 {
 	for (std::unique_ptr<Actor>& item : m_items)
 	{
@@ -249,7 +247,7 @@ void ItemManeger::Shadow(ShadowMap* shadowMap, DirectX::SimpleMath::Matrix view,
 }
 
 //アイテムの生成
-bool ItemManeger::CreateItem(const DirectX::SimpleMath::Vector3& position, Item::ItemType type, float angle)
+bool ItemManager::CreateItem(const DirectX::SimpleMath::Vector3& position, Item::ItemType type, float angle)
 {
 	return m_spawners[type]->Create(m_items, position, angle, nullptr, m_pModel[type].get(), m_commonState);
 }

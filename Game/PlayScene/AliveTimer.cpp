@@ -16,7 +16,7 @@ AliveTimer::~AliveTimer()
 {
 }
 
-void AliveTimer::Initialize(DirectX::CommonStates* commonState, int playerNum)
+void AliveTimer::Initialize(DirectX::CommonStates* commonState)
 {
 	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
 	ID3D11Device1* device = pDR->GetD3DDevice();
@@ -35,11 +35,7 @@ void AliveTimer::Initialize(DirectX::CommonStates* commonState, int playerNum)
 	);
 	m_timer_s = 0.0f;
 
-	m_playersAliveTime_s.resize(playerNum);
-	for (int i = 0; i < m_playersAliveTime_s.size(); i++)
-	{
-		m_playersAliveTime_s[i] = 0;
-	}
+	
 
 }
 
@@ -47,10 +43,7 @@ void AliveTimer::Update(const DX::StepTimer& timer)
 {
 	float time = timer.GetElapsedSeconds();
 
-	for (int i = 0; i < m_playersAliveTime_s.size(); i++)
-	{
-		m_playersAliveTime_s[i] += time;
-	}
+	
 
 	m_timer_s += time;
 }

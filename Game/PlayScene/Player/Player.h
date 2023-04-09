@@ -9,7 +9,7 @@
 #include"../../../Helpers/CueSheet_0.h"
 #include"Helpers/DODGESound_acf.h"
 #include"../Objects.h"
-#include"../Item/ItemManeger.h"
+#include"../Item/ItemManager.h"
 #include"../Stage/StageManager.h"
 #include<WICTextureLoader.h>
 #include"Game/PlayScene/Blink.h"
@@ -57,7 +57,7 @@ private:
 	//音
 	ADX2* m_pAdx2;
 	//ジャンプのSEのID
-	int   m_jumpmusicID;
+	int   m_jumpMusicID;
 
 	//吹き飛ばす
 	DirectX::SimpleMath::Vector3 m_flyVelocity;
@@ -75,21 +75,27 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_shieldTexture;
 
 	//プレイヤーとアイテムの当たり判定用のアイテムマネージャーのポインター
-	ItemManeger*       m_itemManger;
+	ItemManager*       m_itemManager;
 	//プレイヤーとステージの当たり判定用のステージマネージャーのポインター
-	StageManeger*      m_stageManeger;
+	StageManager*      m_stageManager;
 
 	//プレイヤーの番号
 	int m_playerID;
 
-
 	std::unique_ptr<Blink> m_blink;
+	
+	std::vector<DirectX::Keyboard::Keys> m_keys;
+
+	std::vector<std::wstring> m_modelFiles;
+
 public:
 
 	//コンストラクタ
 	Player();
 	//デストラクタ	
 	~Player()override;
+
+	void SetKeys(std::vector<DirectX::Keyboard::Keys>& keys) { m_keys = keys; }
 
 	/// <summary>
 	/// 初期化
@@ -108,7 +114,8 @@ public:
 		float angle,
 		IBehavior* behavia,
 		DirectX::Model* model, 
-		DirectX::CommonStates* commonState)override;
+		DirectX::CommonStates* commonState
+		)override;
 
 	/// <summary>
 	/// 更新
@@ -158,23 +165,23 @@ public:
 	/// アイテムマネージャーを設定
 	/// </summary>
 	/// <param name="itemManeger">アイテムマネージャーの生ポインター</param>
-	void SetIteManeger(ItemManeger* itemManeger) { m_itemManger = itemManeger; }
+	void SetIteManeger(ItemManager* itemManeger) { m_itemManager = itemManeger; }
 
 	/// <summary>
 	///　ステージマネージャーの設定
 	/// </summary>
 	/// <param name="stageManeger">ステージマネージャーの生ポインター</param>
-	void SetStageManeger(StageManeger* stageManeger) { m_stageManeger = stageManeger;  }
+	void SetStageManeger(StageManager* stageManeger) { m_stageManager = stageManeger;  }
 
 
 	/// <summary>
 	/// 持っている盾の数を１増やす
 	/// </summary>
-	void InvalidCountUp();
+	void ShieldCountUp();
 	/// <summary>
 	/// 持っている盾の数を１減らす　盾を一個も持っていない場合死亡させる
 	/// </summary>
-	void InvalidCountDown();
+	void ShieldCountDown();
 
 	void ShieldNumCheck();
 
@@ -196,27 +203,30 @@ public:
 	/// <param name="id">プレイヤーのID</param>
 	void SetID(int id) { m_playerID = id; }
 
+	/// <summary>
+	/// プレイヤーモデルのファイルパスの設定
+	/// </summary>
+	/// <param name="files">モデルファイルパス配列</param>
+	void SetPlayerModelFile(std::vector<std::wstring> files) { m_modelFiles = files; }
+
 private: 
+
 	/// <summary>
-	/// １Ｐの動き
+	/// プレイヤーのモデル作成
+	/// </summary>
+	void CreatePlayerModel();
+
+	/// <summary>
+	/// モデル作成
+	/// </summary>
+	/// <param name="fileName">モデルファイルパス</param>
+	/// <returns>モデルのユニークポインター</returns>
+	std::unique_ptr<DirectX::Model> CreateModel(const wchar_t* fileName);
+
+	/// <summary>
+	/// プレイヤーの動き
 	/// </summary>
 	/// <param name="timer">タイマー</param>
-	void Player1Move(const DX::StepTimer& timer);
-
-	/// <summary>
-	/// ２Ｐの動き
-	/// </summary>
-	/// <param name="timer">タイマー</param>
-	void Player2Move(const DX::StepTimer& timer);
-
-	/// <summary>
-	/// １Ｐのモデル生成
-	/// </summary>
-	void Player1CreateModel();
-
-	/// <summary>
-	/// ２Ｐのモデル生成
-	/// </summary>
-	void Player2CreateModel();
+	void PlayerMove(const DX::StepTimer& timer);
 
 };

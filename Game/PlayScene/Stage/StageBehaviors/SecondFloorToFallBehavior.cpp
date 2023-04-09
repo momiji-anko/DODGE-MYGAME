@@ -5,7 +5,7 @@
 * 二番目に落ちる床の動き
 */
 #include"pch.h"
-#include"SecondFloorToFallBhavior.h"
+#include"SecondFloorToFallBehavior.h"
 #include"../Stage.h"
 #include"Game/PlayScene/MyRandom.h"
 
@@ -14,7 +14,7 @@
 /// </summary>
 /// <param name="timer">タイマー</param>
 /// <param name="actor">ステージのポインター</param>
-void SecondFloorToFallBhavior::Execute(const DX::StepTimer& timer, Actor* actor)
+void SecondFloorToFallBehavior::Execute(const DX::StepTimer& timer, Actor* actor)
 {
 	float elapsedTime_s = timer.GetElapsedSeconds();
 

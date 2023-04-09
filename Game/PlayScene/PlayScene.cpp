@@ -71,13 +71,13 @@ void PlayScene::Initialize()
 	m_shadowMap = std::make_unique<ShadowMap>();
 	m_shadowMap->Initialize(device, L"Resources/Shaders");
 
-	m_stageManeger = std::make_unique<StageManeger>();
+	m_stageManeger = std::make_unique<StageManager>();
 	m_stageManeger->Initialize(m_commonState.get(), m_stageNum);
 	m_stageManeger->SetShadow(m_shadowMap.get());
 
 
 
-	m_itemManeger = std::make_unique< ItemManeger>();
+	m_itemManeger = std::make_unique< ItemManager>();
 	m_itemManeger->Initialize(m_commonState.get());
 	m_itemManeger->SetStageManeger(m_stageManeger.get());
 
@@ -107,19 +107,40 @@ void PlayScene::Initialize()
 
 	if (m_playerMode == GameMain::PlayerMode::Player1)
 	{
-		playersStartPos[0] = DirectX::SimpleMath::Vector3(0.0f, 1.0f, 6.0f);
 		playersStartPos[0] = DirectX::SimpleMath::Vector3(0.0f, 10.0f, 6.0f);
 	}
+
+	//プレイヤーのキーデータ
+	std::vector<std::vector<DirectX::Keyboard::Keys>> playerKeyData = 
+	{ 
+		//プレイヤー１のキーデータ(右、左、前、後ろ、ジャンプ)
+		{DirectX::Keyboard::Keys::Right,DirectX::Keyboard::Keys::Left,DirectX::Keyboard::Keys::Up,DirectX::Keyboard::Keys::Down,DirectX::Keyboard::Keys::Space},
+		//プレイヤー２のキーデータ(右、左、前、後ろ、ジャンプ)
+		{DirectX::Keyboard::Keys::D,DirectX::Keyboard::Keys::A,DirectX::Keyboard::Keys::W,DirectX::Keyboard::Keys::S,DirectX::Keyboard::Keys::Z}
+	};
+
+	//プレイヤーのモデルファイルパス
+	std::vector<std::vector<std::wstring>>playerModelFile = {
+		//プレイヤー１のモデルファイルパス（アイドル状態、左足出している状態、右足出している状態、ジャンプしている状態）
+		{ L"Resources/Models/playeraidoru.cmo",L"Resources/Models/playerhidari.cmo",L"Resources/Models/playermigiasi.cmo",L"Resources/Models/playerjanp.cmo"},
+		//プレイヤー２のモデルファイルパス（アイドル状態、左足出している状態、右足出している状態、ジャンプしている状態）
+		{L"Resources/Models/Player2idoru.cmo",L"Resources/Models/Player2hidari.cmo",L"Resources/Models/Player2Migi.cmo",L"Resources/Models/Player2Janp.cmo"}
+	};
+
+
 	for (int i = 0; i < static_cast<int>(m_playerMode); i++)
 	{
-
+		m_players[i]->SetPlayerModelFile(playerModelFile[i]);
+		m_players[i]->SetKeys(playerKeyData[i]);
 		m_players[i]->SetID(i + 1);
-		m_players[i]->Initialize(DirectX::SimpleMath::Vector3::Zero, playersStartPos[i], true, 0.0f, nullptr, m_pModel.get(), m_commonState.get());
+		m_players[i]->Initialize(DirectX::SimpleMath::Vector3::Zero, playersStartPos[i], true, 0.0f, nullptr, nullptr, m_commonState.get());
 	}
 
 	m_aliveTime = &AliveTimer::GetInstance();
-	m_aliveTime->Initialize(m_commonState.get(), m_players.size());
+	m_aliveTime->Initialize(m_commonState.get());
 
+	m_obstacleManeger = std::make_unique< ObstacleManeger>();
+	m_obstacleManeger->Initialize(m_commonState.get(), m_stageNum);
 
 }
 
@@ -141,12 +162,9 @@ GAME_SCENE PlayScene::Update(const DX::StepTimer& timer)
 
 	if (m_flag)
 	{
-		m_fade += 0.09f;
 		return GAME_SCENE::NONE;
 	}
 
-	if (!m_flagFadeIn)
-		m_fade -= 0.03f;
 
 	if (m_fadeInOut->ISOpen())
 		m_flagFadeIn = true;
@@ -195,7 +213,7 @@ GAME_SCENE PlayScene::Update(const DX::StepTimer& timer)
 			}
 			else
 			{
-				(*player)->InvalidCountDown();
+				(*player)->ShieldCountDown();
 			}
 
 		}
@@ -207,16 +225,7 @@ GAME_SCENE PlayScene::Update(const DX::StepTimer& timer)
 		m_flag = true;
 	}
 
-	//
-	for (std::vector<std::unique_ptr<Player>>::iterator player = m_players.begin(); player != m_players.end(); ++player)
-	{
-		//死んでいた場合カウントを進める
-		if ((*player)->GetPosition().y < -50.0f)
-		{
-			
 
-		}
-	}
 
 	int count = 0;
 	for (std::vector<std::unique_ptr<Player>>::iterator player = m_players.begin(); player != m_players.end(); ++player)
@@ -283,7 +292,7 @@ void PlayScene::Draw()
 
 			world *= scale * rot * trans;
 
-			m_model[i]->Draw(context, *m_commonState, world, m_pDebugCamera->GetViewMatrix(), m_pDebugCamera->GetProjectionMatrix());
+			//m_model[i]->Draw(context, *m_commonState, world, m_pDebugCamera->GetViewMatrix(), m_pDebugCamera->GetProjectionMatrix());
 		}
 
 	}
@@ -335,11 +344,6 @@ void PlayScene::Draw()
 	{
 		(*player)->TextureDraw(m_spriteBatch.get());
 	}
-
-	SimpleMath::Vector2 blackpos(0, 0);
-	DirectX::SimpleMath::Vector4 fadeColor{ 1.0f,1.0f,1.0f,m_fade };
-//	m_spriteBatch->Draw(m_blackTexture.Get(), blackpos, nullptr, fadeColor, 0.0f, DirectX::SimpleMath::Vector2::Zero);
-
 	
 
 	m_spriteBatch->End();
@@ -381,7 +385,8 @@ void PlayScene::Finalize()
 --------------------------------------------------*/
 void PlayScene::LoadResources()
 {
-	
+
+
 
 	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
 	ID3D11Device1* device = pDR->GetD3DDevice();
@@ -395,8 +400,6 @@ void PlayScene::LoadResources()
 	//	コモンステート::D3Dレンダリング状態オブジェクト
 	m_commonState = std::make_unique<DirectX::CommonStates>(device);
 
-
-	
 
 	
 
@@ -433,11 +436,6 @@ void PlayScene::LoadResources()
 				basicEffect->SetEmissiveColor(DirectX::SimpleMath::Vector3(1.0f, 1.0f, 1.0f));
 			}
 		});
-
-	//m_actor->Initialize(DirectX::SimpleMath::Vector3::Zero, DirectX::SimpleMath::Vector3(0.0f, 1.0f, 6.0f), true, 0.0f, nullptr, m_pModel.get(), m_commonState.get());
-
-
-
 
 	DirectX::CreateWICTextureFromFile(
 		device,
@@ -485,5 +483,6 @@ void PlayScene::LoadResources()
 	);
 
 	delete factory3;
+
 
 }

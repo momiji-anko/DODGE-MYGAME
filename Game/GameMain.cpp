@@ -15,10 +15,7 @@
 
 #include "Game/LoadingScreen/LoadingScreen.h"
 
-#include"PlayScene/Stage/StageManager.h"
-#include"PlayScene/Player/Player.h"
-#include"PlayScene/Obstacle/ObstacleManeger.h"
-#include"PlayScene/Item/ItemManeger.h"
+
 
 // –¼‘O‹óŠÔ‚Ì—˜—p
 using namespace DirectX;

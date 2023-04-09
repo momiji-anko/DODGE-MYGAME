@@ -4,7 +4,7 @@
 #include<Keyboard.h>
 #include<Mouse.h>
 #include<Effects.h>
-//#include"Helpers/DODGESound_acf.h"
+
 const float Player::MOVE_SPEED = 9.0f;
 const float Player::GRAVITY_FORCE = -1.4f;
 const float Player::JUMP_FORCE = 0.50f;
@@ -20,7 +20,16 @@ Player::Player()
 	m_flyVelocity{}, 
 	m_shieldCount(0),
 	m_isShield(true),
-	m_blink(nullptr)
+	m_blink(nullptr),
+	m_playerModel{},
+	m_pAdx2(nullptr),
+	m_jumpMusicID(0),
+	m_stageManager(nullptr),
+	m_itemManager(nullptr),
+	m_invincibleCountCoolDownTime_s(0),
+	m_modelTime_s(0),
+	m_playerID(0),
+	m_keys{}
 {
 
 }
@@ -56,23 +65,11 @@ void Player::Initialize(const DirectX::SimpleMath::Vector3& velocity, const Dire
 	m_angle = angle;
 	m_behavia = behavia;
 	m_pModel = model;
-	m_modelTime_s = 0.0f;
-
-	//IDに応じてモデルを変える
-	switch (m_playerID)
-	{
-	case 1:
-		//１Pのモデル生成
-		Player1CreateModel();
-		break;
-	case 2:
-		//２Pのモデル生成
-		Player2CreateModel();
-		break;
-	default:
-		break;
-	}
 	
+
+	//モデルの生成
+	CreatePlayerModel();
+
 	//当たり判定AABBの作成
 	m_AABBObject = std::make_unique<AABBFor3D>();
 	//AABBの初期化
@@ -117,41 +114,31 @@ void Player::Update(const DX::StepTimer& timer)
 
 	float time = timer.GetElapsedSeconds();
 
-	Item::ItemType itemType = m_itemManger->PlayerHitItemType(GetAABB());
+	Item::ItemType itemType = m_itemManager->PlayerHitItemType(GetAABB());
 
+	//アクティブでなければ処理を終わる
 	if (!m_active)
 		return;
 
 	if (itemType == Item::ItemType::SHIELD_ITEM)
 	{
-
-		InvalidCountUp();
+		ShieldCountUp();
 	}
 	
+	//ベロシティのXとZを０にする
 	m_velocity.z = 0.0f;
 	m_velocity.x = 0.0f;
-	switch (m_playerID)
-	{
-	case 1:
-		Player1Move(timer);
-		break;
-	case 2:
-		Player2Move(timer);
-		break;
-
-	default:
-		break;
-	}
-	DirectX::SimpleMath::Vector3 moveVec;
 
 
+	PlayerMove(timer);
 
+	m_position += m_velocity;
+	
 	if (m_flyVelocity.Length() != 0.0f)
 	{
 		m_position += m_flyVelocity;
 
 		m_flyVelocity *= DirectX::SimpleMath::Vector3(0.91f, 0.91f, 0.91f);
-
 	}
 
 
@@ -163,12 +150,10 @@ void Player::Update(const DX::StepTimer& timer)
 		{
 			m_playerState = PlayerState::NORMAL;
 		}
-
 	}
 	else
 	{
 		m_invincbleTime = 0;
-
 	}
 
 	m_AABBObject->SetData(DirectX::SimpleMath::Vector3(m_position.x - 0.5f, m_position.y - 0, m_position.z - 0.5f), DirectX::SimpleMath::Vector3(m_position.x + 0.5f, m_position.y + 2.0f, m_position.z + 0.5f));
@@ -183,25 +168,15 @@ void Player::Update(const DX::StepTimer& timer)
 		m_active = false;
 
 	}
+
 	m_blink->Update(timer);
-
-
-	m_barrierModel->UpdateEffects([&](DirectX::IEffect* effect)
-		{
-			
-			auto fog = dynamic_cast<DirectX::IEffectFog*>(effect);
-			if (fog)
-			{
-				fog->SetFogEnabled(true);
-				fog->SetFogStart(6); // assuming RH coordiantes
-				fog->SetFogEnd(8);
-				fog->SetFogColor(DirectX::Colors::Black);
-			}
-		});
 
 }
 
-// 描画
+/// <summary>
+/// 描画
+/// </summary>
+/// <param name="camera">カメラのポインタ</param>
 void Player::Draw(Camera* camera)
 {
 
@@ -214,32 +189,22 @@ void Player::Draw(Camera* camera)
 	
 
 	m_world = DirectX::SimpleMath::Matrix::Identity;
+
 	DirectX::SimpleMath::Matrix trans = DirectX::SimpleMath::Matrix::CreateTranslation(m_position);
 	DirectX::SimpleMath::Matrix rot = DirectX::SimpleMath::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_rotation.y));
 	DirectX::SimpleMath::Matrix scale= DirectX::SimpleMath::Matrix::CreateScale(2);
 	
 	
 	context->OMSetBlendState(m_commonState->AlphaBlend(), nullptr, 0xFFFFFFFF);
-	if (true)//m_invalidCount > 0)
-	{
-		DirectX::SimpleMath::Matrix world = DirectX::SimpleMath::Matrix::Identity;
-		world *= trans;
-
-		//m_barrierModel->Draw(context, *m_commonState, world, camera->GetViewMatrix(), camera->GetProjectionMatrix());
-	}
 
 	m_world *= rot * scale * trans;
+
 	if (m_blink->IsBlink())
 	{
 		int modelTime = static_cast<int>(m_modelTime_s);
 
 		m_playerModel[m_playerModelNum[modelTime]]->Draw(context, *m_commonState, m_world, camera->GetViewMatrix(), camera->GetProjectionMatrix());
-
 	}
-
-
-
-
 
 }
 
@@ -276,15 +241,13 @@ void Player::PlayerShadow( ShadowMap* shadowMap, DirectX::SimpleMath::Matrix vie
 }
 
 
-
-
-void Player::InvalidCountUp()
+void Player::ShieldCountUp()
 {
 	m_pAdx2->Play(CRI_CUESHEET_0_COIN04_);
 	m_shieldCount++;
 }
 
-void Player::InvalidCountDown()
+void Player::ShieldCountDown()
 {
 	if (m_invincibleCountCoolDownTime_s <= 0.0f)
 	{
@@ -300,63 +263,104 @@ void Player::InvalidCountDown()
 
 }
 
-void Player::Player1Move(const DX::StepTimer& timer)
+
+
+void Player::CreatePlayerModel()
 {
-	float time = timer.GetElapsedSeconds();
+	for (int i = 0; i < m_modelFiles.size();i++)
+	{
+		m_playerModel[i] = CreateModel(m_modelFiles[i].c_str());
+	}
+
+}
+
+/// <summary>
+/// モデル作成
+/// </summary>
+/// <param name="fileName">モデルファイルパス</param>
+/// <returns>モデルのユニークポインター</returns>
+std::unique_ptr<DirectX::Model> Player::CreateModel(const wchar_t* fileName)
+{
+	//DeviceResourcesからデバイスの取得
+	ID3D11Device1* device = DX::DeviceResources::GetInstance()->GetD3DDevice();
+
+	//エフェクトファクトリの作成
+	std::unique_ptr<DirectX::EffectFactory> effectFactry = std::make_unique<DirectX::EffectFactory>(device);
+
+	//	テクスチャの読み込みパス指定
+	effectFactry->SetDirectory(L"Resources/Models");
+
+	//	モデルデータ読み込み＆読み込んだモデルを返す
+	return DirectX::Model::CreateFromCMO(
+		device,
+		fileName,
+		*effectFactry
+	);
+
+}
+
+void Player::PlayerMove(const DX::StepTimer& timer)
+{
+
+	const DirectX::Keyboard::Keys& right =    m_keys[0];
+	const DirectX::Keyboard::Keys& left =     m_keys[1];
+	const DirectX::Keyboard::Keys& forward =  m_keys[2];
+	const DirectX::Keyboard::Keys& backward = m_keys[3];
+	const DirectX::Keyboard::Keys& jump =     m_keys[4];
+
+	float elapsedTime = timer.GetElapsedSeconds();
 
 	// キー入力情報を取得する
 	DirectX::Keyboard::State keyState = DirectX::Keyboard::Get().GetState();
 
-
-	if (keyState.Right)
+	if (keyState.IsKeyDown(right))
 	{
-		m_position.x += MOVE_SPEED * time;
+		m_position.x += MOVE_SPEED * elapsedTime;
 
 		m_rotation.y = -90;
 
 	}
 
-	if (keyState.Left)
+	if (keyState.IsKeyDown(left))
 	{
-		m_position.x -= MOVE_SPEED * time;
+		m_position.x -= MOVE_SPEED * elapsedTime;
 
 		m_rotation.y = 90;
 	}
 
-	if (keyState.Down)
+	if (keyState.IsKeyDown(backward))
 	{
-		m_position.z += MOVE_SPEED * time;
+		m_position.z += MOVE_SPEED * elapsedTime;
 
 		m_rotation.y = 180;
 	}
 
-	if (keyState.Up)
+	if (keyState.IsKeyDown(forward))
 	{
-		m_position.z -= MOVE_SPEED * time;
+		m_position.z -= MOVE_SPEED * elapsedTime;
 
 		m_rotation.y = 0;
 	}
 
 
-	m_position.z += m_velocity.z;
-	m_position.x += m_velocity.x;
 
-	if ((keyState.Right) && (keyState.Down))
+
+	if ((keyState.IsKeyDown(right)) && (keyState.IsKeyDown(backward)))
 		m_rotation.y = -(90 + 45);
 
-	if ((keyState.Right) && (keyState.Up))
+	if ((keyState.IsKeyDown(right)) && (keyState.IsKeyDown(forward)))
 		m_rotation.y = -(45);
 
-	if ((keyState.Left) && (keyState.Down))
+	if ((keyState.IsKeyDown(left)) && (keyState.IsKeyDown(backward)))
 		m_rotation.y = (90 + 45);
 
-	if ((keyState.Left) && (keyState.Up))
+	if ((keyState.IsKeyDown(left)) && (keyState.IsKeyDown(forward)))
 		m_rotation.y = (45);
 
 
-	if (keyState.Right || keyState.Left || keyState.Down || keyState.Up)
+	if (keyState.IsKeyDown(right) || keyState.IsKeyDown(left) || keyState.IsKeyDown(forward) || keyState.IsKeyDown(backward))
 	{
-		m_modelTime_s += time * 10;
+		m_modelTime_s += elapsedTime * 10;
 
 		if (m_modelTime_s >= 4.0f)
 		{
@@ -369,13 +373,13 @@ void Player::Player1Move(const DX::StepTimer& timer)
 	}
 
 
-	if (m_stageManeger->PlayerStageAABBHitCheck(this))
+	if (m_stageManager->PlayerStageAABBHitCheck(this))
 	{
 
 		m_velocity.y = 0;
 
 
-		if (keyState.IsKeyDown(DirectX::Keyboard::Space))
+		if (keyState.IsKeyDown(jump))
 		{
 
 			m_velocity.y += JUMP_FORCE;
@@ -384,7 +388,6 @@ void Player::Player1Move(const DX::StepTimer& timer)
 
 		}
 
-
 	}
 	else
 	{
@@ -392,245 +395,4 @@ void Player::Player1Move(const DX::StepTimer& timer)
 		m_velocity.y += GRAVITY_FORCE * timer.GetElapsedSeconds();
 
 	}
-	m_position.y += m_velocity.y;
-
-}
-
-void Player::Player2Move(const DX::StepTimer& timer)
-{
-	float time = timer.GetElapsedSeconds();
-
-	// キー入力情報を取得する
-	DirectX::Keyboard::State keyState = DirectX::Keyboard::Get().GetState();
-
-	if (keyState.D)
-	{
-		m_velocity.x += MOVE_SPEED * time;
-
-		m_rotation.y = -90;
-
-	}
-
-	if (keyState.A)
-	{
-		m_velocity.x -= MOVE_SPEED * time;
-
-		m_rotation.y = 90;
-	}
-
-	if (keyState.S)
-	{
-		m_velocity.z += MOVE_SPEED * time;
-
-		m_rotation.y = 180;
-	}
-
-	if (keyState.W)
-	{
-		m_velocity.z -= MOVE_SPEED * time;
-
-		m_rotation.y = 0;
-	}
-
-
-	m_position.z += m_velocity.z;
-	m_position.x += m_velocity.x;
-
-	if ((keyState.D) && (keyState.S))
-		m_rotation.y = -(90 + 45);
-
-	if ((keyState.D) && (keyState.W))
-		m_rotation.y = -(45);
-
-	if ((keyState.A) && (keyState.S))
-		m_rotation.y = (90 + 45);
-
-	if ((keyState.A) && (keyState.W))
-		m_rotation.y = (45);
-
-
-	if (keyState.D || keyState.A || keyState.S || keyState.W)
-	{
-		m_modelTime_s += time * 10;
-
-		if (m_modelTime_s >= 4.0f)
-		{
-			m_modelTime_s = 0;
-		}
-	}
-	else
-	{
-		m_modelTime_s = 0;
-	}
-
-
-	if (m_stageManeger->PlayerStageAABBHitCheck(this))
-	{
-
-		m_velocity.y = 0;
-
-
-		if (keyState.IsKeyDown(DirectX::Keyboard::Z))
-		{
-
-			m_velocity.y += JUMP_FORCE;
-
-			m_pAdx2->Play(CRI_CUESHEET_0_JUMP08);
-
-		}
-
-
-	}
-	else
-	{
-		m_modelTime_s = 4;
-		m_velocity.y += GRAVITY_FORCE * timer.GetElapsedSeconds();
-
-	}
-	m_position.y += m_velocity.y;
-}
-
-void Player::Player1CreateModel()
-{
-
-	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
-
-	//	エフェクトファクトリの作成
-	DirectX::EffectFactory* factory0 = new DirectX::EffectFactory(pDR->GetD3DDevice());
-
-	//	テクスチャの読み込みパス指定
-	factory0->SetDirectory(L"Resources/Models");
-
-	//	ファイルを指定してモデルデータ読み込み
-	m_playerModel[0] = DirectX::Model::CreateFromCMO(
-		pDR->GetD3DDevice(),
-		L"Resources/Models/playeraidoru.cmo",
-		*factory0
-	);
-
-	delete factory0;
-
-	//	エフェクトファクトリの作成
-	DirectX::EffectFactory* factory1 = new DirectX::EffectFactory(pDR->GetD3DDevice());
-
-	//	テクスチャの読み込みパス指定
-	factory1->SetDirectory(L"Resources/Models");
-
-	//	ファイルを指定してモデルデータ読み込み
-	m_playerModel[1] = DirectX::Model::CreateFromCMO(
-		pDR->GetD3DDevice(),
-		L"Resources/Models/playerhidari.cmo",
-		*factory1
-	);
-	
-	delete factory1;
-
-	//	エフェクトファクトリの作成
-	DirectX::EffectFactory* factory2 = new DirectX::EffectFactory(pDR->GetD3DDevice());
-
-	//	テクスチャの読み込みパス指定
-	factory2->SetDirectory(L"Resources/Models");
-
-	//	ファイルを指定してモデルデータ読み込み
-	m_playerModel[2] = DirectX::Model::CreateFromCMO(
-		pDR->GetD3DDevice(),
-		L"Resources/Models/playermigiasi.cmo",
-		*factory2
-	);
-
-	delete factory2;
-
-	//	エフェクトファクトリの作成
-	DirectX::EffectFactory* factory3 = new DirectX::EffectFactory(pDR->GetD3DDevice());
-
-	//	テクスチャの読み込みパス指定
-	factory3->SetDirectory(L"Resources/Models");
-
-	//	ファイルを指定してモデルデータ読み込み
-	m_playerModel[3] = DirectX::Model::CreateFromCMO(
-		pDR->GetD3DDevice(),
-		L"Resources/Models/playerjanp.cmo",
-		*factory3
-	);
-
-	delete factory3;
-
-	//	エフェクトファクトリの作成
-	DirectX::EffectFactory* factory4 = new DirectX::EffectFactory(pDR->GetD3DDevice());
-
-	//	テクスチャの読み込みパス指定
-	factory4->SetDirectory(L"Resources/Models");
-
-	//	ファイルを指定してモデルデータ読み込み
-	m_barrierModel = DirectX::Model::CreateFromCMO(
-		pDR->GetD3DDevice(),
-		L"Resources/Models/barrier.cmo",
-		*factory4
-	);
-
-	delete factory4;
-}
-
-void Player::Player2CreateModel()
-{
-	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
-	//	エフェクトファクトリの作成
-	DirectX::EffectFactory* factory0 = new DirectX::EffectFactory(pDR->GetD3DDevice());
-
-	//	テクスチャの読み込みパス指定
-	factory0->SetDirectory(L"Resources/Models");
-
-	//	ファイルを指定してモデルデータ読み込み
-	m_playerModel[0] = DirectX::Model::CreateFromCMO(
-		pDR->GetD3DDevice(),
-		L"Resources/Models/Player2idoru.cmo",
-		*factory0
-	);
-
-	delete factory0;
-
-	//	エフェクトファクトリの作成
-	DirectX::EffectFactory* factory1 = new DirectX::EffectFactory(pDR->GetD3DDevice());
-
-	//	テクスチャの読み込みパス指定
-	factory1->SetDirectory(L"Resources/Models");
-
-	//	ファイルを指定してモデルデータ読み込み
-	m_playerModel[1] = DirectX::Model::CreateFromCMO(
-		pDR->GetD3DDevice(),
-		L"Resources/Models/Player2hidari.cmo",
-		*factory1
-	);
-
-	delete factory1;
-
-	//	エフェクトファクトリの作成
-	DirectX::EffectFactory* factory2 = new DirectX::EffectFactory(pDR->GetD3DDevice());
-
-	//	テクスチャの読み込みパス指定
-	factory2->SetDirectory(L"Resources/Models");
-
-	//	ファイルを指定してモデルデータ読み込み
-	m_playerModel[2] = DirectX::Model::CreateFromCMO(
-		pDR->GetD3DDevice(),
-		L"Resources/Models/Player2Migi.cmo",
-		*factory2
-	);
-
-	delete factory2;
-
-	//	エフェクトファクトリの作成
-	DirectX::EffectFactory* factory3 = new DirectX::EffectFactory(pDR->GetD3DDevice());
-
-	//	テクスチャの読み込みパス指定
-	factory3->SetDirectory(L"Resources/Models");
-
-	//	ファイルを指定してモデルデータ読み込み
-	m_playerModel[3] = DirectX::Model::CreateFromCMO(
-		pDR->GetD3DDevice(),
-		L"Resources/Models/Player2Janp.cmo",
-		*factory3
-	);
-
-	delete factory3;
 }

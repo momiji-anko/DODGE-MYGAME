@@ -17,8 +17,8 @@
 
 #include"../PlayScene/Stage/StageManager.h"
 #include"../PlayScene/Player/Player.h"
-#include"../PlayScene/Obstacle/ObstacleManeger.h"
-#include"../PlayScene/Item/ItemManeger.h"
+#include"../PlayScene/Obstacle/ObstacleManager.h"
+#include"../PlayScene/Item/ItemManager.h"
 
 #include"Game/Shader/Fade.h"
 
@@ -82,10 +82,10 @@ private:
 
 	DirectX::SimpleMath::Vector2 m_rankPos;
 
-	std::unique_ptr<StageManeger> m_stageManeger;
+	std::unique_ptr<StageManager> m_stageManeger;
 	std::unique_ptr<Player> m_player;
 	std::unique_ptr<ObstacleManeger> m_obstacleManeger;
-	std::unique_ptr<ItemManeger> m_itemManeger;
+	std::unique_ptr<ItemManager> m_itemManeger;
 
 	float m_cameraRot;
 
@@ -115,11 +115,11 @@ public:
 
 	void SetTime(float time) { m_time = time; }
 
-	void SetStageManeger(std::unique_ptr<StageManeger>& stage) { m_stageManeger = std::move(stage);}
+	void SetStageManeger(std::unique_ptr<StageManager>& stage) { m_stageManeger = std::move(stage);}
 	void SetPlayer(std::unique_ptr<Player>& player) { m_player = std::move(player); }
 	void SetObstacleManeger(std::unique_ptr<ObstacleManeger>& obstacleManeger) { m_obstacleManeger = std::move(obstacleManeger); }
 
-	void SetItemManeger(std::unique_ptr<ItemManeger>& itemManeger) { m_itemManeger = std::move(itemManeger); }
+	void SetItemManeger(std::unique_ptr<ItemManager>& itemManeger) { m_itemManeger = std::move(itemManeger); }
 private: 
 	void RenderPlayStage(Camera* camera);
 };

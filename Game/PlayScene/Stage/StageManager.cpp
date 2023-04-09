@@ -6,139 +6,16 @@
 #include"StageManager.h"
 #include"DeviceResources.h"
 #include"../MyRandom.h"
+#include<stdlib.h>
 
 //ビヘイビアーのインクルード
-#include"StageBahviors/FirstFloorToFallBhavior.h"
-#include"StageBahviors/SecondFloorToFallBhavior.h"
-#include"StageBahviors/ThirdFloorToFallBhavior.h"
+#include"StageBehaviors/FirstFloorToFallBehavior.h"
+#include"StageBehaviors/SecondFloorToFallBehavior.h"
+#include"StageBehaviors/ThirdFloorToFallBehavior.h"
+#include"StageBehaviors/TiltingFloorbehavior.h"
 
 
-// JSON 形式でグラフデータを読み込む
-bool StageManeger::LoadGraphDataByJSON(const std::wstring& fileName)
-{
-	std::stringstream ss;
-	std::string graphData;
-	// 入力ファイルストリーム
-	std::ifstream in(fileName, std::ifstream::in);
-	// 出力ファイルストリームをオープンする
-	in.open(fileName, std::ifstream::in);
-	if (!in.is_open())
-		return false;
-	// ストリングストリーム
-	ss << in.rdbuf();
-	// 配列をクリアする
-	m_stageData.clear();
-	// 改行までの一行分の文字列を取得する
-	while (std::getline(ss, graphData)) {
-		// グラフデータから不要な文字を消去する
-		graphData.erase(std::remove_if(
-			graphData.begin(),
-			graphData.end(),
-			[](char c) {
-				return (
-					c == '\r' || c == '\t' || c == ' ' || c == '\n' || c == '\"' ||
-					c == '[' || c == ']' || c == '{' || c == '}'
-					);
-			}),
-			graphData.end()
-				);
-		if (!graphData.empty())
-		{
-			// 配列にワードを追加する
-			m_stageData.push_back(graphData);
-		}
-	}
-	// 入力ファイルストリームをクローズする
-	in.close();
-	// 正常終了
-	return true;
-}
-// JSON 形式のデータをパースしオブジェクトに変換する
-void StageManeger::ParseJSON()
-{
-	
-	int i = 0;
-	// JSON データをパースする
-	for (size_t index = 0; index < m_stageData.size(); index++)
-	{
-		int number;
-		float x;
-		float y;
-		float z;
-		int position;
-		// 書式：number:0,position:x:-40,y:20,z:10,
-		std::stringstream ss(m_stageData[index].c_str());
-		// 頂点番号の文字列を検索する
-		position = m_stageData[index].find("number:");
-		// 文字列が見つからない場合
-		if (position == std::string::npos)
-			continue;
-		// "vertex_number:"を削除する
-		m_stageData[index].replace(position, strlen("number:"), "");
-		// ",position:x:"を検索する
-		position = m_stageData[index].find(",position:x:");
-		// ",position:x:"を空文字に置き換える
-		m_stageData[index].replace(position, strlen(",position:x:"), " ");
-		// ",y:"を探索する
-		position = m_stageData[index].find(",y:");
-		// ",y:"を空文字に置き換える
-		m_stageData[index].replace(position, strlen(",y:"), " ");
-		// ",z:"を探索する
-		position = m_stageData[index].find(",z:");
-		// ",z:"を空文字に置き換える
-		m_stageData[index].replace(position, strlen(",z:"), " ");
-		ss.clear();
-		ss.str(m_stageData[index]);
-		// 座標を取得する
-		ss >> number >> x >> y >> z;
-		// ステージを生成する
-		m_stage.push_back(std::make_unique<Stage>());
-
-		m_stage[i]->Initialize(DirectX::SimpleMath::Vector3::Zero, DirectX::SimpleMath::Vector3(x, y, z), true, 0.0f, nullptr, m_stageModel.get(), m_commonState);
-		int n = 0;
-		switch (m_stageSelect)
-		{
-		case StageSelect::Stage1:
-
-			break;
-		case StageSelect::Stage2:
-			n = 4;
-			break;
-		case StageSelect::Stage3:
-			n = 5;
-			break;
-		default:
-			break;
-		}
-
-
-		m_stage[i]->SetStageType(static_cast <Stage::StageType>(i + n));
-		i++;
-	}
-
-}
-
-void StageManeger::LoadJson(nlohmann::json json)
-{
-	switch (m_stageSelect)
-	{
-	case StageManeger::StageSelect::Stage1:
-
-
-		break;
-	case StageManeger::StageSelect::Stage2:
-	case StageManeger::StageSelect::Stage3:
-
-
-		break;
-	default:
-		break;
-	}
-
-
-}
-
-void StageManeger::SetShadow(ShadowMap* shadow)
+void StageManager::SetShadow(ShadowMap* shadow)
 {
 	for (std::unique_ptr<Stage>& stage : m_stage)
 	{
@@ -146,212 +23,80 @@ void StageManeger::SetShadow(ShadowMap* shadow)
 	}
 }
 
-
-
-StageManeger::StageManeger()
+StageManager::StageManager()
 	:
 	m_commonState(nullptr),
-	m_stageSelect(StageSelect::Stage1),
-	m_time_s(0.0f)
+	m_stageSelect(StageSelect::Stage1)
 {
 	
 
 }
 
-StageManeger::~StageManeger()
+StageManager::~StageManager()
 {
 }
 
-void StageManeger::Initialize(DirectX::CommonStates* commonState, StageSelect stage)
+void StageManager::Initialize(DirectX::CommonStates* commonState, StageSelect stage)
 {
 	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
 	ID3D11DeviceContext1* context = pDR->GetD3DDeviceContext();
 
 	std::wstring StageFileName;
-	std::wstring ModelFileName;
 
-	std::fstream StageFile;
 	
 	m_commonState = commonState;
 
 	m_stageSelect = stage;
 
 	//HACK::TEST
-	m_stageSelect = StageSelect::Stage3;
+	m_stageSelect = StageSelect::Stage2;
 	
 	switch (m_stageSelect)
 	{
 	case StageSelect::Stage1:
-		StageFileName = L"Resources/StageData/Stage1.json";
-		ModelFileName = L"Resources/Models/StageObject.cmo";
+		StageFileName = L"Resources/StageData/Stage1Test.json";
 		break;
 	case StageSelect::Stage2:
-		StageFileName = L"Resources/StageData/Stage2.json";
-		ModelFileName = L"Resources/Models/Stage2.cmo";
+		StageFileName = L"Resources/StageData/Stage2Test.json";
 
-		//内側３　外１０．５\0
-		m_baseVertices = {
-			DirectX::SimpleMath::Vector3( -3.0f , 2.0f ,   3.0f),//0
-			DirectX::SimpleMath::Vector3( -3.0f , 2.0f ,  10.0f),//1
-			DirectX::SimpleMath::Vector3(  3.0f , 2.0f ,    3.0f),//2
-			DirectX::SimpleMath::Vector3(  3.0f , 2.0f ,   10.0f),//3
-										  
-			DirectX::SimpleMath::Vector3( -3.0f , 2.0f , -10.0f),//4
-			DirectX::SimpleMath::Vector3( -3.0f , 2.0f ,  -3.0f),//5
-			DirectX::SimpleMath::Vector3(  3.0f , 2.0f , -10.0f),//6
-			DirectX::SimpleMath::Vector3(  3.0f , 2.0f ,  -3.0f),//7
-										  
-			DirectX::SimpleMath::Vector3( -10.5f , 2.0f , -10.0f),//8
-			DirectX::SimpleMath::Vector3( -10.5f , 2.0f ,  10.0f),//9
-			DirectX::SimpleMath::Vector3(  10.5f , 2.0f , -10.0f),//10
-			DirectX::SimpleMath::Vector3(  10.5f , 2.0f ,  10.0f),//11
-
-		};
-		m_nowVertices.resize(m_baseVertices.size());
-
-		m_indices = {
-			{0, 1, 2},
-			{2, 1, 3},
-
-			{4, 5, 6},
-			{6, 5, 7},
-
-			{ 8, 9, 4},
-			{ 4, 9, 1},
-
-			{ 6, 3, 10},
-			{10, 3, 11},
-		};
+		
 
 		break;
 	case StageSelect::Stage3:
-		StageFileName = L"Resources/StageData/Stage2.json";
-		ModelFileName = L"Resources/Models/Stage3.cmo";
+		StageFileName = L"Resources/StageData/Stage3Test.json";
 
-		//内側３　外１０．５
-		//基本頂点座標
-		m_baseVertices = {
-			DirectX::SimpleMath::Vector3(-10.0f ,  0.0f ,  -10.0f),//0
-			DirectX::SimpleMath::Vector3(-10.0f ,  0.0f ,   10.0f),//1
-			DirectX::SimpleMath::Vector3( 10.0f ,  0.0f ,  -10.0f),//2
-			DirectX::SimpleMath::Vector3( 10.0f ,  0.0f ,   10.0f),//3
-			DirectX::SimpleMath::Vector3(-10.0f , -20.0f , -10.0f),//4
-			DirectX::SimpleMath::Vector3(-10.0f , -20.0f ,  10.0f),//5
-			DirectX::SimpleMath::Vector3( 10.0f , -20.0f , -10.0f),//6
-			DirectX::SimpleMath::Vector3( 10.0f , -20.0f ,  10.0f),//7
-		};
-		//現在の
-		m_nowVertices.resize(m_baseVertices.size());
-
-		m_indices = {
-			{0, 1, 2},
-			{2, 1, 3},
-
-			{4, 6, 5},
-			{5, 6, 7},
-			
-			{2, 3, 6},
-			{6, 3, 7},
-			
-			{4, 5, 0},
-			{0, 5, 1},
-
-			{1, 5, 3},
-			{3, 5, 7},
-			
-			{4, 0, 6},
-			{6, 0, 2},
-			
-		};
+	
 		break;
 	default:
 		break;
 	}
-	//	エフェクトファクトリの作成
-	DirectX::EffectFactory* factory2 = new DirectX::EffectFactory(pDR->GetD3DDevice());
-
-	//	テクスチャの読み込みパス指定
-	factory2->SetDirectory(L"Resources/Models");
-	//	ファイルを指定してモデルデータ読み込み
-	m_stageModel = DirectX::Model::CreateFromCMO(
-		pDR->GetD3DDevice(),
-		ModelFileName.c_str(),
-		*factory2
-	);
-	delete factory2;
-
-	LoadGraphDataByJSON(StageFileName);
-	ParseJSON();
-
-	m_flag.resize(m_stage.size());
-	m_geo= DirectX::GeometricPrimitive::CreateBox(context, DirectX::SimpleMath::Vector3(0.3f, 0.3f, 0.3f));
 	
-	StageFileName = L"Resources/StageData/StageTest.json";
-
-	std::fstream file(StageFileName, std::ifstream::in);
-
-	nlohmann::json stageJson= nlohmann::json::parse(file);
-	file.close();
-
+	//HACK::Testで頂点座標を表示するようモデル
+	m_geo = DirectX::GeometricPrimitive::CreateBox(context, DirectX::SimpleMath::Vector3(0.3f, 0.3f, 0.3f));
 	
+	//ビヘイビアー作成
+	CreateBehavior();
+	//jsonを読み込みステージを作成
+	LoadStageJson(StageFileName);
+
 }
 
-void StageManeger::Update(const DX::StepTimer& timer)
+void StageManager::Update(const DX::StepTimer& timer)
 {
+	
+	ChackStageMoveEnd();
 
-	float time = timer.GetElapsedSeconds();
-
-	m_time_s += time;
-
-
-	int count = 0;
-	for (int n = 0; n < m_stage.size() ; n++)
-	{
-		if (!m_stage[n]->GetEndFlag())
-		{
-			continue;
-		}
-		count++;
-		if (count >= 4)
-		{
-			std::vector<int> stageNum = {0,1,2,3};
-			// シャッフル
-			std::random_device seed_gen;
-			std::mt19937 engine(seed_gen());
-			std::shuffle(stageNum.begin(), stageNum.end(), engine);
-
-			for (int j = 0; j < m_stage.size(); j++)
-			{
-				m_stage[j]->SetStageType(static_cast<Stage::StageType>(stageNum[j]));
-				m_stage[j]->Reset();
-			}
-			break;
-		}
-		
-		
-	}
-
+	//ステージの更新
 	for (int i = 0; i < m_stage.size(); i++)
 	{
-	
 		m_stage[i]->Update(timer);
-
-		for (int j = 0; j < m_baseVertices.size(); j++)
-		{
-			//現在の当たり判定用の頂点座標行列
-			DirectX::SimpleMath::Matrix nowVertexMatrix = DirectX::SimpleMath::Matrix::Identity;
-			//StageのXとZの角度の計算
-			DirectX::SimpleMath::Matrix rot = DirectX::SimpleMath::Matrix::CreateRotationX(m_stage[i]->GetRotation().x / 180.0f * 3.14f) * DirectX::SimpleMath::Matrix::CreateRotationZ(m_stage[i]->GetRotation().z / 180.0f * 3.14f);
-			//現在の頂点座標の計算
-			nowVertexMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(m_baseVertices[j] ) * rot * DirectX::SimpleMath::Matrix::CreateTranslation(m_stage[i]->GetPosition());
-			//計算した行列を現在の頂点座標計算に代入する
-			m_nowVertices[j] = DirectX::SimpleMath::Vector3(nowVertexMatrix._41, nowVertexMatrix._42, nowVertexMatrix._43);
-		}
-
 	}
+
+	//頂点座標の更新
+	UpdateVertices();
 }
 
-void StageManeger::Draw(Camera* camera)
+void StageManager::Draw(Camera* camera)
 {
 	for (std::unique_ptr<Stage>& stage : m_stage)
 	{
@@ -367,24 +112,233 @@ void StageManeger::Draw(Camera* camera)
 
 }
 
-void StageManeger::Finalize()
+void StageManager::Finalize()
 {
 
 
 }
 
-void StageManeger::CreateBehavior()
+void StageManager::CreateBehavior()
 {
-	m_behavior.resize(3);
-	m_behavior[0] = std::make_unique<FirstFloorToFallBhavior>();
-	m_behavior[1] = std::make_unique<SecondFloorToFallBhavior>();
-	m_behavior[2] = std::make_unique<ThirdFloorToFallBhavior>();
+	//ビヘイビアーの数
+	static const int BEHAVIOR_NUM = 6;
+
+	m_behavior.resize(BEHAVIOR_NUM);
+	//一番目に落ちる床のビヘイビアー
+	m_behavior[0] = std::make_unique<FirstFloorToFallBehavior>();
+	//二番目に落ちる床のビヘイビアー
+	m_behavior[1] = std::make_unique<SecondFloorToFallBehavior>();
+	//三番目に落ちる床のビヘイビアー
+	m_behavior[2] = std::make_unique<ThirdFloorToFallBehavior>();
+
+	m_behavior[3] = nullptr;
+	m_behavior[4] = std::make_unique<TiltingFloorbehavior>();
 
 
 }
 
+void StageManager::UpdateVertices()
+{
+	//ステージの数分for文で回す
+	for (int i = 0; i < m_stage.size(); i++)
+	{
+		//vertexの数分回す
+		for (int j = 0; j < m_baseVertices.size(); j++)
+		{
+			//現在の当たり判定用の頂点座標行列
+			DirectX::SimpleMath::Matrix nowVertexMatrix = DirectX::SimpleMath::Matrix::Identity;
+			//StageのXとZの角度の計算
+			DirectX::SimpleMath::Matrix rot = DirectX::SimpleMath::Matrix::CreateRotationX(m_stage[i]->GetRotation().x / 180.0f * 3.14f) * DirectX::SimpleMath::Matrix::CreateRotationZ(m_stage[i]->GetRotation().z / 180.0f * 3.14f);
+			//現在の頂点座標の計算
+			nowVertexMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(m_baseVertices[j]) * rot * DirectX::SimpleMath::Matrix::CreateTranslation(m_stage[i]->GetPosition());
+			//計算した行列を現在の頂点座標計算に代入する
+			m_nowVertices[j] = DirectX::SimpleMath::Vector3(nowVertexMatrix._41, nowVertexMatrix._42, nowVertexMatrix._43);
+		}
+	}
+}
 
-bool StageManeger::PlayerStageAABBHitCheck(Actor* player)
+/// <summary>
+/// ステージjsonを読み込み
+/// </summary>
+/// <param name="fileName">jsonのパス</param>
+void StageManager::LoadStageJson(const std::wstring& fileName)
+{
+	//fstream作成
+ 	std::fstream file(fileName, std::ifstream::in);
+	//json読み込み
+	nlohmann::json stageJson = nlohmann::json::parse(file);
+	//ファイルを閉じる
+	file.close();
+
+	//ステージの数取得
+	int stageNum = stageJson["StageNum"];
+	//ステージの数分確保
+	m_stagePositions.resize(stageNum);
+	//ステージの数分確保
+	m_stageType.resize(stageNum);
+
+	//ステージじの情報を読み込む
+	for (int i = 0; i < stageNum; i++)
+	{
+		//番号をストリングにする
+		std::string str = std::to_string(i);
+		//ステージタイプ取得
+		m_stageType[i] = stageJson["Stage"][str.c_str()]["StageType"];
+		//ステージのポジションを取得
+		m_stagePositions[i].x = stageJson["Stage"][str.c_str()]["X"];
+		m_stagePositions[i].y = stageJson["Stage"][str.c_str()]["Y"];
+		m_stagePositions[i].z = stageJson["Stage"][str.c_str()]["Z"];
+	}
+
+	//頂点の数取得
+	int vertexNum = stageJson["VertexNum"];
+	//頂点の数分確保
+	m_baseVertices.resize(vertexNum);
+	m_nowVertices.resize(vertexNum);
+	
+	//頂点座標の取得
+	for (int i = 0; i < vertexNum; i++)
+	{
+		//番号をストリングにする
+		std::string str = std::to_string(i);
+		//頂点座標の取得
+		m_baseVertices[i].x = stageJson["VertexPosition"][str.c_str()]["X"];
+		m_baseVertices[i].y = stageJson["VertexPosition"][str.c_str()]["Y"];
+		m_baseVertices[i].z = stageJson["VertexPosition"][str.c_str()]["Z"];
+	}
+
+	//ベース頂点座標を現在の頂点座標に代入
+	m_nowVertices = m_baseVertices;
+
+	//頂点座標インデックスの数取得
+	int vertexIndex = stageJson["VertexIndexNum"];
+
+	//頂点インデックスの数分確保
+	m_indices.resize(vertexIndex);
+
+	//頂点インデックスの読み込み
+	for (int i = 0; i < vertexIndex; i++)
+	{
+		//インデックスの配列確保
+		m_indices[i].resize(3);
+		//番号をストリングにする
+		std::string str = std::to_string(i);
+		//インデックス番号の取得
+		m_indices[i][0] = stageJson["VertexIndex"][str.c_str()]["1"];
+		m_indices[i][1] = stageJson["VertexIndex"][str.c_str()]["2"];
+		m_indices[i][2] = stageJson["VertexIndex"][str.c_str()]["3"];
+	}
+
+	//モデルのファイルのパスを取得（string）
+	std::string modelFileName = stageJson["StageModelFileName"];
+	//取得したファイルパスをstringからwstringに変換する
+	std::wstring modelFile = ConvertWString(modelFileName);
+	//モデル作成
+	m_stageModel = CreateModel(modelFile.c_str());
+
+	//ステージの数分配列を確保
+	m_stage.resize(stageNum);
+	
+	//ステージの作成
+	for (int i = 0; i < stageNum; i++)
+	{
+		//ステージのユニークポインタで作成
+		m_stage[i] = std::make_unique<Stage>();
+		//読み込んだステージ情報でステージを初期化する
+		m_stage[i]->Initialize(DirectX::SimpleMath::Vector3::Zero, m_stagePositions[i], true, 0.0f, m_behavior[m_stageType[i]].get(), m_stageModel.get(), m_commonState);
+		//ステージのタイプを設定
+		m_stage[i]->SetStageType(static_cast<Stage::StageType>(m_stageType[i]));
+
+	}
+
+}
+
+/// <summary>
+/// stringをwstringに変換する
+/// </summary>
+/// <param name="str">マルチバイト文字列</param>
+/// <returns>ワイド文字列</returns>
+std::wstring StageManager::ConvertWString(const std::string& str)
+{
+	//文字数取得用変数作成（引数で必要なため）
+	size_t strLengthNum;
+	//文字列バッファ作成
+	wchar_t* buffer = new wchar_t[str.size() + 1];
+	//stringをwchar_t*にして文字列バッファに代入
+	mbstowcs_s(&strLengthNum, buffer, str.size() + 1, str.c_str(), _TRUNCATE);
+	//文字列バッファをwstringに代入
+	std::wstring result = buffer;
+	//文字列バッファを削除
+	delete[] buffer;
+	//結果を返す
+	return result;
+}
+
+void StageManager::ChackStageMoveEnd()
+{
+	//全てのステージが行動を終了したか確認
+	for (int n = 0; n < m_stage.size(); n++)
+	{
+		//確認用カウント
+		int count = 0;
+		//終わっていなければ次へ行く
+		if (!m_stage[n]->GetEndFlag())
+		{
+			continue;
+		}
+		//終わっているのカウントを増やす
+		count++;
+		//全てのステージが行動を終了した場合ステージの行動を変化させる
+		if (count >= m_stage.size())
+		{
+			//行動する番号
+			std::vector<int> stageNum = { 0,1,2,3 };
+			// シャッフル
+			std::random_device seed_gen;
+			std::mt19937 engine(seed_gen());
+			//番号をシャッフルさせる
+			std::shuffle(stageNum.begin(), stageNum.end(), engine);
+			//シャッフルさせた番号をステージに渡す
+			for (int j = 0; j < m_stage.size(); j++)
+			{
+				//番号をセット
+				m_stage[j]->SetStageType(static_cast<Stage::StageType>(stageNum[j]));
+				//ステージにリセットをかける
+				m_stage[j]->Reset();
+			}
+			//for文を抜ける
+			break;
+		}
+	}
+}
+
+/// <summary>
+/// モデル作成
+/// </summary>
+/// <param name="fileName">モデルファイルパス</param>
+/// <returns>モデルのユニークポインター</returns>
+std::unique_ptr<DirectX::Model> StageManager::CreateModel(const wchar_t* fileName)
+{
+	//DeviceResourcesからデバイスの取得
+	ID3D11Device1* device= DX::DeviceResources::GetInstance()->GetD3DDevice();
+
+	//エフェクトファクトリの作成
+	std::unique_ptr<DirectX::EffectFactory> effectFactry = std::make_unique<DirectX::EffectFactory>(device);
+
+	//	テクスチャの読み込みパス指定
+	effectFactry->SetDirectory(L"Resources/Models");
+	
+	//	ファイルを指定してモデルデータ読み込み＆読み込んだモデルを返す
+	return DirectX::Model::CreateFromCMO(
+		device,
+		fileName,
+		*effectFactry
+	);
+	
+}
+
+
+bool StageManager::PlayerStageAABBHitCheck(Actor* player)
 {
 	switch (m_stageSelect)
 	{
@@ -414,7 +368,7 @@ bool StageManeger::PlayerStageAABBHitCheck(Actor* player)
 
 				 if (playerVel.Length() == 0)
 				 {
-					 playerVel.y = -1.4f;
+					 playerVel.y = -0.4f;
 				 }
 				
 				std::vector<DirectX::SimpleMath::Vector3> playerLinePos = { DirectX::SimpleMath::Vector3(playerPos),DirectX::SimpleMath::Vector3(playerPos.x,playerPos.y + 2.5f,playerPos.z) };
@@ -460,7 +414,7 @@ bool StageManeger::PlayerStageAABBHitCheck(Actor* player)
 
 
 
-bool StageManeger::ItemHitCheck(Actor* item)
+bool StageManager::ItemHitCheck(Actor* item)
 {
 	
 	switch (m_stageSelect)
@@ -476,6 +430,7 @@ bool StageManeger::ItemHitCheck(Actor* item)
 		}
 		break;
 	case StageSelect::Stage2:
+	case StageSelect::Stage3:
 		for (std::unique_ptr<Stage>& stage : m_stage)
 		{
 			for (int i = 0; i < m_indices.size(); i++)
@@ -497,8 +452,7 @@ bool StageManeger::ItemHitCheck(Actor* item)
 			}
 		}
 		break;
-	case StageSelect::Stage3:
-		break;
+
 	default:
 		break;
 	}
@@ -512,7 +466,7 @@ bool StageManeger::ItemHitCheck(Actor* item)
 /// <param name="linePos">線分の両端座標</param>
 /// <param name="normalVector">法線ベクトルのポインタ</param>
 /// <returns>true=当たっている　false=当っていない</returns>
-bool StageManeger::StageHitCheck(std::vector<DirectX::SimpleMath::Vector3> vertices, std::vector<DirectX::SimpleMath::Vector3> linePos, DirectX::SimpleMath::Vector3* normalVector)
+bool StageManager::StageHitCheck(std::vector<DirectX::SimpleMath::Vector3> vertices, std::vector<DirectX::SimpleMath::Vector3> linePos, DirectX::SimpleMath::Vector3* normalVector)
 {
 	//各頂点座標
 	DirectX::SimpleMath::Vector3 vertex0 = vertices[0];

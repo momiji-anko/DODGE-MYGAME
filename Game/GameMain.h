@@ -28,10 +28,10 @@ class DebugCamera;
 
 class IScene;
 
-class StageManeger;
+class StageManager;
 class Player;
 class ObstacleManeger;
-class ItemManeger;
+class ItemManager;
 
 /// <summary>
 /// Gameクラスから、ユーザ処理部分を抜き出したクラス

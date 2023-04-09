@@ -5,7 +5,7 @@
 #include<Model.h>
 #include"Libraries/MyLibraries/Camera.h"
 #include"../Stage/StageManager.h"
-class ItemManeger
+class ItemManager
 {
 private:
 	//定数
@@ -21,13 +21,13 @@ private:
 	float                                                              m_spawneTime_s;
 	float                                                              m_spawneCoolTime;
 
-	StageManeger* m_stageManeger;
+	StageManager* m_stageManeger;
 
 public:
 	//コンストラクタ
-	ItemManeger();
+	ItemManager();
 	//デストラクタ
-	~ItemManeger();
+	~ItemManager();
 
 	// 初期化
 	void Initialize(DirectX::CommonStates* commonState);
@@ -54,7 +54,7 @@ public:
 
 	void Shadow(ShadowMap* shadowMap, DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix projection);
 
-	void SetStageManeger(StageManeger* stageManeger) { m_stageManeger = stageManeger; }
+	void SetStageManeger(StageManager* stageManeger) { m_stageManeger = stageManeger; }
 
 private:
 	//アイテムの生成

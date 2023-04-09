@@ -35,8 +35,9 @@ private:
 	bool m_endFlag;
 
 	float m_rotationTime_s;
-	DirectX::SimpleMath::Vector3 m_previousRotetion;
-	bool m_isRotetion;
+	DirectX::SimpleMath::Vector3 m_previousRotation;
+	DirectX::SimpleMath::Vector3 m_nextRotation;
+	bool m_isRotation;
 	
 	IBehavior* m_behavior;
 
@@ -48,8 +49,8 @@ public:
 	void SetEndFlag(bool flag) { m_endFlag = flag; }
 	bool GetEndFlag() { return m_endFlag; }
 
-	void SetRotetionTime(float time) { m_rotationTime_s = time; }
-	float GetRotetionTime() { return m_rotationTime_s; }
+	void SetRotationTime(float time) { m_rotationTime_s = time; }
+	float GetRotationTime() { return m_rotationTime_s; }
 
 	void SetOffsetPosition(DirectX::SimpleMath::Vector3& position) { m_offsetPosition = position; }
 	DirectX::SimpleMath::Vector3 GetOffsetPosition() { return m_offsetPosition; }
@@ -57,6 +58,17 @@ public:
 	void SetRoutine(int routine) { m_routine = routine; }
 	float GetRoutine() { return m_routine; }
 
+	void SetNextRotation(DirectX::SimpleMath::Vector3 rotetion) { m_nextRotation = rotetion;}
+	DirectX::SimpleMath::Vector3 GetNextRotation() { return m_nextRotation; }
+
+	void SetPreviousRotation(DirectX::SimpleMath::Vector3 rotetion) { m_previousRotation = rotetion; }
+	DirectX::SimpleMath::Vector3 GetPreviousRotation() { return m_previousRotation; }
+
+	bool  IsRotation() { return m_isRotation;}
+	void SetIsRotation(bool flag) { m_isRotation = flag; }
+
+
+	
 
 	//コンストラクタ
 	Stage();
@@ -98,8 +110,5 @@ public:
 
 
 private: 
-	void Stage1_1();
-	void Stage1_2();
-	void Stage1_3();
-	void Stage1_4();
+	
 };

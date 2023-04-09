@@ -12,7 +12,7 @@
 
 #include"Libraries/Json/json.hpp"
 
-class StageManeger
+class StageManager
 {
 public:
 
@@ -38,19 +38,18 @@ private:
 
 	std::vector<std::string> m_stageData;
 
-	float m_time_s;
-	std::vector<bool> m_flag;
-
 	std::vector<DirectX::SimpleMath::Vector3> m_baseVertices;
 	std::vector<DirectX::SimpleMath::Vector3> m_nowVertices;
 	std::vector<std::vector<int>> m_indices;
 
+	std::vector<int> m_stageType;
+	
 	std::vector<std::unique_ptr<IBehavior>> m_behavior;
 
 public:
 
-	StageManeger();
-	~StageManeger();
+	StageManager();
+	~StageManager();
 
 	// 初期化
 	void Initialize(DirectX::CommonStates* commonState, StageSelect stage = StageSelect::Stage1);
@@ -67,15 +66,15 @@ public:
 	bool PlayerStageAABBHitCheck(Actor* player);
 	bool ItemHitCheck(Actor* item);
 
-	bool LoadGraphDataByJSON(const std::wstring& fileName);
-
-	void ParseJSON();
-
-	void LoadJson(nlohmann::json json);
-
 	void SetShadow(ShadowMap* shadow);
 
-	void CreateBehavior();
+
+	/// <summary>
+	/// モデル作成
+	/// </summary>
+	/// <param name="fileName">モデルファイルパス</param>
+	/// <returns>モデルのユニークポインター</returns>
+	std::unique_ptr<DirectX::Model> CreateModel(const wchar_t* fileName);
 
 	// 点 c と線分 ab の間の距離の平方（2 乗した値）を返す関数
 	// a: 線分の始点
@@ -125,6 +124,25 @@ public:
 	/// <param name="normalVector">法線ベクトルのポインタ</param>
 	/// <returns>true=当たっている　false=当っていない</returns>
 	bool StageHitCheck(std::vector<DirectX::SimpleMath::Vector3> vertices, std::vector<DirectX::SimpleMath::Vector3> linePos, DirectX::SimpleMath::Vector3* normalVector);
+	private:
 
+	void CreateBehavior();
+
+	void UpdateVertices();
+
+	/// <summary>
+	/// ステージjsonを読み込み
+	/// </summary>
+	/// <param name="fileName">jsonのパス</param>
+	void LoadStageJson(const std::wstring& fileName);
+
+	/// <summary>
+	/// stringをwstringに変換する
+	/// </summary>
+	/// <param name="str">マルチバイト文字列</param>
+	/// <returns>ワイド文字列</returns>
+	std::wstring ConvertWString(const std::string& str);
+
+	void ChackStageMoveEnd();
 
 };

@@ -10,11 +10,11 @@
 /// <summary>
 /// O”Ô–Ú‚É—‚¿‚é°‚Ì“®‚«
 /// </summary>
-class ThirdFloorToFallBhavior : public IBehavior
+class ThirdFloorToFallBehavior : public IBehavior
 {
 public:
-	ThirdFloorToFallBhavior() = default;
-	~ThirdFloorToFallBhavior()override = default;
+	ThirdFloorToFallBehavior() = default;
+	~ThirdFloorToFallBehavior()override = default;
 
 	/// <summary>
 	/// O”Ô–Ú‚É—‚¿‚é°‚Ì“®‚«

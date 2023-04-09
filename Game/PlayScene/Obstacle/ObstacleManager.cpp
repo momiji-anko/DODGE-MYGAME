@@ -1,5 +1,5 @@
 #include"pch.h"
-#include"ObstacleManeger.h"
+#include"ObstacleManager.h"
 #include<Effects.h>
 #include"DeviceResources.h"
 #include"../MyRandom.h"
@@ -50,7 +50,7 @@ ObstacleManeger::~ObstacleManeger()
 }
 
 // ‰Šú‰»
-void ObstacleManeger::Initialize(DirectX::CommonStates* commonState, StageManeger::StageSelect stage)
+void ObstacleManeger::Initialize(DirectX::CommonStates* commonState, StageManager::StageSelect stage)
 {
 	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
 	ID3D11DeviceContext1* context = pDR->GetD3DDeviceContext();
@@ -166,6 +166,7 @@ void ObstacleManeger::Initialize(DirectX::CommonStates* commonState, StageManege
 
 	delete reverceRotateStickFactory;
 
+	
 	CreateObstacle(DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f), Obstacle::ObstacleType::ROTATESTICK, 0);
 	CreateObstacle(DirectX::SimpleMath::Vector3(0.0f, 3.0f, 0.0f), Obstacle::ObstacleType::REVERSE_ROTATESTICK, 0);
 

@@ -10,13 +10,13 @@
 #include"Game/PlayScene/Stage/StageManager.h"
 
 //ビヘイビアーインクルード
-#include"ObstacelBhaviors/BirdBehavior.h"
-#include"ObstacelBhaviors/MeanderingeBehavior.h"
-#include"ObstacelBhaviors/MeteoriteBehavior.h"
-#include"ObstacelBhaviors/NormalBehavior.h"
-#include"ObstacelBhaviors/ReverseRotateStickBehavior.h"
-#include"ObstacelBhaviors/RotateStickBehavior.h"
-#include"ObstacelBhaviors/StickBehavior.h"
+#include"ObstacelBehaviors/BirdBehavior.h"
+#include"ObstacelBehaviors/MeanderingeBehavior.h"
+#include"ObstacelBehaviors/MeteoriteBehavior.h"
+#include"ObstacelBehaviors/NormalBehavior.h"
+#include"ObstacelBehaviors/ReverseRotateStickBehavior.h"
+#include"ObstacelBehaviors/RotateStickBehavior.h"
+#include"ObstacelBehaviors/StickBehavior.h"
 
 //スポナーインクルード
 #include"ObstacleSpawners/BirdObstacleSpawner.h"
@@ -67,7 +67,7 @@ public:
 	~ObstacleManeger();
 
 	// 初期化
-	void Initialize(DirectX::CommonStates* commonState, StageManeger::StageSelect stage );
+	void Initialize(DirectX::CommonStates* commonState, StageManager::StageSelect stage );
 
 	// 更新
 	void Update(const DX::StepTimer& timer);

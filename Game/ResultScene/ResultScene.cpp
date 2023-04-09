@@ -81,8 +81,8 @@ void ResultScene::Initialize()
 
 	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
 
-	m_stageManeger = std::make_unique<StageManeger>();
-	m_stageManeger->Initialize(m_commonState.get(), StageManeger::StageSelect::Stage1);
+	m_stageManeger = std::make_unique<StageManager>();
+	m_stageManeger->Initialize(m_commonState.get(), StageManager::StageSelect::Stage1);
 
 	m_fadeInOut = std::make_unique<Fade>();
 	m_fadeInOut->Create();

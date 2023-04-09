@@ -28,21 +28,21 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <PreferredToolArchitecture>x64</PreferredToolArchitecture>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <PreferredToolArchitecture>x64</PreferredToolArchitecture>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <PreferredToolArchitecture>x64</PreferredToolArchitecture>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
@@ -50,7 +50,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <PreferredToolArchitecture>x64</PreferredToolArchitecture>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
@@ -209,19 +209,19 @@
     <ClInclude Include="Game\PlayScene\IBehavior.h" />
     <ClInclude Include="Game\PlayScene\ISpawner.h" />
     <ClInclude Include="Game\PlayScene\Item\Item.h" />
-    <ClInclude Include="Game\PlayScene\Item\ItemManeger.h" />
+    <ClInclude Include="Game\PlayScene\Item\ItemManager.h" />
     <ClInclude Include="Game\PlayScene\Item\ItemSpawner.h" />
     <ClInclude Include="Game\PlayScene\MyRandom.h" />
     <ClInclude Include="Game\PlayScene\Objects.h" />
-    <ClInclude Include="Game\PlayScene\Obstacle\ObstacelBhaviors\BirdBehavior.h" />
-    <ClInclude Include="Game\PlayScene\Obstacle\ObstacelBhaviors\MeanderingeBehavior.h" />
-    <ClInclude Include="Game\PlayScene\Obstacle\ObstacelBhaviors\MeteoriteBehavior.h" />
-    <ClInclude Include="Game\PlayScene\Obstacle\ObstacelBhaviors\NormalBehavior.h" />
-    <ClInclude Include="Game\PlayScene\Obstacle\ObstacelBhaviors\ReverseRotateStickBehavior.h" />
-    <ClInclude Include="Game\PlayScene\Obstacle\ObstacelBhaviors\RotateStickBehavior.h" />
-    <ClInclude Include="Game\PlayScene\Obstacle\ObstacelBhaviors\StickBehavior.h" />
+    <ClInclude Include="Game\PlayScene\Obstacle\ObstacelBehaviors\BirdBehavior.h" />
+    <ClInclude Include="Game\PlayScene\Obstacle\ObstacelBehaviors\MeanderingeBehavior.h" />
+    <ClInclude Include="Game\PlayScene\Obstacle\ObstacelBehaviors\MeteoriteBehavior.h" />
+    <ClInclude Include="Game\PlayScene\Obstacle\ObstacelBehaviors\NormalBehavior.h" />
+    <ClInclude Include="Game\PlayScene\Obstacle\ObstacelBehaviors\ReverseRotateStickBehavior.h" />
+    <ClInclude Include="Game\PlayScene\Obstacle\ObstacelBehaviors\RotateStickBehavior.h" />
+    <ClInclude Include="Game\PlayScene\Obstacle\ObstacelBehaviors\StickBehavior.h" />
     <ClInclude Include="Game\PlayScene\Obstacle\Obstacle.h" />
-    <ClInclude Include="Game\PlayScene\Obstacle\ObstacleManeger.h" />
+    <ClInclude Include="Game\PlayScene\Obstacle\ObstacleManager.h" />
     <ClInclude Include="Game\PlayScene\Obstacle\ObstacleSpawners\BirdObstacleSpawner.h" />
     <ClInclude Include="Game\PlayScene\Obstacle\ObstacleSpawners\MeanderingObstacleSpawner.h" />
     <ClInclude Include="Game\PlayScene\Obstacle\ObstacleSpawners\MeteoriteObstacleSpawner.h" />
@@ -230,12 +230,15 @@
     <ClInclude Include="Game\PlayScene\Obstacle\ObstacleSpawners\RotateStickObstacleSpawner.h" />
     <ClInclude Include="Game\PlayScene\Obstacle\ObstacleSpawners\StickObstacleSpawner.h" />
     <ClInclude Include="Game\PlayScene\Player\Player.h" />
+    <ClInclude Include="Game\PlayScene\Player\PlayerBehaviors\Player1Behavior.h" />
+    <ClInclude Include="Game\PlayScene\Player\PlayerBehaviors\Player2Behavior.h" />
     <ClInclude Include="Game\PlayScene\PlayScene.h" />
     <ClInclude Include="Game\PlayScene\ShadowMap.h" />
     <ClInclude Include="Game\PlayScene\Stage\Stage.h" />
-    <ClInclude Include="Game\PlayScene\Stage\StageBahviors\FirstFloorToFallBhavior.h" />
-    <ClInclude Include="Game\PlayScene\Stage\StageBahviors\SecondFloorToFallBhavior.h" />
-    <ClInclude Include="Game\PlayScene\Stage\StageBahviors\ThirdFloorToFallBhavior.h" />
+    <ClInclude Include="Game\PlayScene\Stage\StageBehaviors\FirstFloorToFallBehavior.h" />
+    <ClInclude Include="Game\PlayScene\Stage\StageBehaviors\SecondFloorToFallBehavior.h" />
+    <ClInclude Include="Game\PlayScene\Stage\StageBehaviors\ThirdFloorToFallBehavior.h" />
+    <ClInclude Include="Game\PlayScene\Stage\StageBehaviors\TiltingFloorbehavior.h" />
     <ClInclude Include="Game\PlayScene\Stage\StageManager.h" />
     <ClInclude Include="Game\PlayScene\AliveTimer.h" />
     <ClInclude Include="Game\ResultScene\ResultScene.h" />
@@ -267,18 +270,18 @@
     <ClCompile Include="Game\PlayScene\IBehavior.cpp" />
     <ClCompile Include="Game\PlayScene\ISpawner.cpp" />
     <ClCompile Include="Game\PlayScene\Item\Item.cpp" />
-    <ClCompile Include="Game\PlayScene\Item\ItemManeger.cpp" />
+    <ClCompile Include="Game\PlayScene\Item\ItemManager.cpp" />
     <ClCompile Include="Game\PlayScene\Item\ItemSpawner.cpp" />
     <ClCompile Include="Game\PlayScene\MyRandom.cpp" />
-    <ClCompile Include="Game\PlayScene\Obstacle\ObstacelBhaviors\BirdBehavior.cpp" />
-    <ClCompile Include="Game\PlayScene\Obstacle\ObstacelBhaviors\MeanderingeBehavior.cpp" />
-    <ClCompile Include="Game\PlayScene\Obstacle\ObstacelBhaviors\MeteoriteBehavior.cpp" />
-    <ClCompile Include="Game\PlayScene\Obstacle\ObstacelBhaviors\NormalBehavior.cpp" />
-    <ClCompile Include="Game\PlayScene\Obstacle\ObstacelBhaviors\ReverseRotateStickBehavior.cpp" />
-    <ClCompile Include="Game\PlayScene\Obstacle\ObstacelBhaviors\RotateStickBehavior.cpp" />
-    <ClCompile Include="Game\PlayScene\Obstacle\ObstacelBhaviors\StickBehavior.cpp" />
+    <ClCompile Include="Game\PlayScene\Obstacle\ObstacelBehaviors\BirdBehavior.cpp" />
+    <ClCompile Include="Game\PlayScene\Obstacle\ObstacelBehaviors\MeanderingeBehavior.cpp" />
+    <ClCompile Include="Game\PlayScene\Obstacle\ObstacelBehaviors\MeteoriteBehavior.cpp" />
+    <ClCompile Include="Game\PlayScene\Obstacle\ObstacelBehaviors\NormalBehavior.cpp" />
+    <ClCompile Include="Game\PlayScene\Obstacle\ObstacelBehaviors\ReverseRotateStickBehavior.cpp" />
+    <ClCompile Include="Game\PlayScene\Obstacle\ObstacelBehaviors\RotateStickBehavior.cpp" />
+    <ClCompile Include="Game\PlayScene\Obstacle\ObstacelBehaviors\StickBehavior.cpp" />
     <ClCompile Include="Game\PlayScene\Obstacle\Obstacle.cpp" />
-    <ClCompile Include="Game\PlayScene\Obstacle\ObstacleManeger.cpp" />
+    <ClCompile Include="Game\PlayScene\Obstacle\ObstacleManager.cpp" />
     <ClCompile Include="Game\PlayScene\Obstacle\ObstacleSpawners\BirdObstacleSpawner.cpp" />
     <ClCompile Include="Game\PlayScene\Obstacle\ObstacleSpawners\MeanderingObstacleSpawner.cpp" />
     <ClCompile Include="Game\PlayScene\Obstacle\ObstacleSpawners\MeteoriteObstacleSpawner.cpp" />
@@ -287,12 +290,15 @@
     <ClCompile Include="Game\PlayScene\Obstacle\ObstacleSpawners\RotateStickObstacleSpawner.cpp" />
     <ClCompile Include="Game\PlayScene\Obstacle\ObstacleSpawners\StickObstacleSpawner.cpp" />
     <ClCompile Include="Game\PlayScene\Player\Player.cpp" />
+    <ClCompile Include="Game\PlayScene\Player\PlayerBehaviors\Player1Behavior.cpp" />
+    <ClCompile Include="Game\PlayScene\Player\PlayerBehaviors\Player2Behavior.cpp" />
     <ClCompile Include="Game\PlayScene\PlayScene.cpp" />
     <ClCompile Include="Game\PlayScene\ShadowMap.cpp" />
     <ClCompile Include="Game\PlayScene\Stage\Stage.cpp" />
-    <ClCompile Include="Game\PlayScene\Stage\StageBahviors\FirstFloorToFallBhavior.cpp" />
-    <ClCompile Include="Game\PlayScene\Stage\StageBahviors\SecondFloorToFallBhavior.cpp" />
-    <ClCompile Include="Game\PlayScene\Stage\StageBahviors\ThirdFloorToFallBhavior.cpp" />
+    <ClCompile Include="Game\PlayScene\Stage\StageBehaviors\FirstFloorToFallBehavior.cpp" />
+    <ClCompile Include="Game\PlayScene\Stage\StageBehaviors\SecondFloorToFallBehavior.cpp" />
+    <ClCompile Include="Game\PlayScene\Stage\StageBehaviors\ThirdFloorToFallBehavior.cpp" />
+    <ClCompile Include="Game\PlayScene\Stage\StageBehaviors\TiltingFloorbehavior.cpp" />
     <ClCompile Include="Game\PlayScene\Stage\StageManager.cpp" />
     <ClCompile Include="Game\PlayScene\AliveTimer.cpp" />
     <ClCompile Include="Game\ResultScene\ResultScene.cpp" />

@@ -1,22 +1,22 @@
 /*
-* 2023/03/27
-* FirstFloorToFallBhavior.h
+* 2023/04/07
+* TiltingFloorbehavior.h
 * 麻生　楓
 */
 #pragma once
 #include"Game/PlayScene/IBehavior.h"
 
 /// <summary>
-/// 一番目に落ちる床の動き
+/// ステージ２の傾く床
 /// </summary>
-class FirstFloorToFallBhavior : public IBehavior
+class TiltingFloorbehavior : public IBehavior
 {
 public:
-	FirstFloorToFallBhavior() = default;
-	~FirstFloorToFallBhavior()override = default;
+	TiltingFloorbehavior() = default;
+	~TiltingFloorbehavior()override = default;
 
 	/// <summary>
-	/// 一番目に落ちる床の動き
+	/// ステージ２の傾く床の動き
 	/// </summary>
 	/// <param name="timer">タイマー</param>
 	/// <param name="actor">ステージのポインター</param>
