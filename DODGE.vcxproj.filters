@@ -258,12 +258,6 @@
     <ClInclude Include="Game\PlayScene\Stage\StageBehaviors\ThirdFloorToFallBehavior.h">
       <Filter>Game\PlayScene\Stage\StageBehaviors</Filter>
     </ClInclude>
-    <ClInclude Include="Game\PlayScene\Player\PlayerBehaviors\Player1Behavior.h">
-      <Filter>Game\PlayScene\Player\PlayerBehaviors</Filter>
-    </ClInclude>
-    <ClInclude Include="Game\PlayScene\Player\PlayerBehaviors\Player2Behavior.h">
-      <Filter>Game\PlayScene\Player\PlayerBehaviors</Filter>
-    </ClInclude>
     <ClInclude Include="Game\PlayScene\Stage\StageBehaviors\TiltingFloorbehavior.h">
       <Filter>Game\PlayScene\Stage\StageBehaviors</Filter>
     </ClInclude>
@@ -412,12 +406,6 @@
     </ClCompile>
     <ClCompile Include="Game\PlayScene\Stage\StageBehaviors\ThirdFloorToFallBehavior.cpp">
       <Filter>Game\PlayScene\Stage\StageBehaviors</Filter>
-    </ClCompile>
-    <ClCompile Include="Game\PlayScene\Player\PlayerBehaviors\Player1Behavior.cpp">
-      <Filter>Game\PlayScene\Player\PlayerBehaviors</Filter>
-    </ClCompile>
-    <ClCompile Include="Game\PlayScene\Player\PlayerBehaviors\Player2Behavior.cpp">
-      <Filter>Game\PlayScene\Player\PlayerBehaviors</Filter>
     </ClCompile>
     <ClCompile Include="Game\PlayScene\Stage\StageBehaviors\TiltingFloorbehavior.cpp">
       <Filter>Game\PlayScene\Stage\StageBehaviors</Filter>

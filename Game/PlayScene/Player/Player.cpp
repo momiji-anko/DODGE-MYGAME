@@ -46,7 +46,7 @@ Player::~Player()
 /// <param name="position">初期座標</param>
 /// <param name="active">存在しているか</param>
 /// <param name="angle">角度</param>
-/// <param name="behavia">ビヘイビアー（NULLでOK）</param>
+/// <param name="behavia">ビヘイビアー（Playrでは使わないのでNULLでOK）</param>
 /// <param name="model">プレイヤーのモデルだがNULLでOK</param>
 /// <param name="commonState">コモンステート</param>
 void Player::Initialize(const DirectX::SimpleMath::Vector3& velocity, const DirectX::SimpleMath::Vector3& position, bool active, float angle, IBehavior* behavia, DirectX::Model* model, DirectX::CommonStates* commonState)
@@ -176,7 +176,7 @@ void Player::Update(const DX::StepTimer& timer)
 /// <summary>
 /// 描画
 /// </summary>
-/// <param name="camera">カメラのポインタ</param>
+/// <param name="camera">カメラのポインター</param>
 void Player::Draw(Camera* camera)
 {
 
