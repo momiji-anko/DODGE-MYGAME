@@ -38,8 +38,10 @@ bool StickObstacleSpawner::Create(std::vector< std::unique_ptr<Actor>>& actors, 
 
 		}
 
+		DirectX::SimpleMath::Vector3 scale;
+
 		//áŠQ•¨‚Ì‰Šú‰»
-		actor->Initialize(DirectX::SimpleMath::Vector3(-3.0f, 0.0f, 0.0f), position, true, angle, behavior, model, commonState);
+		actor->Initialize(DirectX::SimpleMath::Vector3(-3.0f, 0.0f, 0.0f), position, scale, true, angle, behavior, model, commonState);
 
 		//áŠQ•¨‚Ì¶¬‚É¬Œ÷
 		return true;

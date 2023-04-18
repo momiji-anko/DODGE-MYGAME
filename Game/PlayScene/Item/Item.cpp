@@ -1,147 +1,216 @@
+/*
+* 2023/04/14
+* Item.cpp
+* アイテム
+* 麻生　楓
+*/
 #include"pch.h"
 #include"Item.h"
 #include"DeviceResources.h"
 
 const float Item::ITEM_DELETE_TIME_S = 20.0f;
 
-//コンストラクタ
+/// <summary>
+/// コンストラクタ
+/// </summary>
 Item::Item()
 	:
 	Actor(),
-	m_itemType(Item::ItemType::NONE)
+	m_itemType(Item::ItemType::NONE),
+	m_stageHit(false),
+	m_deleteTime_s(0),
+	m_blink{}
 {
 
 }
 
-//デストラクタ
+/// <summary>
+/// デストラクタ
+/// </summary>
 Item:: ~Item()
 {
 
 }
 
-// 初期化
- void Item::Initialize(const DirectX::SimpleMath::Vector3& velocity,const DirectX::SimpleMath::Vector3& position,bool active,float angle,IBehavior* behavia,DirectX::Model* model,DirectX::CommonStates* commonState)
+/// <summary>
+/// 初期化
+/// </summary>
+/// <param name="velocity">移動ベロシティ</param>
+/// <param name="position">座標</param>
+/// <param name="scale">スケール</param>
+/// <param name="active">アクティブ</param>
+/// <param name="angle">アングル</param>
+/// <param name="behavia">ビヘイビアーの生ポインタ</param>
+/// <param name="model">モデルの生ポインタ</param>
+/// <param name="commonState">コモンステートの生ポインタ</param>
+void Item::Initialize(const DirectX::SimpleMath::Vector3& velocity,const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Vector3& scale,bool active,float angle,IBehavior* behavia,DirectX::Model* model,DirectX::CommonStates* commonState)
  {
+	//デバイスリソース取得
+	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
+	//デバイスリソースからデバイスコンテキスト取得
+	ID3D11DeviceContext1* context = pDR->GetD3DDeviceContext();
+	
+	//パラメータの設定
+	//移動速度
+	SetVelocity(velocity);
+	
+	//座標
+	SetPosition(position);
+	
+	//スケール
+	SetScale(scale);
+	 
+	//アクティブ
+	
+	SetActive(active);
+	//アングル
+	SetAngle(angle);
+	
+	//ビヘイビアー
+	SetBehavior(behavia);
+	//モデル
+	SetModel(model);
+	
+	//コモンステート
 
-	 DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
-	 ID3D11DeviceContext1* context = pDR->GetD3DDeviceContext();
+	
+	
+	//角度設定
+	DirectX::SimpleMath::Vector3 rot = GetRotation().ToEuler();
+	rot.y = DirectX::XM_PI;
+	SetRotation(DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(rot));
 
-	 m_velocity = velocity;
-	 m_position = position;
+	
+	//死亡タイム
+	m_deleteTime_s = ITEM_DELETE_TIME_S;
+	//地面に当たってない状態にする
+	m_stageHit = false;
 
-	 m_active = active;
-	 m_angle = angle;
-
-	 m_behavia = behavia;
-
-	 m_pModel = model;
-	 m_commonState = commonState;
-	 m_AABBObject = std::make_unique<AABBFor3D>();
-	 m_AABBObject->Initialize();
-	 m_AABBObject->SetData(DirectX::SimpleMath::Vector3(m_position.x + 0.5f, m_position.y + 0.5f, m_position.z + 0.5f), DirectX::SimpleMath::Vector3(m_position.x - 0.5f, m_position.y - 0.5f, m_position.z - 0.5f));
-	 m_deleteTime_s = ITEM_DELETE_TIME_S;
-	 m_hit = false;
-
-	 m_rotation.y = 180.0f;
-
-	 m_blink = std::make_unique<Blink>();
-	 m_blink->Initialize(0.3, 30, true, 0.003f);
+	//点滅の設定
+	m_blink = std::make_unique<Blink>();
+	//初期化
+	m_blink->Initialize(0.3, 30, true, 0.003f);
 
  }
 
-// 更新
+/// <summary>
+/// 更新
+/// </summary>
+/// <param name="timer">タイマー</param>
 void Item::Update(const DX::StepTimer& timer)
 {
+	//経過時間
+	float elapsedTime = timer.GetElapsedSeconds();
+	//死亡タイムを経過時間で引く
+	m_deleteTime_s -= elapsedTime;
 
-	float time = timer.GetElapsedSeconds();
+	DirectX::SimpleMath::Vector3 position = GetPosition();
 
-	m_deleteTime_s -= time;
+	//当たり判定再設定
+	DirectX::SimpleMath::Vector3 length = { 0.5f,0.5f,0.5f };
 
-	m_AABBObject->SetData(DirectX::SimpleMath::Vector3(m_position.x - 0.5f, m_position.y , m_position.z - 0.5f), DirectX::SimpleMath::Vector3(m_position.x + 0.5f, m_position.y + 1.0f, m_position.z + 0.5f));
+	GetAABB()->SetData(position + length, position + length);
 
+	//点滅の更新
 	m_blink->Update(timer);
 
-	if (m_deleteTime_s < 5.0f)
+	//死亡タイムが５秒になったら点滅を開始する
+	if (m_deleteTime_s < ITEM_DELETE_TIME_S / 4.0f)
 	{
+		//点滅する
 		m_blink->Start();
 	}
 
-	if(!m_hit)
+	//地面に当っていなければ落下する
+	if(!m_stageHit)
 	{
-		m_position += m_velocity * time;
+		//移動
+		m_position += m_velocity * elapsedTime;
 	}
-	else
-	{
-
-	}
-
+	
+	//死亡タイムが０になったら非アクティブ状態にする
 	if (m_deleteTime_s <= 0)
 	{
+		//非アクティブ状態にする
 		m_active = false;
 	}
 
 }
 
-// 描画
- void Item::Draw(Camera* camera)
+/// <summary>
+/// 描画
+/// </summary>
+/// <param name="camera">カメラの生ポインタ</param>
+void Item::Draw(Camera* camera)
  {
+	//ワールド行列に単位行列を入れる
 	 m_world = DirectX::SimpleMath::Matrix::Identity;
 
+	 //デバイスリソース取得
 	 DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
+	 //デバイスリソースからデバイスコンテキスト取得
 	 ID3D11DeviceContext1* context = pDR->GetD3DDeviceContext();
 
-	 // 深度バッファに書き込み参照する
-	 //context->OMSetDepthStencilState(m_commonState->DepthRead(), 0);
+	 CalculationWorld();
 
-	 DirectX::SimpleMath::Matrix trans = DirectX::SimpleMath::Matrix::CreateTranslation(m_position);
-	 DirectX::SimpleMath::Matrix rot = DirectX::SimpleMath::Matrix::CreateRotationY(m_rotation.y / 180.0f * 3.14f);
-	 DirectX::SimpleMath::Matrix scale = DirectX::SimpleMath::Matrix::CreateScale(0.008f);
-
-	 m_world *= scale * rot * trans;
-	/// m_AABBObject->Draw(DirectX::SimpleMath::Matrix::Identity, camera->GetViewMatrix(), camera->GetProjectionMatrix(), DirectX::SimpleMath::Color(1, 1, 0, 1));
-
+	 //点滅状態を取得し、消えている状態でなければ表示する
 	 if (m_blink->IsBlink())
 	 {
-		
+		 //モデル表示
 		m_pModel->Draw(context, *m_commonState, m_world, camera->GetViewMatrix(), camera->GetProjectionMatrix());
-	 }
-	 else
-	 {
-
 	 }
 
  }
 
-// 終了処理
- void Item::Finalize()
+/// <summary>
+/// 終了処理
+/// </summary>
+void Item::Finalize()
  {
 
  }
 
-//アイテムの取得
- Item::ItemType Item::GetItemType()
+/// <summary>
+/// アイテムのタイプの取得
+/// </summary>
+/// <returns>タイプ</returns>
+Item::ItemType Item::GetItemType()
  {
 	 return m_itemType;
  }
 
-//アイテムの設定
- void Item::SetItemType(ItemType item)
+/// <summary>
+/// アイテムタイプの設定
+/// </summary>
+/// <param name="item">アイテムタイプ</param>
+void Item::SetItemType(ItemType item)
  {
 	 m_itemType = item;
  }
 
- void Item::Reset()
+/// <summary>
+/// リセット
+/// </summary>
+void Item::Reset()
  {
 	 m_active = false;
  }
 
- void Item::Shadow(ShadowMap* shadowMap, DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix projection)
+/// <summary>
+/// アイテムの影生成
+/// </summary>
+/// <param name="shadowMap">シャドウマップ</param>
+/// <param name="view">ビュー行列</param>
+/// <param name="projection">プロジェクション行列</param>
+void Item::Shadow(ShadowMap* shadowMap, DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix projection)
  {
 
+	//デバイスリソース取得
+	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
+	//デバイスリソースからデバイスコンテキスト取得
+	ID3D11DeviceContext1* context = pDR->GetD3DDeviceContext();
 
-	 DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
-	 ID3D11DeviceContext1* context = pDR->GetD3DDeviceContext();
-	 
+	 //影作成
 	 m_pModel->Draw(context, *m_commonState, m_world, view, projection, false, [&]()
 		 {
 			 shadowMap->DrawShadowMap(context);

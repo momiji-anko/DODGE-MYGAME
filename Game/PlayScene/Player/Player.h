@@ -48,7 +48,7 @@ private:
 	float m_invincbleTime;
 
 	//プレイヤーのモデル連想配列
-	std::map<int, std::unique_ptr<DirectX::Model>> m_playerModel;
+	std::vector< DirectX::Model*> m_playerModel;
 	//プレイヤーの表示するモデルの番号
 	std::vector<int>                               m_playerModelNum;
 	//モデルを切り替えるタイム
@@ -110,6 +110,7 @@ public:
 	void Initialize(
 		const DirectX::SimpleMath::Vector3& velocity,
 		const DirectX::SimpleMath::Vector3& position,
+		const DirectX::SimpleMath::Vector3& scale,
 		bool active,
 		float angle,
 		IBehavior* behavia,
@@ -216,12 +217,7 @@ private:
 	/// </summary>
 	void CreatePlayerModel();
 
-	/// <summary>
-	/// モデル作成
-	/// </summary>
-	/// <param name="fileName">モデルファイルパス</param>
-	/// <returns>モデルのユニークポインター</returns>
-	std::unique_ptr<DirectX::Model> CreateModel(const wchar_t* fileName);
+	
 
 	/// <summary>
 	/// プレイヤーの動き

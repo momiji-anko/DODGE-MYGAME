@@ -1,6 +1,7 @@
 /*
 * 2023/03/27
 * SecondFloorToFallBhavior.h
+* “ñ”Ô–Ú‚É—Ž‚¿‚é°‚Ì“®‚«
 * –ƒ¶@•–
 */
 #pragma once

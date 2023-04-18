@@ -1,6 +1,7 @@
 /*
 * 2023/04/07
 * TiltingFloorbehavior.h
+* ステージ２の傾く床
 * 麻生　楓
 */
 #pragma once

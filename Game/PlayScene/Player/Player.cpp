@@ -4,6 +4,8 @@
 #include<Keyboard.h>
 #include<Mouse.h>
 #include<Effects.h>
+#include"Libraries/MyLibraries/ModelManager.h"
+#include"Libraries/MyLibraries/TextureManager.h"
 
 const float Player::MOVE_SPEED = 9.0f;
 const float Player::GRAVITY_FORCE = -1.4f;
@@ -49,7 +51,7 @@ Player::~Player()
 /// <param name="behavia">ビヘイビアー（Playrでは使わないのでNULLでOK）</param>
 /// <param name="model">プレイヤーのモデルだがNULLでOK</param>
 /// <param name="commonState">コモンステート</param>
-void Player::Initialize(const DirectX::SimpleMath::Vector3& velocity, const DirectX::SimpleMath::Vector3& position, bool active, float angle, IBehavior* behavia, DirectX::Model* model, DirectX::CommonStates* commonState)
+void Player::Initialize(const DirectX::SimpleMath::Vector3& velocity, const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Vector3& scale, bool active, float angle, IBehavior* behavia, DirectX::Model* model, DirectX::CommonStates* commonState)
 {
 	//デバイスリソースの取得
 	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
@@ -65,7 +67,7 @@ void Player::Initialize(const DirectX::SimpleMath::Vector3& velocity, const Dire
 	m_angle = angle;
 	m_behavia = behavia;
 	m_pModel = model;
-	
+	m_scale = scale;
 
 	//モデルの生成
 	CreatePlayerModel();
@@ -90,13 +92,9 @@ void Player::Initialize(const DirectX::SimpleMath::Vector3& velocity, const Dire
 	m_capsule->r = 0.5f;
 
 	//盾のテクスチャ読み込み
-	DirectX::CreateWICTextureFromFile(
-		device,
-		L"Resources/Textures/haet.png",
-		nullptr,
-		m_shieldTexture.ReleaseAndGetAddressOf()
-	);
+	m_shieldTexture = TextureManager::GetInstance().LoadTexture(L"Resources/Textures/haet.png");
 
+	//ブリンクする
 	m_blink = std::make_unique<Blink>();
 	m_blink->Initialize(0.15f, 12, 0.01f, true);
 
@@ -108,11 +106,6 @@ void Player::Initialize(const DirectX::SimpleMath::Vector3& velocity, const Dire
 /// <param name="timer">タイマー</param>
 void Player::Update(const DX::StepTimer& timer)
 {
-
-	// マウス入力情報を取得する
-	DirectX::Mouse::State mouseState = DirectX::Mouse::Get().GetState();
-
-	float time = timer.GetElapsedSeconds();
 
 	Item::ItemType itemType = m_itemManager->PlayerHitItemType(GetAABB());
 
@@ -132,8 +125,10 @@ void Player::Update(const DX::StepTimer& timer)
 
 	PlayerMove(timer);
 
+
 	m_position += m_velocity;
 	
+
 	if (m_flyVelocity.Length() != 0.0f)
 	{
 		m_position += m_flyVelocity;
@@ -187,17 +182,7 @@ void Player::Draw(Camera* camera)
 		return;
 
 	
-
-	m_world = DirectX::SimpleMath::Matrix::Identity;
-
-	DirectX::SimpleMath::Matrix trans = DirectX::SimpleMath::Matrix::CreateTranslation(m_position);
-	DirectX::SimpleMath::Matrix rot = DirectX::SimpleMath::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_rotation.y));
-	DirectX::SimpleMath::Matrix scale= DirectX::SimpleMath::Matrix::CreateScale(2);
-	
-	
-	context->OMSetBlendState(m_commonState->AlphaBlend(), nullptr, 0xFFFFFFFF);
-
-	m_world *= rot * scale * trans;
+	CalculationWorld();
 
 	if (m_blink->IsBlink())
 	{
@@ -267,37 +252,16 @@ void Player::ShieldCountDown()
 
 void Player::CreatePlayerModel()
 {
+	m_playerModel.resize(m_modelFiles.size());
+
 	for (int i = 0; i < m_modelFiles.size();i++)
 	{
-		m_playerModel[i] = CreateModel(m_modelFiles[i].c_str());
+		m_playerModel[i] = ModelManager::GetInstance().LoadModel(m_modelFiles[i].c_str());
 	}
 
 }
 
-/// <summary>
-/// モデル作成
-/// </summary>
-/// <param name="fileName">モデルファイルパス</param>
-/// <returns>モデルのユニークポインター</returns>
-std::unique_ptr<DirectX::Model> Player::CreateModel(const wchar_t* fileName)
-{
-	//DeviceResourcesからデバイスの取得
-	ID3D11Device1* device = DX::DeviceResources::GetInstance()->GetD3DDevice();
 
-	//エフェクトファクトリの作成
-	std::unique_ptr<DirectX::EffectFactory> effectFactry = std::make_unique<DirectX::EffectFactory>(device);
-
-	//	テクスチャの読み込みパス指定
-	effectFactry->SetDirectory(L"Resources/Models");
-
-	//	モデルデータ読み込み＆読み込んだモデルを返す
-	return DirectX::Model::CreateFromCMO(
-		device,
-		fileName,
-		*effectFactry
-	);
-
-}
 
 void Player::PlayerMove(const DX::StepTimer& timer)
 {

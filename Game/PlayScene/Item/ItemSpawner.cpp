@@ -32,8 +32,10 @@ bool ItemSpawner::Create( std::vector< std::unique_ptr<Actor>>& actors, const Di
 			item->SetItemType(Item::ItemType::SHIELD_ITEM);
 		}
 
+		DirectX::SimpleMath::Vector3 scale = { 0.008f,0.008f ,0.008f };
+
 		//アイテムの初期化
-		actor->Initialize(DirectX::SimpleMath::Vector3(0.0f, -3.0f, 0.0f), position, true, angle, nullptr, model, commonState);
+		actor->Initialize(DirectX::SimpleMath::Vector3(0.0f, -3.0f, 0.0f), position, scale, true, angle, nullptr, model, commonState);
 
 		//アイテムの生成に成功
 		return true;

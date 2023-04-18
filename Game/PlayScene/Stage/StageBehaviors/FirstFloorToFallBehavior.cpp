@@ -1,8 +1,8 @@
 /*
 * 2023/03/27
 * FirstFloorToFallBhavior.cpp
-* –ƒ¶@•–
 * ˆê”Ô–Ú‚É—‚¿‚é°‚Ì“®‚«
+* –ƒ¶@•–
 */
 #include"pch.h"
 #include"FirstFloorToFallBehavior.h"

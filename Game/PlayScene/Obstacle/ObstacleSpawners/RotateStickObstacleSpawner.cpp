@@ -40,8 +40,10 @@ bool RotateStickObstacleSpawner::Create(std::vector< std::unique_ptr<Actor>>& ac
 			obstale->SetRotSpeed(0.01f);
 		}
 
+		DirectX::SimpleMath::Vector3 scale;
+
 		//áŠQ•¨‰Šú‰»
-		actor->Initialize(DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f), position, true, angle, behavior, model, commonState);
+		actor->Initialize(DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f), position, scale, true, angle, behavior, model, commonState);
 
 
 

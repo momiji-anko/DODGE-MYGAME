@@ -25,26 +25,25 @@ public:
 
 private:
 
-	std::unique_ptr<DirectX::Model>           m_stageModel;
-	std::unique_ptr<DirectX::GeometricPrimitive>           m_geo;
+	DirectX::Model*                             m_stageModel;
 
-	std::vector<DirectX::SimpleMath::Vector3> m_stagePositions;
+	std::vector<DirectX::SimpleMath::Vector3>   m_stagePositions;
 
-	std::vector<std::unique_ptr<Stage>>       m_stage;
+	std::vector<std::unique_ptr<Stage>>         m_stage;
 
-	DirectX::CommonStates*                    m_commonState;
+	DirectX::CommonStates*                      m_commonState;
 	
-	StageSelect m_stageSelect;
+	StageSelect                                 m_stageSelect;
 
-	std::vector<std::string> m_stageData;
+	std::vector<std::string>                    m_stageData;
 
-	std::vector<DirectX::SimpleMath::Vector3> m_baseVertices;
-	std::vector<DirectX::SimpleMath::Vector3> m_nowVertices;
-	std::vector<std::vector<int>> m_indices;
+	std::vector<DirectX::SimpleMath::Vector3>   m_baseVertices;
+	std::vector<DirectX::SimpleMath::Vector3>   m_nowVertices;
+	std::vector<std::vector<int>>               m_indices;
 
-	std::vector<int> m_stageType;
+	std::vector<int>                            m_stageType;
 	
-	std::vector<std::unique_ptr<IBehavior>> m_behavior;
+	std::vector<std::unique_ptr<IBehavior>>     m_behavior;
 
 public:
 
@@ -69,12 +68,7 @@ public:
 	void SetShadow(ShadowMap* shadow);
 
 
-	/// <summary>
-	/// モデル作成
-	/// </summary>
-	/// <param name="fileName">モデルファイルパス</param>
-	/// <returns>モデルのユニークポインター</returns>
-	std::unique_ptr<DirectX::Model> CreateModel(const wchar_t* fileName);
+
 
 	// 点 c と線分 ab の間の距離の平方（2 乗した値）を返す関数
 	// a: 線分の始点
@@ -143,6 +137,6 @@ public:
 	/// <returns>ワイド文字列</returns>
 	std::wstring ConvertWString(const std::string& str);
 
-	void ChackStageMoveEnd();
+	void CheckStageMoveEnd();
 
 };

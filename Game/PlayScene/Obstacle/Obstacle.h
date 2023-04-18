@@ -9,29 +9,39 @@
 class Obstacle :public Actor
 {
 public:
-	//列挙体
+	//障害物タイプの列挙体
 	enum class ObstacleType
 	{
+		//普通の炎
 		NORMAL,
+		//棒
 		STICK,
+		//隕石
 		METEORITE, 
+		//時計回りに回転する棒
 		ROTATESTICK,
+		//反時計回りに回転する棒
 		REVERSE_ROTATESTICK,
+		//蛇行する炎
 		MEANDERING,
-		
-		
-
+		//鳥
 		BIRD,
+		
+		NONE
 		
 	};
 private:
 	//定数
+	//移動速度
 	static const float MOVE_SPEED;
 
+
 	//変数
+	//障害物のタイプ
 	ObstacleType                                 m_type;
+	//炎のエフェクト
 	FireEffectManager*                           m_effect;
-	std::unique_ptr<DirectX::GeometricPrimitive> m_geo;
+	
 
 	DirectX::SimpleMath::Vector3                 m_scale;
 
@@ -62,6 +72,7 @@ public :
 	virtual void Initialize(
 		const DirectX::SimpleMath::Vector3& velocity,
 		const DirectX::SimpleMath::Vector3& position,
+		const DirectX::SimpleMath::Vector3& scale,
 		bool active,
 		float angle,
 		IBehavior* behavia,
@@ -80,25 +91,18 @@ public :
 	//リセット
 	virtual void Reset();
 
-	void SetAABB(AABBFor3D* aabb) { m_AABBObject.reset(aabb); }
 
 	void SetType(ObstacleType type) { m_type = type; }
 
 	void ObstacleShadow(ShadowMap* shadow, DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix projection);
 
 	void SetEffect(FireEffectManager* effect) { m_effect = effect; }
-
+	FireEffectManager* GetEffect() { return m_effect; }
 	ObstacleType GetObstacleType() { return m_type; }
 
 	float& GetRotSpeed() { return m_rotSpeed; }
 	void SetRotSpeed(float speed) { m_rotSpeed = speed; }
 	float GetMeanderingSpeed() { return m_meanderingSpeed; }
-
-	DirectX::SimpleMath::Vector3 GetScale(){ return m_scale; }
-	void SetScale(DirectX::SimpleMath::Vector3 scale) { m_scale = scale; }
-
-
-
 
 
 	DirectX::SimpleMath::Vector3 GetPlayerPosition() { return m_playerPosition; }
@@ -112,16 +116,13 @@ public :
 	void SetMaxSpeed(float speed) { m_maxSpeed = speed; }
 	void SetMaxForce(float force) { m_maxForce = force; }
 
-	DirectX::SimpleMath::Vector3 Forward() const
-	{
-		float x = std::cos(m_angle) * GetVelocity().Length();
-		float z = std::sin(m_angle) * GetVelocity().Length();
-		x = -sin(m_angle) * MOVE_SPEED;
-		z = -cos(m_angle) * MOVE_SPEED;
-		DirectX::SimpleMath::Vector3 vec{x,0.0,z};
-		vec.Normalize();
-		return vec;
-	}
+	
 
 	float GetSeekTime() { return m_seekTime_s; }
+
+private:
+	bool  CheckInArea();
+
+
+	
 };

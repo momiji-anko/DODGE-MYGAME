@@ -1,3 +1,12 @@
+/*
+* 2023/04/11
+* ObstacleManeger.h
+* 障害物管理クラス
+* 麻生　楓
+*/
+
+
+
 #pragma once
 
 #include<map>
@@ -27,72 +36,135 @@
 #include"ObstacleSpawners/RotateStickObstacleSpawner.h"
 #include"ObstacleSpawners/StickObstacleSpawner.h"
 
-
+//前方宣言
 class Player;
 
+/// <summary>
+/// 障害物管理クラス
+/// </summary>
 class ObstacleManeger
 {
 public:
+	//障害物最大数
 	static const int OBSTACLE_MAX_NUM;
-	static const float SPANE_COOL_TIME_S;
+	//スポーンクールタイム
+	static const float SPAWN_COOL_TIME_S;
+	//炎エフェクトの最大数
 	static const int EFFECT_MAX_NUM;
 private:
-	std::vector< std::unique_ptr<Actor>>                               m_obstacles;
-	std::map< Obstacle::ObstacleType, std::unique_ptr<ISpawner>>       m_spawners;
-	std::map< Obstacle::ObstacleType, std::unique_ptr<DirectX::Model>> m_models;
-	std::map< Obstacle::ObstacleType, std::unique_ptr<IBehavior>>      m_behavior;
-	DirectX::CommonStates*                                             m_commonState;
+	//障害物
+	std::vector< std::unique_ptr<Actor>>                         m_obstacles;
+	//障害物のスポナー
+	std::map< Obstacle::ObstacleType, std::unique_ptr<ISpawner>> m_spawners;
+	//障害物のモデル
+	std::map< Obstacle::ObstacleType, DirectX::Model*>           m_models;
+	//障害物のビヘイビアー
+	std::map< Obstacle::ObstacleType, std::unique_ptr<IBehavior>>m_behavior;
+	//コモンステート
+	DirectX::CommonStates*                                       m_commonState;
+	//炎の障害物の出現位置
+	std::vector<DirectX::SimpleMath::Vector3>                    m_normalSpawnePosition;
+	//棒の障害物の出現位置
+	std::vector<DirectX::SimpleMath::Vector3>                    m_stickSpawnePosition;
+	//鳥の障害物の出現位置
+	std::vector<DirectX::SimpleMath::Vector3>                    m_birdSpawnPosition;
+	//プレイヤーのポジション
+	DirectX::SimpleMath::Vector3                                 m_playerPosition;
+
+	//炎エフェクトの配列
+	std::vector<std::unique_ptr<FireEffectManager>>              m_effectlist;
 	
-	std::map< int, DirectX::SimpleMath::Vector3>                       m_normalSpawnePosition;
-	std::map< int, DirectX::SimpleMath::Vector3>                       m_stickSpawnePosition;
-	std::map< int, DirectX::SimpleMath::Vector3>                       m_birdSpawnPosition;
-
-	DirectX::SimpleMath::Vector3                                       m_playerPosition;
-
-	std::vector<std::unique_ptr<FireEffectManager>>                       m_effectlist;
-
-	DirectX::SimpleMath::Vector3                                       m_hitvel;
-	DirectX::SimpleMath::Vector3                                       m_capsuleHitC1;
-	DirectX::SimpleMath::Vector3                                       m_capsuleHitC2;
-
-	float                                                              m_time_s;
-	float                                                              m_spawneTime_s;
-	float                                                              m_spawneCoolTime;
-
-
+	//プレイヤーを回転する棒に当たった時のプレイヤーから回転する棒の距離
+	DirectX::SimpleMath::Vector3                                 m_hitvel;
+	//当たったカプセルの場所（障害物）
+	DirectX::SimpleMath::Vector3                                 m_capsuleHitC1;
+	//当たったカプセルの場所（プレイヤー）
+	DirectX::SimpleMath::Vector3                                 m_capsuleHitC2;
+	
+	//タイマー
+	float                                                        m_time_s;
+	//障害物のスポーンタイマー
+	float                                                        m_spawneTime_s;
+	//障害物のスポーンクールタイム
+	float                                                        m_spawneCoolTime_s;
 public:
-	//コンストラクタ
+	/// <summary>
+	/// コンストラクタ
+	/// </summary>
 	ObstacleManeger();
-	//デストラクタ
+	/// <summary>
+	/// デストラクタ
+	/// </summary>
 	~ObstacleManeger();
 
-	// 初期化
+	/// <summary>
+	/// 初期化
+	/// </summary>
+	/// <param name="commonState">コモンステートの生ポインタ</param>
+	/// <param name="stage">ステージの番号</param>
 	void Initialize(DirectX::CommonStates* commonState, StageManager::StageSelect stage );
 
-	// 更新
+	/// <summary>
+	/// 更新
+	/// </summary>
+	/// <param name="timer">タイマー</param>
 	void Update(const DX::StepTimer& timer);
 
-	// 描画
+	/// <summary>
+	/// 描画
+	/// </summary>
+	/// <param name="camera">カメラの生ポインタ</param>
 	void Draw(Camera* camera);
 
-	// 終了処理
+	/// <summary>
+	/// 終了処理
+	/// </summary>
 	void Finalize();
 
+	/// <summary>
+	/// スポナー作成
+	/// </summary>
 	void CreateSpawner();
+	
+	/// <summary>
+	/// ビヘイビアー作成
+	/// </summary>
 	void CreateBehavior();
-
+	
+	/// <summary>
+	/// プレイヤーの座標設定
+	/// </summary>
+	/// <param name="position"></param>
 	void SetPlayerPosition(DirectX::SimpleMath::Vector3 position) { m_playerPosition = position; }
 
+	/// <summary>
+	/// プレイヤーと障害物のの当たり判定
+	/// </summary>
+	/// <param name="playerAABB">プレイヤーのAABB</param>
+	/// <returns>true = 当たった , false = 当っていない</returns>
 	bool PlayerHitCheck(AABBFor3D* playerAABB);
 
+	/// <summary>
+	/// 障害物の影作成
+	/// </summary>
+	/// <param name="shadowMap">シャドウマップの生ポインタ</param>
+	/// <param name="view">ビュー行列</param>
+	/// <param name="projection">プロジェクション行列</param>
 	void ObstacleShadow( ShadowMap* shadowMap, DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix projection);
 
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="playerCapsule"></param>
+	/// <returns></returns>
 	bool PlayerCapsuleHitCheck(Capsule* playerCapsule);
 	bool PlayerCapsuleHitCheck(Player* player);
 
 private:
 	//アイテムの生成
 	bool CreateObstacle(const DirectX::SimpleMath::Vector3& position, Obstacle::ObstacleType type, float angle);
+
+	void CreateModel();
 
 	// クランプ関数
 // n：丸め処理を行いたい数値

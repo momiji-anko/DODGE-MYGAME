@@ -30,7 +30,7 @@ Stage::~Stage()
 }
 
 // ‰Šú‰»
-void Stage::Initialize(const DirectX::SimpleMath::Vector3& velocity, const DirectX::SimpleMath::Vector3& position, bool active, float angle, IBehavior* behavia, DirectX::Model* model, DirectX::CommonStates* commonState)
+void Stage::Initialize(const DirectX::SimpleMath::Vector3& velocity, const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Vector3& scale, bool active, float angle, IBehavior* behavia, DirectX::Model* model, DirectX::CommonStates* commonState)
 {
 	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
 	ID3D11DeviceContext1* context = pDR->GetD3DDeviceContext();
@@ -45,6 +45,7 @@ void Stage::Initialize(const DirectX::SimpleMath::Vector3& velocity, const Direc
 
 	m_behavia = behavia;
 
+	m_scale = scale;
 	m_pModel = model;
 
 	m_time = 0.0f;
@@ -53,7 +54,7 @@ void Stage::Initialize(const DirectX::SimpleMath::Vector3& velocity, const Direc
 	m_AABBObject->Initialize();
 	m_AABBObject->SetData(DirectX::SimpleMath::Vector3(m_position.x - 6.0f, m_position.y - 0.5f, m_position.z - 6.0f), DirectX::SimpleMath::Vector3(m_position.x + 6.0f, m_position.y + 0.5f, m_position.z + 6.0f));
 
-	m_previousRotation = m_rotation;
+	m_previousRotation = m_rotation.ToEuler();
 	m_isRotation = false;
 	m_rotationTime_s = 10;
 }
@@ -91,11 +92,11 @@ void Stage::Draw(Camera* camera)
 	DirectX::SimpleMath::Matrix world = DirectX::SimpleMath::Matrix::Identity;
 
 	DirectX::SimpleMath::Matrix trans = DirectX::SimpleMath::Matrix::CreateTranslation(m_position + m_offsetPosition);
-	DirectX::SimpleMath::Matrix rot = DirectX::SimpleMath::Matrix::CreateRotationX(m_rotation.x / 180.0f * 3.14f) * DirectX::SimpleMath::Matrix::CreateRotationZ(m_rotation.z / 180.0f * 3.14f) * DirectX::SimpleMath::Matrix::CreateRotationY(m_rotation.y / 180.0f * 3.14f);
-
-	if (m_type == Stage::StageType::Stage2_1)
+	DirectX::SimpleMath::Matrix rot = DirectX::SimpleMath::Matrix::CreateRotationX(DirectX::XMConvertToRadians(m_rotation.x)) * DirectX::SimpleMath::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(m_rotation.z)) * DirectX::SimpleMath::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_rotation.y));
+	rot = DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_rotation);
+	if (m_type == StageType::Stage2_1)
 	{
-		world *= DirectX::SimpleMath::Matrix::CreateScale(0.32f);
+		//world *= DirectX::SimpleMath::Matrix::CreateScale(0.32f);
 	}
 
 	world *= rot * trans;

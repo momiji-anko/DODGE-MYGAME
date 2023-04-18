@@ -77,9 +77,10 @@ public:
 
 	// èâä˙âª
 	 void Initialize(
-		const DirectX::SimpleMath::Vector3& velocity,
-		const DirectX::SimpleMath::Vector3& position,
-		bool active,
+		 const DirectX::SimpleMath::Vector3& velocity,
+		 const DirectX::SimpleMath::Vector3& position,
+		 const DirectX::SimpleMath::Vector3& scale,
+		 bool active,
 		float angle,
 		IBehavior* behavia,
 		DirectX::Model* model,

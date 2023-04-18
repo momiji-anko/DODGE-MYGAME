@@ -12,6 +12,7 @@
 
 #include "TitleScene.h"
 #include"Libraries/MyLibraries/Camera.h"
+#include"Libraries/MyLibraries/TextureManager.h"
 
 using namespace DirectX;
 
@@ -124,16 +125,26 @@ GAME_SCENE TitleScene::Update(const DX::StepTimer& timer)
 
 		if (m_keyboardStateTracker->IsKeyPressed(Keyboard::Keys::Left))
 		{
-			m_stageNum = 0;
+			m_stageNum -= 1;
 			m_pAdx2->Play(CRI_CUESHEET_0_BUTTON);
 
 		}
 		if (m_keyboardStateTracker->IsKeyPressed(Keyboard::Keys::Right))
 		{
-			m_stageNum = 1;
+			m_stageNum += 1;
 			m_pAdx2->Play(CRI_CUESHEET_0_BUTTON);
 
 
+		}
+
+		if (m_stageNum < 0)
+		{
+			m_stageNum = 0;
+		}
+
+		if (m_stageNum > 2)
+		{
+			m_stageNum = 2;
 		}
 
 		if (m_keyboardStateTracker->IsKeyPressed(Keyboard::Keys::Space) && m_flagFadeIn == true)
@@ -157,16 +168,17 @@ GAME_SCENE TitleScene::Update(const DX::StepTimer& timer)
 		{
 			m_modeSelectNum = 1;
 			m_pAdx2->Play(CRI_CUESHEET_0_BUTTON);
-			
 
 		}
+
+	
 
 		if (m_keyboardStateTracker->IsKeyPressed(Keyboard::Keys::Space) && m_flagFadeIn == true)
 		{
 			m_flag = true;
 			m_pAdx2->Play(CRI_CUESHEET_0_BUTTON);
 			m_titleSelect = TitleState::FADEOUT;
-			m_playerMode = GameMain::PlayerMode::Player1;
+
 			m_playerMode = static_cast<GameMain::PlayerMode>(m_modeSelectNum + 1);
 		}
 
@@ -317,40 +329,52 @@ void TitleScene::Draw()
 		break;
 	case TitleScene::TitleState::STAGESELECT:
 	{
-		DirectX::SimpleMath::Vector2 stageSelectPosition[2] =
+		float aa = size.right / 3.0f;
+		
+		DirectX::SimpleMath::Vector2 stageSelectPosition[] =
 		{
-			DirectX::SimpleMath::Vector2{size.right / 2.0f - size.right / 4.0f , size.bottom / 2.0f + size.bottom / 4.0f  },
-			DirectX::SimpleMath::Vector2{size.right / 2.0f + size.right / 4.0f , size.bottom / 2.0f + size.bottom / 4.0f }
+			DirectX::SimpleMath::Vector2{size.right / 2.0f - aa , size.bottom / 2.0f + size.bottom / 4.0f  },
+			DirectX::SimpleMath::Vector2{size.right / 2.0f  , size.bottom / 2.0f + size.bottom / 4.0f },
+			DirectX::SimpleMath::Vector2{size.right / 2.0f + aa , size.bottom / 2.0f + size.bottom / 4.0f }
 		};
 
-		DirectX::SimpleMath::Vector4 stageSelectColor[2] =
+		DirectX::SimpleMath::Vector4 stageSelectColor[] =
 		{
-			DirectX::SimpleMath::Vector4{1.0f,static_cast<float>(m_stageNum),static_cast<float>(m_stageNum),1.0f},
-			DirectX::SimpleMath::Vector4{1.0f,1.0f - m_stageNum,1.0f - m_stageNum,1.0f},
+			DirectX::SimpleMath::Vector4{1.0f,1.0f,1.0f,1.0f},
+			DirectX::SimpleMath::Vector4{1.0f,0.0f,0.0f,1.0f},
 		};
-		float texSize[2] = { 117.5f,123 };
+		float texSize[] = { 117.5f,123,102 };
 		for (int i = 0; i < m_stageSelectTexture.size(); i++)
 		{
+			DirectX::SimpleMath::Vector4 color = stageSelectColor[0];
 
-			m_spriteBatch->Draw(m_stageSelectTexture[i].Get(), stageSelectPosition[i], nullptr, stageSelectColor[i], 0.0f, DirectX::SimpleMath::Vector2(texSize[i], 39.0f), 2.0f);
+			if (i == m_stageNum)
+			{
+				color = stageSelectColor[1];
+			}
+
+			m_spriteBatch->Draw(m_stageSelectTexture[i].Get(), stageSelectPosition[i], nullptr, color, 0.0f, DirectX::SimpleMath::Vector2(texSize[i], 39.0f), 1.5f);
 
 		}
 	}
 		break;
 	case TitleScene::TitleState::MODESELECT:
 	{
-		DirectX::SimpleMath::Vector2 modeSelectPosition[2] =
+		
+
+		DirectX::SimpleMath::Vector2 modeSelectPosition[3] =
 		{
-			DirectX::SimpleMath::Vector2{size.right / 2.0f - size.right / 4.0f , size.bottom / 2.0f + size.bottom / 4.0f  },
-			DirectX::SimpleMath::Vector2{size.right / 2.0f + size.right / 4.0f , size.bottom / 2.0f + size.bottom / 4.0f }
+			DirectX::SimpleMath::Vector2{size.right / 2.0f - size.right / 4.0f , size.bottom / 2.0f + size.bottom / 4.0f },
+			DirectX::SimpleMath::Vector2{size.right / 2.0f + size.right / 4.0f , size.bottom / 2.0f + size.bottom / 4.0f },
+			
 		};
 
-		DirectX::SimpleMath::Vector4 modeSelectColor[2] =
+		DirectX::SimpleMath::Vector4 modeSelectColor[3] =
 		{
 			DirectX::SimpleMath::Vector4{1.0f,static_cast<float>(m_modeSelectNum),static_cast<float>(m_modeSelectNum),1.0f},
 			DirectX::SimpleMath::Vector4{1.0f,1.0f - m_modeSelectNum,1.0f - m_modeSelectNum,1.0f},
 		};
-		float tex[2] = {92,102};
+		float tex[3] = {92,102};
 
 		for (int i = 0; i < m_modeSelectTextures.size(); i++)
 		{
@@ -400,35 +424,14 @@ void TitleScene::LoadResources()
 	m_spriteBatch = std::make_unique<DirectX::SpriteBatch>(context);
 	m_spriteFont = std::make_unique<DirectX::SpriteFont>(device, L"Resources/Fonts/SegoeUI_18.spritefont");
 
-	// テクスチャの読み込み
-	CreateWICTextureFromFile(
-		device,
-		L"Resources/Textures/title.png",
-		nullptr,
-		m_titileTexture.ReleaseAndGetAddressOf()
-	);
-	// テクスチャの読み込み
-	CreateWICTextureFromFile(
-		device,
-		L"Resources/Textures/PushSpaceKey.png",
-		nullptr,
-		m_pushTexture.ReleaseAndGetAddressOf()
-	);
+	TextureManager& textureManager = TextureManager::GetInstance();
+	
+	m_titileTexture = textureManager.LoadTexture(L"Resources/Textures/title.png");
+	m_pushTexture = textureManager.LoadTexture(L"Resources/Textures/PushSpaceKey.png");
+	m_blackTexture = textureManager.LoadTexture(L"Resources/Textures/black.png");
+	m_CRIWARETexture = textureManager.LoadTexture(L"Resources/Textures/CRIWARELOGO_1.png");
 
-	// テクスチャの読み込み
-	CreateWICTextureFromFile(
-		device,
-		L"Resources/Textures/black.png",
-		nullptr,
-		m_blackTexture.ReleaseAndGetAddressOf()
-	);
-	// テクスチャの読み込み
-	CreateWICTextureFromFile(
-		device,
-		L"Resources/Textures/CRIWARELOGO_1.png",
-		nullptr,
-		m_CRIWARETexture.ReleaseAndGetAddressOf()
-	);
+
 
 	//	エフェクトファクトリの作成
 	EffectFactory* factory2 = new EffectFactory(pDR->GetD3DDevice());
@@ -464,7 +467,7 @@ void TitleScene::LoadResources()
 	for (std::unique_ptr<Stage>& stage : m_stageobj)
 	{
 		stage = std::make_unique<Stage>();
-		stage->Initialize(DirectX::SimpleMath::Vector3::Zero, m_stagePosition[num], true, 0, nullptr, m_stageModel.get(), m_commonState.get());
+		stage->Initialize(DirectX::SimpleMath::Vector3::Zero, m_stagePosition[num],DirectX::SimpleMath::Vector3::One, true, 0, nullptr, m_stageModel.get(), m_commonState.get());
 		stage->SetStageType(static_cast <Stage::StageType>(num));
 		stage->SetShadow(nullptr);
 		num++;
@@ -473,7 +476,7 @@ void TitleScene::LoadResources()
 	//プレイヤーモードのテクスチャのロード
 	m_modeSelectTextures.resize(static_cast<int>(GameMain::PlayerMode::Player2));
 
-	const wchar_t* modeTexFileName[static_cast<int>(GameMain::PlayerMode::Player2)] =
+	std::wstring modeTexFileName[static_cast<int>(GameMain::PlayerMode::Player2)] =
 	{
 		L"Resources/Textures/SOLO.png",
 		L"Resources/Textures/MARUTI.png",
@@ -482,32 +485,25 @@ void TitleScene::LoadResources()
 
 	for (int i = 0; i < static_cast<int>(GameMain::PlayerMode::Player2); i++)
 	{
-		CreateWICTextureFromFile(
-			device,
-			modeTexFileName[i],
-			nullptr,
-			m_modeSelectTextures[i].ReleaseAndGetAddressOf()
-		);
+		m_modeSelectTextures[i] = textureManager.LoadTexture(modeTexFileName[i].c_str());
+		
 	}
 
 	//プレイヤーモードのテクスチャのロード
-	m_stageSelectTexture.resize(2);
+	m_stageSelectTexture.resize(3);
 	int stageTexNum = static_cast<int>(m_stageSelectTexture.size());
-	const wchar_t* stageTexFileName[2] =
+	std::wstring stageTexFileName[] =
 	{
 		L"Resources/Textures/stage1.png",
 		L"Resources/Textures/stage2.png",
+		L"Resources/Textures/stage3.png",
 	};
 
 
 	for (int i = 0; i < m_stageSelectTexture.size(); i++)
 	{
-		CreateWICTextureFromFile(
-			device,
-			stageTexFileName[i],
-			nullptr,
-			m_stageSelectTexture[i].ReleaseAndGetAddressOf()
-		);
+		m_stageSelectTexture[i] = textureManager.LoadTexture(stageTexFileName[i].c_str());
+		
 	}
 
 }

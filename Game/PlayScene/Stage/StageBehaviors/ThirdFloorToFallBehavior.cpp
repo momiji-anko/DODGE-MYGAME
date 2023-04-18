@@ -1,8 +1,8 @@
 /*
 * 2023/03/27
 * ThirdFloorToFallBhavior.cpp
-* –ƒ¶@•–
 * ŽO”Ô–Ú‚É—Ž‚¿‚é°‚Ì“®‚«
+* –ƒ¶@•–
 */
 #include"pch.h"
 #include"ThirdFloorToFallBehavior.h"
@@ -174,7 +174,12 @@ void ThirdFloorToFallBehavior::Execute(const DX::StepTimer& timer, Actor* actor)
 			position.x = stage->Lerp(100.0f, 6.0f, time_s / MOVE_TIME_S);
 		}
 		break;
-	case 27:
-		break;
+
 	}
+	stage->SetPosition(position);
+	stage->SetOffsetPosition(offsetPosition);
+	stage->SetRoutine(routine);
+	stage->SetTime(time_s);
+
+
 }

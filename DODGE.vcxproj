@@ -234,6 +234,7 @@
     <ClInclude Include="Game\PlayScene\ShadowMap.h" />
     <ClInclude Include="Game\PlayScene\Stage\Stage.h" />
     <ClInclude Include="Game\PlayScene\Stage\StageBehaviors\FirstFloorToFallBehavior.h" />
+    <ClInclude Include="Game\PlayScene\Stage\StageBehaviors\RotationCubeBehavior.h" />
     <ClInclude Include="Game\PlayScene\Stage\StageBehaviors\SecondFloorToFallBehavior.h" />
     <ClInclude Include="Game\PlayScene\Stage\StageBehaviors\ThirdFloorToFallBehavior.h" />
     <ClInclude Include="Game\PlayScene\Stage\StageBehaviors\TiltingFloorbehavior.h" />
@@ -252,7 +253,9 @@
     <ClInclude Include="Libraries\MyLibraries\Camera.h" />
     <ClInclude Include="Libraries\MyLibraries\DebugCamera.h" />
     <ClInclude Include="Libraries\MyLibraries\GridFloor.h" />
+    <ClInclude Include="Libraries\MyLibraries\ModelManager.h" />
     <ClInclude Include="Libraries\MyLibraries\Singleton.h" />
+    <ClInclude Include="Libraries\MyLibraries\TextureManager.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resources\Icon\Icon.h" />
     <ClInclude Include="StepTimer.h" />
@@ -292,6 +295,7 @@
     <ClCompile Include="Game\PlayScene\ShadowMap.cpp" />
     <ClCompile Include="Game\PlayScene\Stage\Stage.cpp" />
     <ClCompile Include="Game\PlayScene\Stage\StageBehaviors\FirstFloorToFallBehavior.cpp" />
+    <ClCompile Include="Game\PlayScene\Stage\StageBehaviors\RotationCubeBehavior.cpp" />
     <ClCompile Include="Game\PlayScene\Stage\StageBehaviors\SecondFloorToFallBehavior.cpp" />
     <ClCompile Include="Game\PlayScene\Stage\StageBehaviors\ThirdFloorToFallBehavior.cpp" />
     <ClCompile Include="Game\PlayScene\Stage\StageBehaviors\TiltingFloorbehavior.cpp" />
@@ -307,6 +311,8 @@
     <ClCompile Include="Libraries\MyLibraries\Camera.cpp" />
     <ClCompile Include="Libraries\MyLibraries\DebugCamera.cpp" />
     <ClCompile Include="Libraries\MyLibraries\GridFloor.cpp" />
+    <ClCompile Include="Libraries\MyLibraries\ModelManager.cpp" />
+    <ClCompile Include="Libraries\MyLibraries\TextureManager.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

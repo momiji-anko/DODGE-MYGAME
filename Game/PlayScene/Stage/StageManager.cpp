@@ -7,13 +7,14 @@
 #include"DeviceResources.h"
 #include"../MyRandom.h"
 #include<stdlib.h>
+#include"Libraries/MyLibraries/ModelManager.h"
 
 //ビヘイビアーのインクルード
 #include"StageBehaviors/FirstFloorToFallBehavior.h"
 #include"StageBehaviors/SecondFloorToFallBehavior.h"
 #include"StageBehaviors/ThirdFloorToFallBehavior.h"
 #include"StageBehaviors/TiltingFloorbehavior.h"
-
+#include"StageBehaviors/RotationCubeBehavior.h"
 
 void StageManager::SetShadow(ShadowMap* shadow)
 {
@@ -26,7 +27,8 @@ void StageManager::SetShadow(ShadowMap* shadow)
 StageManager::StageManager()
 	:
 	m_commonState(nullptr),
-	m_stageSelect(StageSelect::Stage1)
+	m_stageSelect(StageSelect::Stage1),
+	m_stageModel()
 {
 	
 
@@ -48,31 +50,23 @@ void StageManager::Initialize(DirectX::CommonStates* commonState, StageSelect st
 
 	m_stageSelect = stage;
 
-	//HACK::TEST
-	m_stageSelect = StageSelect::Stage2;
+	
 	
 	switch (m_stageSelect)
 	{
 	case StageSelect::Stage1:
-		StageFileName = L"Resources/StageData/Stage1Test.json";
+		StageFileName = L"Resources/StageData/Stage1.json";
 		break;
 	case StageSelect::Stage2:
-		StageFileName = L"Resources/StageData/Stage2Test.json";
-
-		
-
+		StageFileName = L"Resources/StageData/Stage2.json";
 		break;
 	case StageSelect::Stage3:
-		StageFileName = L"Resources/StageData/Stage3Test.json";
-
-	
+		StageFileName = L"Resources/StageData/Stage3.json";
 		break;
 	default:
 		break;
 	}
 	
-	//HACK::Testで頂点座標を表示するようモデル
-	m_geo = DirectX::GeometricPrimitive::CreateBox(context, DirectX::SimpleMath::Vector3(0.3f, 0.3f, 0.3f));
 	
 	//ビヘイビアー作成
 	CreateBehavior();
@@ -84,7 +78,7 @@ void StageManager::Initialize(DirectX::CommonStates* commonState, StageSelect st
 void StageManager::Update(const DX::StepTimer& timer)
 {
 	
-	ChackStageMoveEnd();
+	CheckStageMoveEnd();
 
 	//ステージの更新
 	for (int i = 0; i < m_stage.size(); i++)
@@ -103,12 +97,7 @@ void StageManager::Draw(Camera* camera)
 		stage->Draw(camera);
 	}
 
-	for (int i = 0; i < m_indices.size(); i++)
-	{
-		m_geo->Draw(DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(m_nowVertices[m_indices[i][0]]) ), camera->GetViewMatrix(), camera->GetProjectionMatrix());
-		m_geo->Draw(DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(m_nowVertices[m_indices[i][1]])	), camera->GetViewMatrix(), camera->GetProjectionMatrix());
-		m_geo->Draw(DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(m_nowVertices[m_indices[i][2]])	), camera->GetViewMatrix(), camera->GetProjectionMatrix());
-	}
+
 
 }
 
@@ -132,7 +121,12 @@ void StageManager::CreateBehavior()
 	m_behavior[2] = std::make_unique<ThirdFloorToFallBehavior>();
 
 	m_behavior[3] = nullptr;
+	//傾く床
 	m_behavior[4] = std::make_unique<TiltingFloorbehavior>();
+	//回転するキューブ
+	m_behavior[5] = std::make_unique<RotationCubeBehavior>();
+
+
 
 
 }
@@ -234,18 +228,20 @@ void StageManager::LoadStageJson(const std::wstring& fileName)
 	//取得したファイルパスをstringからwstringに変換する
 	std::wstring modelFile = ConvertWString(modelFileName);
 	//モデル作成
-	m_stageModel = CreateModel(modelFile.c_str());
+	m_stageModel = ModelManager::GetInstance().LoadModel(modelFile.c_str());
 
 	//ステージの数分配列を確保
 	m_stage.resize(stageNum);
 	
+	DirectX::SimpleMath::Vector3 scale;
+
 	//ステージの作成
 	for (int i = 0; i < stageNum; i++)
 	{
 		//ステージのユニークポインタで作成
 		m_stage[i] = std::make_unique<Stage>();
 		//読み込んだステージ情報でステージを初期化する
-		m_stage[i]->Initialize(DirectX::SimpleMath::Vector3::Zero, m_stagePositions[i], true, 0.0f, m_behavior[m_stageType[i]].get(), m_stageModel.get(), m_commonState);
+		m_stage[i]->Initialize(DirectX::SimpleMath::Vector3::Zero, m_stagePositions[i], scale, true, 0.0f, m_behavior[m_stageType[i]].get(), m_stageModel, m_commonState);
 		//ステージのタイプを設定
 		m_stage[i]->SetStageType(static_cast<Stage::StageType>(m_stageType[i]));
 
@@ -274,7 +270,7 @@ std::wstring StageManager::ConvertWString(const std::string& str)
 	return result;
 }
 
-void StageManager::ChackStageMoveEnd()
+void StageManager::CheckStageMoveEnd()
 {
 	//全てのステージが行動を終了したか確認
 	for (int n = 0; n < m_stage.size(); n++)
@@ -312,30 +308,6 @@ void StageManager::ChackStageMoveEnd()
 	}
 }
 
-/// <summary>
-/// モデル作成
-/// </summary>
-/// <param name="fileName">モデルファイルパス</param>
-/// <returns>モデルのユニークポインター</returns>
-std::unique_ptr<DirectX::Model> StageManager::CreateModel(const wchar_t* fileName)
-{
-	//DeviceResourcesからデバイスの取得
-	ID3D11Device1* device= DX::DeviceResources::GetInstance()->GetD3DDevice();
-
-	//エフェクトファクトリの作成
-	std::unique_ptr<DirectX::EffectFactory> effectFactry = std::make_unique<DirectX::EffectFactory>(device);
-
-	//	テクスチャの読み込みパス指定
-	effectFactry->SetDirectory(L"Resources/Models");
-	
-	//	ファイルを指定してモデルデータ読み込み＆読み込んだモデルを返す
-	return DirectX::Model::CreateFromCMO(
-		device,
-		fileName,
-		*effectFactry
-	);
-	
-}
 
 
 bool StageManager::PlayerStageAABBHitCheck(Actor* player)
@@ -368,7 +340,7 @@ bool StageManager::PlayerStageAABBHitCheck(Actor* player)
 
 				 if (playerVel.Length() == 0)
 				 {
-					 playerVel.y = -0.4f;
+					 playerVel.y = -0.7f;
 				 }
 				
 				std::vector<DirectX::SimpleMath::Vector3> playerLinePos = { DirectX::SimpleMath::Vector3(playerPos),DirectX::SimpleMath::Vector3(playerPos.x,playerPos.y + 2.5f,playerPos.z) };

@@ -86,9 +86,6 @@
     <Filter Include="Game\PlayScene\Stage\StageBehaviors">
       <UniqueIdentifier>{907c0335-bab6-4d60-8614-f670d729de7a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Game\PlayScene\Player\PlayerBehaviors">
-      <UniqueIdentifier>{a6f97888-ba96-44a0-886b-84a8d21d84af}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -261,6 +258,15 @@
     <ClInclude Include="Game\PlayScene\Stage\StageBehaviors\TiltingFloorbehavior.h">
       <Filter>Game\PlayScene\Stage\StageBehaviors</Filter>
     </ClInclude>
+    <ClInclude Include="Libraries\MyLibraries\ModelManager.h">
+      <Filter>Libraries\MyLibraries</Filter>
+    </ClInclude>
+    <ClInclude Include="Libraries\MyLibraries\TextureManager.h">
+      <Filter>Libraries\MyLibraries</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\PlayScene\Stage\StageBehaviors\RotationCubeBehavior.h">
+      <Filter>Game\PlayScene\Stage\StageBehaviors</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -408,6 +414,15 @@
       <Filter>Game\PlayScene\Stage\StageBehaviors</Filter>
     </ClCompile>
     <ClCompile Include="Game\PlayScene\Stage\StageBehaviors\TiltingFloorbehavior.cpp">
+      <Filter>Game\PlayScene\Stage\StageBehaviors</Filter>
+    </ClCompile>
+    <ClCompile Include="Libraries\MyLibraries\ModelManager.cpp">
+      <Filter>Libraries\MyLibraries</Filter>
+    </ClCompile>
+    <ClCompile Include="Libraries\MyLibraries\TextureManager.cpp">
+      <Filter>Libraries\MyLibraries</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\PlayScene\Stage\StageBehaviors\RotationCubeBehavior.cpp">
       <Filter>Game\PlayScene\Stage\StageBehaviors</Filter>
     </ClCompile>
   </ItemGroup>

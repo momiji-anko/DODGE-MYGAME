@@ -66,7 +66,7 @@ private:
 
 	std::unique_ptr<Fade> m_fadeInOut;
 
-	std::vector< std::unique_ptr<Stage> > m_stageobj;
+	std::vector<std::unique_ptr<Stage>> m_stageobj;
 	std::vector<DirectX::SimpleMath::Vector3> m_stagePosition;
 	//カメラの角度（ラジアン）
 	float m_cameraRot;

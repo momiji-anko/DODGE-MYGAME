@@ -38,10 +38,12 @@ bool NormalObstacleSpawner::Create(std::vector< std::unique_ptr<Actor>>& actors,
 		DirectX::SimpleMath::Vector3 velocity;
 		velocity.x = -sin(angle) * 0.1;
 		velocity.z = cos(angle) * 0.1;
+		DirectX::SimpleMath::Vector3 scale;
+
 		//アイテムの初期化
-		actor->Initialize(velocity, position, true, angle, behavior, model, commonState);
+		actor->Initialize(velocity, position, scale, true, angle, behavior, model, commonState);
 
-
+		
 
 
 		//アイテムの生成に成功

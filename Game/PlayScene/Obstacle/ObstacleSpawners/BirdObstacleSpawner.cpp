@@ -52,6 +52,8 @@ bool BirdObstacleSpawner::Create(std::vector<std::unique_ptr<Actor>>& actors, co
 			//速度を計算する（発射角度を加味した移動速度を計算する）
 			velocity = DirectX::SimpleMath::Vector3::TransformNormal(velocity, rotetion);
 
+			DirectX::SimpleMath::Vector3 scale;
+
 			//1体づつのポジションの計算
 			DirectX::SimpleMath::Vector3 pos;
 			pos = position;
@@ -65,12 +67,17 @@ bool BirdObstacleSpawner::Create(std::vector<std::unique_ptr<Actor>>& actors, co
 			{
 				pos.z = (i - 2) * 4.0f;
 			}
-
+			
 
 			//障害物の初期化
-			actor->Initialize(velocity, pos, true, angle, behavior, model, commonState);
+			actor->Initialize(velocity, pos, scale, true, angle, behavior, model, commonState);
+
+			DirectX::SimpleMath::Quaternion rotation;
+
+			rotation = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitY, angle + DirectX::XM_PI);
+			
 			//角度の設定
-			actor->SetRotation(DirectX::SimpleMath::Vector3(0.0f, angle + DirectX::XM_PI, 0.0f));
+			actor->SetRotation(rotation);
 
 
 			//障害物の生成に成功

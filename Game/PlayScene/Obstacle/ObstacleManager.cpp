@@ -1,3 +1,9 @@
+/*
+* 2023/04/15
+* ObstacleManeger.cpp
+* 障害物管理クラス
+* 麻生　楓
+*/
 #include"pch.h"
 #include"ObstacleManager.h"
 #include<Effects.h>
@@ -5,11 +11,11 @@
 #include"../MyRandom.h"
 #include"../Player/Player.h"
 #include"../../GameMain.h"
-
+#include"Libraries/MyLibraries/ModelManager.h"
 
 const int ObstacleManeger::OBSTACLE_MAX_NUM = 100;
 const int ObstacleManeger::EFFECT_MAX_NUM = 5;
-const float ObstacleManeger::SPANE_COOL_TIME_S = 3.0f;
+const float ObstacleManeger::SPAWN_COOL_TIME_S = 3.0f;
 
 //コンストラクタ
 ObstacleManeger::ObstacleManeger() 
@@ -19,26 +25,26 @@ ObstacleManeger::ObstacleManeger()
 	m_models{},
 	m_commonState(nullptr),
 	m_normalSpawnePosition{ 
-		{0,DirectX::SimpleMath::Vector3(19,0.0f,-19) },
-		{1,DirectX::SimpleMath::Vector3(19,0.0f,19) },
-		{2,DirectX::SimpleMath::Vector3(-19,0.0f,19) },
-		{3,DirectX::SimpleMath::Vector3(-19,0.0f,-19) },
+		{DirectX::SimpleMath::Vector3(19,0.0f,-19) },
+		{DirectX::SimpleMath::Vector3(19,0.0f,19) },
+		{DirectX::SimpleMath::Vector3(-19,0.0f,19) },
+		{DirectX::SimpleMath::Vector3(-19,0.0f,-19) },
 	},
 	m_stickSpawnePosition{ 
-		{0,DirectX::SimpleMath::Vector3(19.0f,0.0f,0.0f) },
-		{1,DirectX::SimpleMath::Vector3(0.0f,0.0f,-19.0f) },
-		{2,DirectX::SimpleMath::Vector3(-19.0f,0.0f,0.0f) },
-		{3,DirectX::SimpleMath::Vector3(0.0f,0.0f,19) },
+		{DirectX::SimpleMath::Vector3(19.0f,0.0f,0.0f) },
+		{DirectX::SimpleMath::Vector3(0.0f,0.0f,-19.0f) },
+		{DirectX::SimpleMath::Vector3(-19.0f,0.0f,0.0f) },
+		{DirectX::SimpleMath::Vector3(0.0f,0.0f,19) },
 	},
 	m_birdSpawnPosition{
-		{0,DirectX::SimpleMath::Vector3(19.0f ,  3.0f ,0.0f) },
-		{1,DirectX::SimpleMath::Vector3(0.0f  ,  3.0f ,-19.0f) },
-		{2,DirectX::SimpleMath::Vector3(-19.0f,  3.0f ,0.0f) },
-		{3,DirectX::SimpleMath::Vector3(0.0f  ,  3.0f ,19.0f) },
+		{DirectX::SimpleMath::Vector3(19.0f ,  3.0f ,0.0f) },
+		{DirectX::SimpleMath::Vector3(0.0f  ,  3.0f ,-19.0f) },
+		{DirectX::SimpleMath::Vector3(-19.0f,  3.0f ,0.0f) },
+		{DirectX::SimpleMath::Vector3(0.0f  ,  3.0f ,19.0f) },
 	},
 	m_hitvel{0,0,0},
 	m_time_s(0.0f),
-	m_spawneCoolTime(0.0f),
+	m_spawneCoolTime_s(0.0f),
 	m_spawneTime_s(0.0f)
 {
 }
@@ -82,96 +88,26 @@ void ObstacleManeger::Initialize(DirectX::CommonStates* commonState, StageManage
 			
 		}
 	}
-
+	//障害物スポナ作成
 	CreateSpawner();
-
+	//障害物ビヘイビアー作成
 	CreateBehavior();
 	
 
-	m_spawneCoolTime = SPANE_COOL_TIME_S;
-	m_spawneTime_s = 0.0f;
+	m_spawneCoolTime_s = SPAWN_COOL_TIME_S;
+	m_spawneTime_s = SPAWN_COOL_TIME_S;
 
-	//	エフェクトファクトリの作成
-	DirectX::EffectFactory* meteoriteFactory = new DirectX::EffectFactory(pDR->GetD3DDevice());
-
-	//	テクスチャの読み込みパス指定
-	meteoriteFactory->SetDirectory(L"Resources/Models");
-
-	//	ファイルを指定してモデルデータ読み込み
-	m_models[Obstacle::ObstacleType::METEORITE] = DirectX::Model::CreateFromCMO(
-		pDR->GetD3DDevice(),
-		L"Resources/Models/star.cmo",
-		*meteoriteFactory
-	);
-
-
-	delete meteoriteFactory;
-		//	エフェクトファクトリの作成
-	DirectX::EffectFactory* stickFactory = new DirectX::EffectFactory(pDR->GetD3DDevice());
-
-	//	テクスチャの読み込みパス指定
-	stickFactory->SetDirectory(L"Resources/Models");
-
-	//	ファイルを指定してモデルデータ読み込み
-	m_models[Obstacle::ObstacleType::STICK] = DirectX::Model::CreateFromCMO(
-		pDR->GetD3DDevice(),
-		L"Resources/Models/stickObstale.cmo",
-		*stickFactory
-	);
-
-	delete stickFactory;
-
-	//	エフェクトファクトリの作成
-	DirectX::EffectFactory* rotateStickFactory = new DirectX::EffectFactory(pDR->GetD3DDevice());
-
-	//	テクスチャの読み込みパス指定
-	rotateStickFactory->SetDirectory(L"Resources/Models");
-
-	//	ファイルを指定してモデルデータ読み込み
-	m_models[Obstacle::ObstacleType::ROTATESTICK] = DirectX::Model::CreateFromCMO(
-		pDR->GetD3DDevice(),
-		L"Resources/Models/roll.cmo",
-		*rotateStickFactory
-	);
+	//障害物モデル作成
+	CreateModel();
 	
+	//Stage1とStage2であれば回転する棒を生成する
+	if (stage == StageManager::StageSelect::Stage1 || stage == StageManager::StageSelect::Stage2)
+	{
+		CreateObstacle(DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f), Obstacle::ObstacleType::ROTATESTICK, 0);
+		CreateObstacle(DirectX::SimpleMath::Vector3(0.0f, 3.0f, 0.0f), Obstacle::ObstacleType::REVERSE_ROTATESTICK, 0);
+	}
 
 
-	delete rotateStickFactory;
-	//	エフェクトファクトリの作成
-	DirectX::EffectFactory* birdFactory = new DirectX::EffectFactory(pDR->GetD3DDevice());
-
-	//	テクスチャの読み込みパス指定
-	birdFactory->SetDirectory(L"Resources/Models");
-
-	//	ファイルを指定してモデルデータ読み込み
-	m_models[Obstacle::ObstacleType::BIRD] = DirectX::Model::CreateFromCMO(
-		pDR->GetD3DDevice(),
-		L"Resources/Models/bule.cmo",
-		*birdFactory
-	);
-
-	delete birdFactory;
-	//	エフェクトファクトリの作成
-	DirectX::EffectFactory* reverceRotateStickFactory = new DirectX::EffectFactory(pDR->GetD3DDevice());
-
-	//	テクスチャの読み込みパス指定
-	reverceRotateStickFactory->SetDirectory(L"Resources/Models");
-
-	//	ファイルを指定してモデルデータ読み込み
-	m_models[Obstacle::ObstacleType::REVERSE_ROTATESTICK] = DirectX::Model::CreateFromCMO(
-		pDR->GetD3DDevice(),
-		L"Resources/Models/roll2.cmo",
-		*reverceRotateStickFactory
-	);
-
-	delete reverceRotateStickFactory;
-
-	
-	CreateObstacle(DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f), Obstacle::ObstacleType::ROTATESTICK, 0);
-	CreateObstacle(DirectX::SimpleMath::Vector3(0.0f, 3.0f, 0.0f), Obstacle::ObstacleType::REVERSE_ROTATESTICK, 0);
-
-
-	
 }
 
 // 更新
@@ -182,39 +118,28 @@ void ObstacleManeger::Update(const DX::StepTimer& timer)
 	m_spawneTime_s -= time;
 	if (m_spawneTime_s <= 0.0f)
 	{
-		m_spawneTime_s = m_spawneCoolTime;
+		m_spawneTime_s = m_spawneCoolTime_s;
 		int type = MyRandom::GetIntRange(0, 3);
 		float rad = atan2(m_normalSpawnePosition[type].x - m_playerPosition.x, m_normalSpawnePosition[type].z - m_playerPosition.z);
 		float  birdangle = ((DirectX::XM_PI / 2.0f) * type) ;
 
+
+		float  angle = (DirectX::XM_PI / 2.0f) * type;
 		if (m_time_s <= 50)
 		{
-			float  angle = (DirectX::XM_PI / 2.0f) * type;
-			switch (MyRandom::GetIntRange(0, 5))
+			int createObs = MyRandom::GetIntRange(0, 5);
+
+			if(createObs <= 4)
 			{
-			case 0:
-			case 1:
-			case 2:
-			case 3:
-			case 4:
-				
-
-
-
 				CreateObstacle(m_normalSpawnePosition[type], Obstacle::ObstacleType::NORMAL, rad);
-				//CreateObstacle(m_normalSpawnePosition[type], Obstacle::ObstacleType::MEANDERING, rad);
-				//CreateObstacle(m_playerPosition+DirectX::SimpleMath::Vector3(0.0f,10.0f,0.0f), Obstacle::ObstacleType::METEORITE, rad);
-				break;
-			case 5:
-
-
-
-
-				CreateObstacle(m_stickSpawnePosition[type], Obstacle::ObstacleType::STICK, angle);
-
-				break;
 
 			}
+			else if (createObs == 5)
+			{
+				CreateObstacle(m_stickSpawnePosition[type], Obstacle::ObstacleType::STICK, angle);
+			}
+
+			
 		}
 		else 
 		{
@@ -227,7 +152,7 @@ void ObstacleManeger::Update(const DX::StepTimer& timer)
 			}
 			else if (random <= 45)
 			{
-				float  angle = (DirectX::XM_PI / 2.0f) * type;
+				
 
 				CreateObstacle(m_stickSpawnePosition[type], Obstacle::ObstacleType::STICK, angle);
 			}
@@ -246,12 +171,9 @@ void ObstacleManeger::Update(const DX::StepTimer& timer)
 		
 
 		
-		m_spawneCoolTime -= 0.003f;
+		m_spawneCoolTime_s -= 0.003f;
 
-		if (m_spawneCoolTime <= 1.0f)
-		{
-			//m_spawneCoolTime = 1.0f;
-		}
+		
 	}
 	for (std::unique_ptr<Actor>& obstacle : m_obstacles)
 	{
@@ -267,8 +189,6 @@ void ObstacleManeger::Update(const DX::StepTimer& timer)
 
 		obstacle->Update(timer);
 	}
-
-
 }
 
 // 描画
@@ -464,7 +384,6 @@ bool ObstacleManeger::PlayerCapsuleHitCheck(Player* player)
 						speed *= -1;
 					}
 
-					//m_hitvel.y += 1.1f;
 					player->SetFlyVelocity(DirectX::SimpleMath::Vector3(m_hitvel) * (0.5f + (speed * 2.0f)));
 				}
 
@@ -489,8 +408,39 @@ bool ObstacleManeger::PlayerCapsuleHitCheck(Player* player)
 }
 
 
-	//障害物の生成
+/// <summary>
+/// 障害物の生成
+/// </summary>
+/// <param name="position">生成座標</param>
+/// <param name="type">障害物のタイプ</param>
+/// <param name="angle">アングル</param>
+/// <returns>true = 生成成功 , false = 生成失敗</returns>
 bool ObstacleManeger::CreateObstacle(const DirectX::SimpleMath::Vector3& position, Obstacle::ObstacleType type, float angle)
 {
-	return m_spawners[type]->Create(m_obstacles, position, angle, m_behavior[type].get(), m_models[type].get(), m_commonState);
+	return m_spawners[type]->Create(m_obstacles, position, angle, m_behavior[type].get(), m_models[type], m_commonState);
+}
+
+/// <summary>
+/// 障害物のモデル生成
+/// 障害物のモデル生成
+/// </summary>
+void ObstacleManeger::CreateModel()
+{
+	//モデルマネージャー取得
+	ModelManager& modelManager = ModelManager::GetInstance();
+
+	//	隕石モデル
+	m_models[Obstacle::ObstacleType::METEORITE] = modelManager.LoadModel(L"Resources/Models/star.cmo");
+
+	//	棒モデル
+	m_models[Obstacle::ObstacleType::STICK] = modelManager.LoadModel(L"Resources/Models/stickObstale.cmo"); 
+	
+	//　回る棒モデル
+	m_models[Obstacle::ObstacleType::ROTATESTICK] = modelManager.LoadModel(L"Resources/Models/roll.cmo"); 
+
+	//	鳥モデル
+	m_models[Obstacle::ObstacleType::BIRD] = modelManager.LoadModel(L"Resources/Models/bule.cmo"); 
+
+	//	反対に回る棒モデル
+	m_models[Obstacle::ObstacleType::REVERSE_ROTATESTICK] = modelManager.LoadModel(L"Resources/Models/roll2.cmo"); 
 }

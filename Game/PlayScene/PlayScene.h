@@ -34,15 +34,15 @@ class PlayScene : public IScene
 private:
 	// コモンステート
 	std::unique_ptr<DirectX::CommonStates>           m_commonState;
-	std::unique_ptr<DirectX::Model>                  m_pModel;
-	std::unique_ptr<DirectX::Model>                  m_pTenModel;
+	DirectX::Model*                  m_pModel;
+	DirectX::Model*                  m_pTenModel;
 
 	
 	std::unique_ptr<Player>                          m_actor;
 	std::unique_ptr<ObstacleManeger>                 m_obstacleManeger;
 	std::unique_ptr<ItemManager>                     m_itemManeger;
 
-	DebugCamera*                                     m_pDebugCamera;
+	DebugCamera*                                     m_pCamera;
 	GridFloor*                                       m_pGridFloor;
 
 
@@ -71,7 +71,7 @@ private:
 
 	std::unique_ptr<StageManager>                    m_stageManeger;
 
-	std::unique_ptr<DirectX::Model>                  m_model[2];
+	DirectX::Model*                  m_model[2];
 	std::unique_ptr<Fade>                  m_fadeInOut;
 	
 	bool                                             m_stratFlag;

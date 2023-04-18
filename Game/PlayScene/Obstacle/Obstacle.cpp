@@ -24,7 +24,7 @@ Obstacle::~Obstacle()
 }
 
 // ‰Šú‰»
-void Obstacle::Initialize(const DirectX::SimpleMath::Vector3& velocity,const DirectX::SimpleMath::Vector3& position,bool active,float angle,IBehavior* behavia,DirectX::Model* model,DirectX::CommonStates* commonState)
+void Obstacle::Initialize(const DirectX::SimpleMath::Vector3& velocity,const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Vector3& scale,bool active,float angle,IBehavior* behavia,DirectX::Model* model,DirectX::CommonStates* commonState)
 {
 
 	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
@@ -44,7 +44,7 @@ void Obstacle::Initialize(const DirectX::SimpleMath::Vector3& velocity,const Dir
 	m_angle = angle;
 
 	m_behavia = behavia;
-
+	m_scale = scale;
 	m_commonState = commonState;
 	m_pModel = model;
 	m_wanderAngle = atan2(m_position.x-m_playerPosition.x, m_position.z - m_playerPosition.z);
@@ -72,7 +72,6 @@ void Obstacle::Initialize(const DirectX::SimpleMath::Vector3& velocity,const Dir
 
 
 	}
-	m_geo = DirectX::GeometricPrimitive::CreateGeoSphere(pDR->GetD3DDeviceContext(), 1.0f, 2, false);
 	
 	m_capsule = std::make_unique<Capsule>();
 	m_capsule->r = 0.0f;
@@ -101,11 +100,7 @@ void Obstacle::Update(const DX::StepTimer& timer)
 
 	m_behavia->Execute(timer, this);
 
-	if (m_position.y <= -30.0f || m_position.y >= 30.0f)
-	{
-		Reset();
-	}
-	if (m_position.z <= -30.0f || m_position.z >= 30.0f)
+	if (CheckInArea())
 	{
 		Reset();
 	}
@@ -125,9 +120,7 @@ void Obstacle::Draw(Camera* camera)
 	DirectX::SimpleMath::Matrix rot = DirectX::SimpleMath::Matrix::CreateRotationY(m_rotation.y);
 	DirectX::SimpleMath::Matrix scale = DirectX::SimpleMath::Matrix::CreateScale(0.005f);
 
-#ifndef DEBUG
-	//m_AABBObject->Draw(DirectX::SimpleMath::Matrix::Identity, camera->GetViewMatrix(), camera->GetProjectionMatrix(), DirectX::SimpleMath::Color(1, 1, 0, 1));
-#endif // DEBUG
+
 
 
 
@@ -135,31 +128,31 @@ void Obstacle::Draw(Camera* camera)
 	{
 	case Obstacle::ObstacleType::NORMAL:
 	case Obstacle::ObstacleType::MEANDERING:
-		m_world *= rot * trans;
+		m_world = rot * trans;
 		m_effect->SetRenderState(camera->GetEyePosition(), camera->GetViewMatrix(), camera->GetProjectionMatrix());
 		m_effect->SetOffsetPosition(m_position);
 		m_effect->Render();
 		break;
 	case Obstacle::ObstacleType::STICK:
-		m_world *= rot * trans;
+		m_world = rot * trans;
 		m_pModel->Draw(context, *m_commonState, m_world, camera->GetViewMatrix(), camera->GetProjectionMatrix());
 		break;
 	case Obstacle::ObstacleType::ROTATESTICK:
 	case Obstacle::ObstacleType::REVERSE_ROTATESTICK:
-		m_world *= scale * rot * trans;
+		m_world = scale * rot * trans;
 
 		m_pModel->Draw(context, *m_commonState, m_world, camera->GetViewMatrix(), camera->GetProjectionMatrix());
 
 		break;
 	case Obstacle::ObstacleType::BIRD:
 		scale = DirectX::SimpleMath::Matrix::CreateScale(0.010f);
-		m_world *= scale * rot  * trans;
+		m_world = scale * rot  * trans;
 
 		m_pModel->Draw(context, *m_commonState, m_world, camera->GetViewMatrix(), camera->GetProjectionMatrix());
 		break;
 	case Obstacle::ObstacleType::METEORITE:
 		scale = DirectX::SimpleMath::Matrix::CreateScale(1);
-		m_world *= scale * rot  * trans;
+		m_world = scale * rot  * trans;
 
 		m_pModel->Draw(context, *m_commonState, m_world, camera->GetViewMatrix(), camera->GetProjectionMatrix());
 		break;
@@ -210,4 +203,16 @@ DirectX::SimpleMath::Vector3 Obstacle::Seek(const DirectX::SimpleMath::Vector3& 
 	DirectX::SimpleMath::Vector3 steeringForce = desiredVelocity - GetVelocity();
 
 	return steeringForce;
+}
+
+bool Obstacle::CheckInArea()
+{
+	static const float Area = 30.0f;
+
+	if ((m_position.y <= -Area || m_position.y >= Area)||(m_position.z <= -Area || m_position.z >= Area))
+	{
+		return true;
+	}
+	
+	return false;
 }

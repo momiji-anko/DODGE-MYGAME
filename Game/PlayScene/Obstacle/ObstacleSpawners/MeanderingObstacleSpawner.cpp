@@ -43,8 +43,11 @@ bool MeanderingObstacleSpawner::Create(std::vector<std::unique_ptr<Actor>>& acto
 		velocity.x = 1;
 		velocity.z = 1;
 
+		DirectX::SimpleMath::Vector3 scale;
+
+
 		//áŠQ•¨‚Ì‰Šú‰»
-		actor->Initialize(velocity, position, true, angle, behavior, model, commonState);
+		actor->Initialize(velocity, position, scale, true, angle, behavior, model, commonState);
 
 		//áŠQ•¨‚Ì¶¬‚É¬Œ÷
 		return true;

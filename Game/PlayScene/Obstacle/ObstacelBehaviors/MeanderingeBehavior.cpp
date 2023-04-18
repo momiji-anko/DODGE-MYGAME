@@ -29,6 +29,15 @@ void MeanderingBehavior::Execute(const DX::StepTimer& timer, Actor* actor)
 	float angle = actor->GetAngle();
 	//アクター型から障害物型にダイナミックキャスト
 	Obstacle* obstacle = dynamic_cast<Obstacle*>(actor);
+
+	//NULLチェック
+	if (obstacle == nullptr)
+	{
+		return;
+	}
+	//エフェクト更新
+	obstacle->GetEffect()->Update(timer);
+
 	//蛇行タイム取得
 	float seekTime_s = obstacle->GetSeekTime();
 	

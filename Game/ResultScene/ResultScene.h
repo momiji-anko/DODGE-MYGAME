@@ -121,5 +121,5 @@ public:
 
 	void SetItemManeger(std::unique_ptr<ItemManager>& itemManeger) { m_itemManeger = std::move(itemManeger); }
 private: 
-	void RenderPlayStage(Camera* camera);
+	void RenderStage(Camera* camera);
 };

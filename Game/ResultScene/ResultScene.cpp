@@ -13,6 +13,7 @@
 #include "ResultScene.h"
 #include<string>
 #include"Game/PlayScene/AliveTimer.h"
+#include"Libraries/MyLibraries/TextureManager.h"
 using namespace DirectX;
 
 /*--------------------------------------------------
@@ -130,6 +131,7 @@ GAME_SCENE ResultScene::Update(const DX::StepTimer& timer)
 	{
 		m_flag = true;
 		m_fadeInOut->FadeOut();
+		m_pAdx2->Play(CRI_CUESHEET_0_BUTTON);
 	}
 
 	m_fadeInOut->Update(timer);
@@ -181,17 +183,13 @@ void ResultScene::Draw()
 	Camera camera;
 	camera.SetProjectionMatrix(projection);
 	camera.SetViewMatrix(view);
-	RenderPlayStage(&camera);
+	RenderStage(&camera);
 
 
 	m_spriteBatch->Begin(SpriteSortMode_Deferred, m_commonState->NonPremultiplied());
 
 	SimpleMath::Vector2 pos(0.0f, 0.0f);
 
-	//m_spriteBatch->Draw(m_numTexture.Get(), pos, nullptr, DirectX::Colors::White, 0.0f, DirectX::SimpleMath::Vector2::Zero);
-	
-	
-	//m_spriteBatch->Draw(m_rankBackTexture.Get(), pos, nullptr, DirectX::Colors::White, 0.0f, DirectX::SimpleMath::Vector2::Zero);
 
 	DirectX::SimpleMath::Vector2 resultPos{ width / 2 , 100};
 	m_spriteBatch->Draw(m_resultTexture.Get(), resultPos, nullptr, Colors::White, 0.0f, { 129.0f,44.0f }, 2.0f, SpriteEffects_None, 0);
@@ -303,76 +301,35 @@ void ResultScene::LoadResources()
 	m_spriteBatch = std::make_unique<DirectX::SpriteBatch>(context);
 	m_spriteFont = std::make_unique<DirectX::SpriteFont>(device, L"Resources/Fonts/SegoeUI_18.spritefont");
 
-	// テクスチャの読み込み
-	CreateWICTextureFromFile(
-		device,
-		L"Resources/Textures/num.png",
-		nullptr,
-		m_numTexture.ReleaseAndGetAddressOf()
-	);
-
-	// テクスチャの読み込み
-	CreateWICTextureFromFile(
-		device,
-		L"Resources/Textures/black.png",
-		nullptr,
-		m_blackTexture.ReleaseAndGetAddressOf()
-	);
-	// テクスチャの読み込み
-	CreateWICTextureFromFile(
-		device,
-		L"Resources/Textures/PushSpaceKey.png",
-		nullptr,
-		m_pushTexture.ReleaseAndGetAddressOf()
-	);
-
-	// テクスチャの読み込み
-	CreateWICTextureFromFile(
-		device,
-		L"Resources/Textures/rank.png",
-		nullptr,
-		m_rankTexture.ReleaseAndGetAddressOf()
-	);
-
-	// テクスチャの読み込み
-	CreateWICTextureFromFile(
-		device,
-		L"Resources/Textures/time.png",
-		nullptr,
-		m_aliveTimeTexture.ReleaseAndGetAddressOf()
-	);
-
-	// テクスチャの読み込み
-	CreateWICTextureFromFile(
-		device,
-		L"Resources/Textures/A.png",
-		nullptr,
-		m_rankBackTexture.ReleaseAndGetAddressOf()
-	);
-
-	// テクスチャの読み込み
-	CreateWICTextureFromFile(
-		device,
-		L"Resources/Textures/result.png",
-		nullptr,
-		m_resultTexture.ReleaseAndGetAddressOf()
-	);
+	TextureManager& textureManager = TextureManager::GetInstance();
 	
 	// テクスチャの読み込み
-	CreateWICTextureFromFile(
-		device,
-		L"Resources/Textures/rankString.png",
-		nullptr,
-		m_rankStringTexture.ReleaseAndGetAddressOf()
-	);
+	m_numTexture =textureManager.LoadTexture(L"Resources/Textures/num.png");
+	
 
+	// テクスチャの読み込み
+	
+	m_blackTexture = textureManager.LoadTexture(L"Resources/Textures/black.png");
+
+	// テクスチャの読み込み
+	m_pushTexture = textureManager.LoadTexture(L"Resources/Textures/PushSpaceKey.png");
+
+	// テクスチャの読み込み
+	m_rankTexture = textureManager.LoadTexture(L"Resources/Textures/rank.png");
+	
+	// テクスチャの読み込み
+	m_aliveTimeTexture = textureManager.LoadTexture(L"Resources/Textures/time.png");
+
+	// テクスチャの読み込み
+	m_resultTexture = textureManager.LoadTexture(L"Resources/Textures/result.png");
+
+	// テクスチャの読み込み
+	m_rankStringTexture = textureManager.LoadTexture(L"Resources/Textures/rankString.png");
 
 }
 
-void ResultScene::RenderPlayStage(Camera* camera)
+void ResultScene::RenderStage(Camera* camera)
 {
 	m_stageManeger->Draw(camera);
-	/*m_itemManeger->Draw(camera);
-	m_player->Draw(camera);
-	m_obstacleManeger->Draw(camera);*/
+	
 }

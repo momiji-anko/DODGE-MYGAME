@@ -1,23 +1,23 @@
 /*
-* 2023/03/27
-* FirstFloorToFallBhavior.h
-* 一番目に落ちる床の動き
+* 2023/04/11
+* RotationCubeBehavior.h
+* 回転するキューブ
 * 麻生　楓
 */
-#pragma once
 #include"Game/PlayScene/IBehavior.h"
 
+
 /// <summary>
-/// 一番目に落ちる床の動き
+/// 回転するキューブの動き
 /// </summary>
-class FirstFloorToFallBehavior : public IBehavior
+class RotationCubeBehavior : public IBehavior
 {
 public:
-	FirstFloorToFallBehavior() = default;
-	~FirstFloorToFallBehavior()override = default;
+	RotationCubeBehavior() = default;
+	~RotationCubeBehavior()override = default;
 
 	/// <summary>
-	/// 一番目に落ちる床の動き
+	/// 回転するキューブの動き
 	/// </summary>
 	/// <param name="timer">タイマー</param>
 	/// <param name="actor">ステージのポインター</param>

@@ -30,7 +30,7 @@ void RotateStickBehavior::Execute(const DX::StepTimer& timer, Actor* actor)
 	Obstacle* obstacle = dynamic_cast<Obstacle*>(actor);
 
 	//Šp“x‚Ìæ“¾
-	DirectX::SimpleMath::Vector3 rot = actor->GetRotation();
+	DirectX::SimpleMath::Quaternion rot = actor->GetRotation();
 	//‰ñ“]‘¬“x‚Ìæ“¾
 	float speed = obstacle->GetRotSpeed();
 	//‰ñ“]‘¬“x‚Ìã‚°‚é

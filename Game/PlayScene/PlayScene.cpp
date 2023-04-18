@@ -9,6 +9,8 @@
 #include "Libraries/MyLibraries/GridFloor.h"
 #include "PlayScene.h"
 #include"Game/PlayScene/MyRandom.h"
+#include"Libraries/MyLibraries/ModelManager.h"
+#include"Libraries/MyLibraries/TextureManager.h"
 
 // 名前空間の利用
 using namespace DirectX;
@@ -32,7 +34,7 @@ PlayScene::PlayScene()
 	ID3D11Device1* device = pDR->GetD3DDevice();
 	ID3D11DeviceContext1* context = pDR->GetD3DDeviceContext();
 
-	m_pDebugCamera = new DebugCamera();
+	m_pCamera = new DebugCamera();
 	//	グリッドを10分割×10分割で作る
 	m_pGridFloor = new GridFloor(device, context, 10, 10);
 }
@@ -42,7 +44,7 @@ PlayScene::PlayScene()
 --------------------------------------------------*/
 PlayScene::~PlayScene()
 {
-	delete m_pDebugCamera;
+	delete m_pCamera;
 	delete m_pGridFloor;
 	
 	m_pAdx2->Finalize();
@@ -107,7 +109,7 @@ void PlayScene::Initialize()
 
 	if (m_playerMode == GameMain::PlayerMode::Player1)
 	{
-		playersStartPos[0] = DirectX::SimpleMath::Vector3(0.0f, 10.0f, 6.0f);
+		playersStartPos[0] = DirectX::SimpleMath::Vector3(0.0f, 7.0f, 6.0f);
 	}
 
 	//プレイヤーのキーデータ
@@ -133,7 +135,7 @@ void PlayScene::Initialize()
 		m_players[i]->SetPlayerModelFile(playerModelFile[i]);
 		m_players[i]->SetKeys(playerKeyData[i]);
 		m_players[i]->SetID(i + 1);
-		m_players[i]->Initialize(DirectX::SimpleMath::Vector3::Zero, playersStartPos[i], true, 0.0f, nullptr, nullptr, m_commonState.get());
+		m_players[i]->Initialize(DirectX::SimpleMath::Vector3::Zero, playersStartPos[i],DirectX::SimpleMath::Vector3(2.0f,2.0f,2.0f), true, 0.0f, nullptr, nullptr, m_commonState.get());
 	}
 
 	m_aliveTime = &AliveTimer::GetInstance();
@@ -209,7 +211,6 @@ GAME_SCENE PlayScene::Update(const DX::StepTimer& timer)
 			if ((*player)->GetInvalidCount() <= -1)
 			{
 				deathCount++;
-				m_pAdx2->Play(CRI_CUESHEET_0_DAMAGE1);
 			}
 			else
 			{
@@ -275,38 +276,21 @@ void PlayScene::Draw()
 
 
 	// モデル描画
-	m_pModel->Draw(context, *m_commonState.get(), DirectX::SimpleMath::Matrix::Identity, m_pDebugCamera->GetViewMatrix(),m_pDebugCamera->GetProjectionMatrix());
+	m_pModel->Draw(context, *m_commonState.get(), DirectX::SimpleMath::Matrix::Identity, m_pCamera->GetViewMatrix(),m_pCamera->GetProjectionMatrix());
 
-	m_stageManeger->Draw(m_pDebugCamera);
-
-	if (m_stratFlag)
-	{
-		for (int i = 0; i < 2; i++)
-		{
-
-			DirectX::SimpleMath::Matrix world = SimpleMath::Matrix::Identity;
-			DirectX::SimpleMath::Matrix trans = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, 3.0f * i, 0.0f));
-			DirectX::SimpleMath::Matrix rot = DirectX::SimpleMath::Matrix::CreateRotationY(0.0f);
-			DirectX::SimpleMath::Matrix scale = DirectX::SimpleMath::Matrix::CreateScale(0.005);
+	m_stageManeger->Draw(m_pCamera);
 
 
-			world *= scale * rot * trans;
-
-			//m_model[i]->Draw(context, *m_commonState, world, m_pDebugCamera->GetViewMatrix(), m_pDebugCamera->GetProjectionMatrix());
-		}
-
-	}
-
-	m_obstacleManeger->Draw(m_pDebugCamera);
+	m_obstacleManeger->Draw(m_pCamera);
 
 	
-	m_itemManeger->Draw(m_pDebugCamera);
+	m_itemManeger->Draw(m_pCamera);
 	
 	
 	//プレイヤーの描画
 	for (std::vector<std::unique_ptr<Player>>::iterator player = m_players.begin(); player != m_players.end(); ++player)
 	{
-		(*player)->Draw(m_pDebugCamera);
+		(*player)->Draw(m_pCamera);
 	}
 
 	m_spriteBatch->Begin(SpriteSortMode_Deferred, m_commonState->NonPremultiplied());
@@ -400,23 +384,11 @@ void PlayScene::LoadResources()
 	//	コモンステート::D3Dレンダリング状態オブジェクト
 	m_commonState = std::make_unique<DirectX::CommonStates>(device);
 
-
+	//
+	ModelManager& modelManager = ModelManager::GetInstance();
+	//天球モデル読み込み
+	m_pModel = modelManager.LoadModel(L"Resources/Models/tenkyuu.cmo");
 	
-
-	//	エフェクトファクトリの作成
-	EffectFactory* factory = new EffectFactory(pDR->GetD3DDevice());
-
-	//	テクスチャの読み込みパス指定
-	factory->SetDirectory(L"Resources/Models");
-
-	//	ファイルを指定してモデルデータ読み込み
-	m_pModel = DirectX::Model::CreateFromCMO(
-		pDR->GetD3DDevice(),
-		L"Resources/Models/tenkyuu.cmo",
-		*factory
-	);
-
-	delete factory;
 
 	m_pModel->UpdateEffects([&](IEffect* effect)
 		{
@@ -437,52 +409,16 @@ void PlayScene::LoadResources()
 			}
 		});
 
-	DirectX::CreateWICTextureFromFile(
-		device,
-		L"Resources/Textures/num.png",
-		nullptr,
-		m_numTexture.ReleaseAndGetAddressOf()
-	);
 
 
-	// テクスチャの読み込み
-	CreateWICTextureFromFile(
-		device,
-		L"Resources/Textures/black.png",
-		nullptr,
-		m_blackTexture.ReleaseAndGetAddressOf()
-	);
+	m_model[0] = modelManager.LoadModel(L"Resources/Models/roll.cmo");
 
+	m_model[1] = modelManager.LoadModel(L"Resources/Models/roll2.cmo");
 
-	//	エフェクトファクトリの作成
-	DirectX::EffectFactory* factory2 = new DirectX::EffectFactory(pDR->GetD3DDevice());
+	TextureManager& textureManager = TextureManager::GetInstance();
 
-	//	テクスチャの読み込みパス指定
-	factory2->SetDirectory(L"Resources/Models");
+	m_numTexture = textureManager.LoadTexture(L"Resources/Textures/num.png");
 
-	//	ファイルを指定してモデルデータ読み込み
-	m_model[0] = DirectX::Model::CreateFromCMO(
-		pDR->GetD3DDevice(),
-		L"Resources/Models/roll.cmo",
-		*factory2
-	);
-
-	delete factory2;
-
-	//	エフェクトファクトリの作成
-	DirectX::EffectFactory* factory3 = new DirectX::EffectFactory(pDR->GetD3DDevice());
-
-	//	テクスチャの読み込みパス指定
-	factory3->SetDirectory(L"Resources/Models");
-
-	//	ファイルを指定してモデルデータ読み込み
-	m_model[1] = DirectX::Model::CreateFromCMO(
-		pDR->GetD3DDevice(),
-		L"Resources/Models/roll2.cmo",
-		*factory3
-	);
-
-	delete factory3;
-
+	m_blackTexture = textureManager.LoadTexture(L"Resources/Textures/black.png");
 
 }

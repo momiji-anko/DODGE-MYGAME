@@ -1,29 +1,27 @@
 /*
-* 2023/04/07
-* TiltingFloorbehavior.cpp
-* ステージ２の傾く床の動き
+* 2023/04/11
+* RotationCubeBehavior.h
+* 回転するキューブ
 * 麻生　楓
 */
 #include"pch.h"
-#include"Game/PlayScene/Actor/Actor.h"
-#include "TiltingFloorbehavior.h"
-#include"Game/PlayScene/Stage/Stage.h"
+#include"RotationCubeBehavior.h"
 #include"Game/PlayScene/MyRandom.h"
-
+#include"../Stage.h"
 
 /// <summary>
-/// ステージ２の傾く床の動き
+/// 回転するキューブの動き
 /// </summary>
 /// <param name="timer">タイマー</param>
 /// <param name="actor">ステージのポインター</param>
-void TiltingFloorbehavior::Execute(const DX::StepTimer& timer, Actor* actor)
+void RotationCubeBehavior::Execute(const DX::StepTimer& timer, Actor* actor)
 {
 	//回転量
-	static const float ROTATION_ANGLE = DirectX::XMConvertToRadians(3.5f);
+	static const float ROTATION_ANGLE = DirectX::XM_PI;
 	//移動秒数
-	static const float MOVE_TIME_S = 3.0f;
+	static const float MOVE_TIME_S = 5.0f;
 	//回転時間のクールタイム
-	static const float ROTATION_COOL_TIME_S = 20.0f;
+	static float ROTATION_COOL_TIME_S = 10.0f;
 
 	//Actor型かたStage型にダイナミックキャストする
 	Stage* stage = dynamic_cast<Stage*>(actor);
@@ -70,6 +68,7 @@ void TiltingFloorbehavior::Execute(const DX::StepTimer& timer, Actor* actor)
 			else if (rotationDir == 0)
 			{
 				nextRotation.z += ROTATION_ANGLE * MyRandom::GetIntRange(-2, 2);
+				
 			}
 			//回転している状態にする
 			isRotation = true;
@@ -78,12 +77,13 @@ void TiltingFloorbehavior::Execute(const DX::StepTimer& timer, Actor* actor)
 		//タイムを経過時間で足す
 		time_s += elapsedTime_s;
 		//回転する
-		DirectX::SimpleMath::Vector3  rot = DirectX::SimpleMath::Vector3::Lerp(previousRotation, nextRotation, time_s / MOVE_TIME_S);
+		DirectX::SimpleMath::Vector3 rot = DirectX::SimpleMath::Vector3::Lerp(previousRotation, nextRotation, time_s / MOVE_TIME_S);
 		nowRotation = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(rot);
 
 		//タイムが移動時間より大きくなったらタイムをリセット
 		if (time_s > MOVE_TIME_S)
 		{
+
 			//タイムのリセットする
 			rotationTime_s = ROTATION_COOL_TIME_S;
 			time_s = 0;

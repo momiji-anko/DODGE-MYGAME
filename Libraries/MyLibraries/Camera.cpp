@@ -21,8 +21,6 @@ Camera::Camera()
 	, m_target(0.0f, 0.0f, 3.0f)
 	, m_up(0.0f, 1.0f, 0.0f)
 {
-	m_eye = { 0.0f, 38.0f, 38.0f }
-	;
 	CalculateViewMatrix();
 	CalculateProjectionMatrix();
 }

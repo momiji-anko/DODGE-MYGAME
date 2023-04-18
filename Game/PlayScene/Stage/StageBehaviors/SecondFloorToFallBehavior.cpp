@@ -1,8 +1,8 @@
 /*
 * 2023/03/27
 * SecondFloorToFallBhavior.cpp
-* –ƒ¶@•–
 * “ñ”Ô–Ú‚É—Ž‚¿‚é°‚Ì“®‚«
+* –ƒ¶@•–
 */
 #include"pch.h"
 #include"SecondFloorToFallBehavior.h"
@@ -159,6 +159,11 @@ void SecondFloorToFallBehavior::Execute(const DX::StepTimer& timer, Actor* actor
 		break;
 
 	}
+
+	stage->SetPosition(position);
+	stage->SetOffsetPosition(offsetPosition);
+	stage->SetRoutine(routine);
+	stage->SetTime(time_s);
 
 }
 
