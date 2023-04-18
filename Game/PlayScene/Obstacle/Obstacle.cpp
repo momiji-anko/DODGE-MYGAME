@@ -36,18 +36,31 @@ void Obstacle::Initialize(const DirectX::SimpleMath::Vector3& velocity,const Dir
 	m_wanderAngle = angle;
 
 	
-	m_position = position;
-	m_velocity = velocity;
+	//パラメータの設定
+	//移動速度
+	SetVelocity(velocity);
 
-	m_active = active;
+	//座標
+	SetPosition(position);
 
-	m_angle = angle;
+	//スケール
+	SetScale(scale);
 
-	m_behavia = behavia;
-	m_scale = scale;
-	m_commonState = commonState;
-	m_pModel = model;
-	m_wanderAngle = atan2(m_position.x-m_playerPosition.x, m_position.z - m_playerPosition.z);
+	//アクティブ
+	SetActive(active);
+
+	//アングル
+	SetAngle(angle);
+
+	//ビヘイビアー
+	SetBehavior(behavia);
+	//モデル
+	SetModel(model);
+
+	//コモンステート
+	SetCommonState(commonState);
+
+	m_wanderAngle = atan2(position.x-m_playerPosition.x, position.z - m_playerPosition.z);
 	switch (m_type)
 	{
 	case Obstacle::ObstacleType::MEANDERING:
@@ -73,8 +86,6 @@ void Obstacle::Initialize(const DirectX::SimpleMath::Vector3& velocity,const Dir
 
 	}
 	
-	m_capsule = std::make_unique<Capsule>();
-	m_capsule->r = 0.0f;
 
 	m_AABBObject = std::make_unique<AABBFor3D>();
 	m_AABBObject->Initialize();
@@ -85,7 +96,6 @@ void Obstacle::Initialize(const DirectX::SimpleMath::Vector3& velocity,const Dir
 // 更新
 void Obstacle::Update(const DX::StepTimer& timer)
 {
-	m_world = DirectX::SimpleMath::Matrix::Identity;
 	m_seekTime_s += timer.GetElapsedSeconds();
 
 	switch (m_type)
@@ -98,7 +108,7 @@ void Obstacle::Update(const DX::StepTimer& timer)
 		break;
 	}
 
-	m_behavia->Execute(timer, this);
+	GetBehavior()->Execute(timer, this);
 
 	if (CheckInArea())
 	{

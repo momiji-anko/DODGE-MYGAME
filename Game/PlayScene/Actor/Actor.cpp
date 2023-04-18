@@ -21,13 +21,15 @@ Actor::Actor():
 	m_commonState(nullptr),
 	m_AABBObject(nullptr)
 {
-	
+	CreateAABB();
 
 }
 
 
 DirectX::SimpleMath::Matrix Actor::CalculationWorld()
 {
+	//ワールド行列に単位行列を入れる
+	m_world = DirectX::SimpleMath::Matrix::Identity;
 	//移動
 	DirectX::SimpleMath::Matrix trans = DirectX::SimpleMath::Matrix::CreateTranslation(m_position);
 	//回転
@@ -53,5 +55,13 @@ void Actor::CreateAABB()
 	m_AABBObject->SetData(m_position + length, m_position - length);
 
 
+}
+
+void Actor::CreateCapsule()
+{
+	//カプセルの作成
+	m_capsule = std::make_unique<Capsule>();
+	//半径設定
+	m_capsule->r = 0.5f;
 }
 

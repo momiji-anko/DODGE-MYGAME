@@ -218,6 +218,17 @@ public:
 	/// <returns>モデル</returns>
 	DirectX::Model* GetModel() { return m_pModel; }
 
-	private:
-		void CreateAABB();
+	/// <summary>
+	/// コモンステートの設定
+	/// </summary>
+	/// <param name="state">コモンステート</param>
+	void SetCommonState(DirectX::CommonStates* state) { m_commonState = state; }
+	/// <summary>
+	/// コモンステートの取得
+	/// </summary>
+	/// <returns>コモンステート</returns>
+	DirectX::CommonStates* GetCommonState() { return m_commonState; }
+private:
+	void CreateAABB();
+	void CreateCapsule();
 };

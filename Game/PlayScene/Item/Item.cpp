@@ -72,7 +72,7 @@ void Item::Initialize(const DirectX::SimpleMath::Vector3& velocity,const DirectX
 	SetModel(model);
 	
 	//コモンステート
-
+	SetCommonState(commonState);
 	
 	
 	//角度設定
@@ -125,14 +125,14 @@ void Item::Update(const DX::StepTimer& timer)
 	if(!m_stageHit)
 	{
 		//移動
-		m_position += m_velocity * elapsedTime;
+		SetPosition(position + (GetVelocity() * elapsedTime));
 	}
 	
 	//死亡タイムが０になったら非アクティブ状態にする
 	if (m_deleteTime_s <= 0)
 	{
 		//非アクティブ状態にする
-		m_active = false;
+		SetActive(false);
 	}
 
 }
@@ -143,8 +143,6 @@ void Item::Update(const DX::StepTimer& timer)
 /// <param name="camera">カメラの生ポインタ</param>
 void Item::Draw(Camera* camera)
  {
-	//ワールド行列に単位行列を入れる
-	 m_world = DirectX::SimpleMath::Matrix::Identity;
 
 	 //デバイスリソース取得
 	 DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
@@ -157,7 +155,7 @@ void Item::Draw(Camera* camera)
 	 if (m_blink->IsBlink())
 	 {
 		 //モデル表示
-		m_pModel->Draw(context, *m_commonState, m_world, camera->GetViewMatrix(), camera->GetProjectionMatrix());
+		GetModel()->Draw(context, *GetCommonState(), GetWorld(), camera->GetViewMatrix(), camera->GetProjectionMatrix());
 	 }
 
  }
@@ -193,7 +191,7 @@ void Item::SetItemType(ItemType item)
 /// </summary>
 void Item::Reset()
  {
-	 m_active = false;
+	SetActive(false);
  }
 
 /// <summary>
@@ -211,7 +209,7 @@ void Item::Shadow(ShadowMap* shadowMap, DirectX::SimpleMath::Matrix view, Direct
 	ID3D11DeviceContext1* context = pDR->GetD3DDeviceContext();
 
 	 //影作成
-	 m_pModel->Draw(context, *m_commonState, m_world, view, projection, false, [&]()
+	 GetModel()->Draw(context, *GetCommonState(), GetWorld(), view, projection, false, [&]()
 		 {
 			 shadowMap->DrawShadowMap(context);
 		 }
