@@ -15,12 +15,12 @@
 /// </summary>
 /// <param name="actors">障害物の配列</param>
 /// <param name="position">生成する位置</param>
-/// <param name="angle">角度（ラジアン）</param>
+/// <param name="rotation">角度（ラジアン）</param>
 /// <param name="behavior">蛇行する炎のビヘイビア</param>
 /// <param name="model">蛇行する炎のモデル（NULLでOK）</param>
 /// <param name="commonState">コモンステート</param>
 /// <returns>true=生成成功　false=生成失敗</returns>
-bool MeanderingObstacleSpawner::Create(std::vector<std::unique_ptr<Actor>>& actors, const DirectX::SimpleMath::Vector3& position, const float angle, IBehavior* behavior, DirectX::Model* model, DirectX::CommonStates* commonState)
+bool MeanderingObstacleSpawner::Create(std::vector<std::unique_ptr<Actor>>& actors, const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Vector3& rotation, IBehavior* behavior, DirectX::Model* model, DirectX::CommonStates* commonState)
 {
 	for (std::unique_ptr<Actor>& actor : actors)
 	{
@@ -30,24 +30,24 @@ bool MeanderingObstacleSpawner::Create(std::vector<std::unique_ptr<Actor>>& acto
 
 		//障害物型にダイナミックキャストする
 		Obstacle* obstale = dynamic_cast<Obstacle*>(actor.get());
+
+		//移動ベクトル
+		DirectX::SimpleMath::Vector3 velocity;
+		
+
 		//キャスト出来たか
 		if (obstale != nullptr)
 		{
 			//障害物にのタイプ設定
 			obstale->SetType(Obstacle::ObstacleType::MEANDERING);
-
+			velocity = obstale->Seek(obstale->GetPlayerPosition());
 		}
-		
-		//移動ベクトル
-		DirectX::SimpleMath::Vector3 velocity;
-		velocity.x = 1;
-		velocity.z = 1;
-
+		//スケール
 		DirectX::SimpleMath::Vector3 scale;
 
 
 		//障害物の初期化
-		actor->Initialize(velocity, position, scale, true, angle, behavior, model, commonState);
+		actor->Initialize(velocity, position, scale, rotation, true, behavior, model, commonState);
 
 		//障害物の生成に成功
 		return true;

@@ -43,7 +43,7 @@ Item:: ~Item()
 /// <param name="behavia">ビヘイビアーの生ポインタ</param>
 /// <param name="model">モデルの生ポインタ</param>
 /// <param name="commonState">コモンステートの生ポインタ</param>
-void Item::Initialize(const DirectX::SimpleMath::Vector3& velocity,const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Vector3& scale,bool active,float angle,IBehavior* behavia,DirectX::Model* model,DirectX::CommonStates* commonState)
+void Item::Initialize(const DirectX::SimpleMath::Vector3& velocity,const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Vector3& scale, const DirectX::SimpleMath::Vector3& rotation, bool active,IBehavior* behavia,DirectX::Model* model,DirectX::CommonStates* commonState)
  {
 	//デバイスリソース取得
 	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
@@ -61,11 +61,8 @@ void Item::Initialize(const DirectX::SimpleMath::Vector3& velocity,const DirectX
 	SetScale(scale);
 	 
 	//アクティブ
-	
 	SetActive(active);
-	//アングル
-	SetAngle(angle);
-	
+		
 	//ビヘイビアー
 	SetBehavior(behavia);
 	//モデル
@@ -109,7 +106,7 @@ void Item::Update(const DX::StepTimer& timer)
 	//当たり判定再設定
 	DirectX::SimpleMath::Vector3 length = { 0.5f,0.5f,0.5f };
 
-	GetAABB()->SetData(position + length, position + length);
+	GetAABB()->SetData(position - length, position + length);
 
 	//点滅の更新
 	m_blink->Update(timer);
@@ -127,6 +124,7 @@ void Item::Update(const DX::StepTimer& timer)
 		//移動
 		SetPosition(position + (GetVelocity() * elapsedTime));
 	}
+
 	
 	//死亡タイムが０になったら非アクティブ状態にする
 	if (m_deleteTime_s <= 0)

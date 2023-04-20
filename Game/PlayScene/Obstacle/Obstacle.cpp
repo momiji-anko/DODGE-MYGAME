@@ -3,7 +3,6 @@
 #include"DeviceResources.h"
 #include<random>
 
-const float  Obstacle::MOVE_SPEED = 4.0f;
 
 //コンストラクタ
 Obstacle::Obstacle()
@@ -24,16 +23,13 @@ Obstacle::~Obstacle()
 }
 
 // 初期化
-void Obstacle::Initialize(const DirectX::SimpleMath::Vector3& velocity,const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Vector3& scale,bool active,float angle,IBehavior* behavia,DirectX::Model* model,DirectX::CommonStates* commonState)
+void Obstacle::Initialize(const DirectX::SimpleMath::Vector3& velocity,const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Vector3& scale, const DirectX::SimpleMath::Vector3& rotation,bool active,IBehavior* behavia,DirectX::Model* model,DirectX::CommonStates* commonState)
 {
 
 	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
 	SetMaxSpeed(1.0f);
 	SetMaxForce(4.0f);
-	m_wanderRadius = 1.0f;
-	m_wanderDistance = 2.0f;
-	m_wanderAngularVelocity = DirectX::XMConvertToRadians(30.0f);
-	m_wanderAngle = angle;
+	
 
 	
 	//パラメータの設定
@@ -48,9 +44,9 @@ void Obstacle::Initialize(const DirectX::SimpleMath::Vector3& velocity,const Dir
 
 	//アクティブ
 	SetActive(active);
-
-	//アングル
-	SetAngle(angle);
+	
+	//角度
+	SetRotation(rotation);
 
 	//ビヘイビアー
 	SetBehavior(behavia);
@@ -60,37 +56,15 @@ void Obstacle::Initialize(const DirectX::SimpleMath::Vector3& velocity,const Dir
 	//コモンステート
 	SetCommonState(commonState);
 
-	m_wanderAngle = atan2(position.x-m_playerPosition.x, position.z - m_playerPosition.z);
-	switch (m_type)
-	{
-	case Obstacle::ObstacleType::MEANDERING:
-		m_velocity = DirectX::SimpleMath::Vector3::Zero;
-		m_velocity = Seek(m_playerPosition);
-		break;
-	case Obstacle::ObstacleType::NORMAL:
+	DirectX::SimpleMath::Vector3 vel = GetVelocity();
 
-		m_velocity.x = -sin(m_angle) * MOVE_SPEED;
-		m_velocity.z = -cos(m_angle) * MOVE_SPEED;
-
-		break;
-	case Obstacle::ObstacleType::STICK:
-
-		m_rotation.y = m_angle;
-		//障害物を回転させる（発射角度を計算する行列を作る）
-		DirectX::SimpleMath::Matrix rotetion = DirectX::SimpleMath::Matrix::CreateRotationY(m_angle);
-		//速度を計算する（発射角度を加味した移動速度を計算する）
-		m_velocity = DirectX::SimpleMath::Vector3::TransformNormal(m_velocity, rotetion);
-		break;
-
-
-
-	}
+	
 	
 
-	m_AABBObject = std::make_unique<AABBFor3D>();
-	m_AABBObject->Initialize();
-	m_AABBObject->SetData({ 100,100,100 }, {100,100,100});
+	GetAABB()->SetData({100,100,100}, {100,100,100});
 	m_seekTime_s = 0.f;
+
+
 }
 
 // 更新
@@ -98,17 +72,17 @@ void Obstacle::Update(const DX::StepTimer& timer)
 {
 	m_seekTime_s += timer.GetElapsedSeconds();
 
-	switch (m_type)
+	if (m_effect != nullptr)
 	{
-	case Obstacle::ObstacleType::NORMAL:
-	case Obstacle::ObstacleType::MEANDERING:
-
 		m_effect->Update(timer);
-
-		break;
+	}
+	
+	
+	if (GetBehavior() != nullptr)
+	{
+		GetBehavior()->Execute(timer, this);
 	}
 
-	GetBehavior()->Execute(timer, this);
 
 	if (CheckInArea())
 	{
@@ -122,51 +96,22 @@ void Obstacle::Draw(Camera* camera)
 	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
 	ID3D11DeviceContext1* context = pDR->GetD3DDeviceContext();
 
-	// 深度バッファに書き込み参照する
-	context->OMSetDepthStencilState(m_commonState->DepthRead(), 0);
 	
 
-	DirectX::SimpleMath::Matrix trans = DirectX::SimpleMath::Matrix::CreateTranslation(m_position);
-	DirectX::SimpleMath::Matrix rot = DirectX::SimpleMath::Matrix::CreateRotationY(m_rotation.y);
-	DirectX::SimpleMath::Matrix scale = DirectX::SimpleMath::Matrix::CreateScale(0.005f);
+	CalculationWorld();
 
-
-
-
-
-	switch (m_type)
+	if (m_type != ObstacleType::NORMAL && m_type != ObstacleType::MEANDERING)
 	{
-	case Obstacle::ObstacleType::NORMAL:
-	case Obstacle::ObstacleType::MEANDERING:
-		m_world = rot * trans;
-		m_effect->SetRenderState(camera->GetEyePosition(), camera->GetViewMatrix(), camera->GetProjectionMatrix());
-		m_effect->SetOffsetPosition(m_position);
-		m_effect->Render();
-		break;
-	case Obstacle::ObstacleType::STICK:
-		m_world = rot * trans;
-		m_pModel->Draw(context, *m_commonState, m_world, camera->GetViewMatrix(), camera->GetProjectionMatrix());
-		break;
-	case Obstacle::ObstacleType::ROTATESTICK:
-	case Obstacle::ObstacleType::REVERSE_ROTATESTICK:
-		m_world = scale * rot * trans;
-
-		m_pModel->Draw(context, *m_commonState, m_world, camera->GetViewMatrix(), camera->GetProjectionMatrix());
-
-		break;
-	case Obstacle::ObstacleType::BIRD:
-		scale = DirectX::SimpleMath::Matrix::CreateScale(0.010f);
-		m_world = scale * rot  * trans;
-
-		m_pModel->Draw(context, *m_commonState, m_world, camera->GetViewMatrix(), camera->GetProjectionMatrix());
-		break;
-	case Obstacle::ObstacleType::METEORITE:
-		scale = DirectX::SimpleMath::Matrix::CreateScale(1);
-		m_world = scale * rot  * trans;
-
-		m_pModel->Draw(context, *m_commonState, m_world, camera->GetViewMatrix(), camera->GetProjectionMatrix());
-		break;
+		GetModel()->Draw(context, *GetCommonState(), GetWorld(), camera->GetViewMatrix(), camera->GetProjectionMatrix());
 	}
+	else if(m_type == ObstacleType::NORMAL || m_type == ObstacleType::MEANDERING)
+	{
+		m_effect->SetRenderState(camera->GetEyePosition(), camera->GetViewMatrix(), camera->GetProjectionMatrix());
+		m_effect->SetOffsetPosition(GetPosition());
+		m_effect->Render();
+	}
+
+
 	
 }
 
@@ -178,23 +123,19 @@ void Obstacle::Finalize()
 
 void Obstacle::Reset()
 {
-	m_active = false;
+	SetActive(false);
 }
 
 void Obstacle::ObstacleShadow(ShadowMap* shadow, DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix projection)
 {
 
-	DirectX::SimpleMath::Matrix world = DirectX::SimpleMath::Matrix::Identity;
 	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
 	ID3D11DeviceContext1* context = pDR->GetD3DDeviceContext();
-	// 深度バッファに書き込み参照する
-	context->OMSetDepthStencilState(m_commonState->DepthRead(), 0);
 
-	if (m_pModel != nullptr)
+	if (GetModel() != nullptr)
 	{
 
-
-		m_pModel->Draw(context, *m_commonState, m_world, view, projection, false, [&]()
+		GetModel()->Draw(context, *GetCommonState(), GetWorld(), view, projection, false, [&]()
 			{
 				shadow->DrawShadowMap(context);
 			}
@@ -218,8 +159,9 @@ DirectX::SimpleMath::Vector3 Obstacle::Seek(const DirectX::SimpleMath::Vector3& 
 bool Obstacle::CheckInArea()
 {
 	static const float Area = 30.0f;
+	DirectX::SimpleMath::Vector3 position = GetPosition();
 
-	if ((m_position.y <= -Area || m_position.y >= Area)||(m_position.z <= -Area || m_position.z >= Area))
+	if ((position.y <= -Area || position.y >= Area)||(position.z <= -Area || position.z >= Area))
 	{
 		return true;
 	}

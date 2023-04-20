@@ -22,6 +22,7 @@ Actor::Actor():
 	m_AABBObject(nullptr)
 {
 	CreateAABB();
+	CreateCapsule();
 
 }
 

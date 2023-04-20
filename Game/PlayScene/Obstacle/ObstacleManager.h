@@ -87,6 +87,7 @@ private:
 	float                                                        m_spawneTime_s;
 	//障害物のスポーンクールタイム
 	float                                                        m_spawneCoolTime_s;
+
 public:
 	/// <summary>
 	/// コンストラクタ
@@ -162,7 +163,7 @@ public:
 
 private:
 	//アイテムの生成
-	bool CreateObstacle(const DirectX::SimpleMath::Vector3& position, Obstacle::ObstacleType type, float angle);
+	bool CreateObstacle(const DirectX::SimpleMath::Vector3& position, Obstacle::ObstacleType type, DirectX::SimpleMath::Vector3 rot);
 
 	void CreateModel();
 

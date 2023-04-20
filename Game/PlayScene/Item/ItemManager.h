@@ -102,9 +102,9 @@ private:
 	/// </summary>
 	/// <param name="position">座標</param>
 	/// <param name="type">アイテムのタイプ</param>
-	/// <param name="angle">アングル</param>
+	/// <param name="rot">アングル</param>
 	/// <returns>true = 生成成功、false = 生成失敗</returns>
-	bool CreateItem(const DirectX::SimpleMath::Vector3& position ,Item::ItemType type,float angle);
+	bool CreateItem(const DirectX::SimpleMath::Vector3& position ,Item::ItemType type, DirectX::SimpleMath::Vector3 rot);
 
 	/// <summary>
 	/// アイテムとステージが当たっているか判定

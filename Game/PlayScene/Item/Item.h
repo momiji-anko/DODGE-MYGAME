@@ -61,8 +61,8 @@ public:
 		const DirectX::SimpleMath::Vector3& velocity,
 		const DirectX::SimpleMath::Vector3& position,
 		const DirectX::SimpleMath::Vector3& scale, 
+		const DirectX::SimpleMath::Vector3& rotation, 
 		bool active,
-		float angle,
 		IBehavior* behavia,
 		DirectX::Model* model,
 		DirectX::CommonStates* commonState

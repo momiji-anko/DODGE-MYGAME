@@ -33,87 +33,163 @@ public:
 private:
 	//定数
 	//移動速度
-	static const float MOVE_SPEED;
+
+								 
+	//変数					   
+	//障害物のタイプ			   
+	ObstacleType                 m_type;
+	//炎のエフェクト			   
+	FireEffectManager*           m_effect;
+					 
+	//回転スピード							 
+	float                        m_rotSpeed;
+	// 質量
+	float                        m_mass;           
+	// 最大移動速度(スピード)
+	float                        m_maxSpeed;       
+	// 適用される最大の力
+	float                        m_maxForce;       
+	// 物体に加わる力
+	DirectX::SimpleMath::Vector3 m_force;       
+				 
+	// プレイヤーの座標							 
+	DirectX::SimpleMath::Vector3 m_playerPosition;
+	//蛇行用タイム
+	float                        m_seekTime_s;
 
 
-	//変数
-	//障害物のタイプ
-	ObstacleType                                 m_type;
-	//炎のエフェクト
-	FireEffectManager*                           m_effect;
-	
-
-	DirectX::SimpleMath::Vector3                 m_scale;
-
-	float                                        m_rotSpeed;
-	float                                        m_meanderingSpeed;
-
-
-	float                                        m_mass;           // 質量
-	float                                        m_maxSpeed;       // 最大移動速度(スピード)
-	float                                        m_maxForce;       // 適用される最大の力
-
-	DirectX::SimpleMath::Vector3                 m_force;       // 物体に加わる力
-
-		// 徘徊行動用パラメータ
-	float                                        m_wanderRadius;
-	float                                        m_wanderDistance;
-	float                                        m_wanderAngularVelocity;
-	float                                        m_wanderAngle;
-	DirectX::SimpleMath::Vector3                 m_playerPosition;
-	float                                        m_seekTime_s;
 public :
-	//コンストラクタ
+	/// <summary>
+	/// コンストラクタ
+	/// </summary>
 	Obstacle();
-	//デストラクタ
-	virtual ~Obstacle()override;
+	 /// <summary>
+	 /// デストラクタ
+	 /// </summary>
+	 ~Obstacle()override;
 
-	// 初期化
-	virtual void Initialize(
+	 /// <summary>
+	 /// 初期化
+	 /// </summary>
+	 /// <param name="velocity">移動ベロシティ</param>
+	 /// <param name="position">座標</param>
+	 /// <param name="scale">スケール</param>
+	 /// <param name="rotation">角度</param>
+	 /// <param name="active">アクティブ</param>
+	 /// <param name="behavia">ビヘイビアーの生ポインタ</param>
+	 /// <param name="model">モデルの生ポインタ</param>
+	 /// <param name="commonState">コモンステートの生ポインタ</param>
+	void Initialize(
 		const DirectX::SimpleMath::Vector3& velocity,
 		const DirectX::SimpleMath::Vector3& position,
 		const DirectX::SimpleMath::Vector3& scale,
+		const DirectX::SimpleMath::Vector3& rotation,
 		bool active,
-		float angle,
 		IBehavior* behavia,
 		DirectX::Model* model,
 		DirectX::CommonStates* commonState)override;
 
-	// 更新
-	virtual void Update(const DX::StepTimer& timer)override;
+	 /// <summary>
+	 /// 更新
+	 /// </summary>
+	 /// <param name="timer">タイマー</param>
+	 void Update(const DX::StepTimer& timer)override;
 
-	// 描画
-	virtual void Draw(Camera* camera)override;
+	/// <summary>
+	/// 描画
+	/// </summary>
+	/// <param name="camera">カメラの生ポインタ</param>
+	void Draw(Camera* camera)override;
 
-	// 終了処理
-	virtual void Finalize()override;
+	/// <summary>
+	/// 終了処理
+	/// </summary>
+	void Finalize()override;
 
-	//リセット
+	/// <summary>
+	/// リセット
+	/// </summary>
 	virtual void Reset();
 
-
+	/// <summary>
+	/// タイプ設定
+	/// </summary>
+	/// <param name="type">障害物のタイプ</param>
 	void SetType(ObstacleType type) { m_type = type; }
-
-	void ObstacleShadow(ShadowMap* shadow, DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix projection);
-
-	void SetEffect(FireEffectManager* effect) { m_effect = effect; }
-	FireEffectManager* GetEffect() { return m_effect; }
+	/// <summary>
+	/// タイプ取得
+	/// </summary>
+	/// <returns>障害物のタイプ</returns>
 	ObstacleType GetObstacleType() { return m_type; }
 
+	/// <summary>
+	/// 障害物の影生成
+	/// </summary>
+	/// <param name="shadow">シャドウマップの生ポインタ</param>
+	/// <param name="view">ビュー行列</param>
+	/// <param name="projection">プロジェクション行列</param>
+	void ObstacleShadow(ShadowMap* shadow, DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix projection);
+
+	/// <summary>
+	/// エフェクト設定
+	/// </summary>
+	/// <param name="effect">エフェクトの生ポインタ</param>
+	void SetEffect(FireEffectManager* effect) { m_effect = effect; }
+	/// <summary>
+	/// エフェクトの取得
+	/// </summary>
+	/// <returns>エフェクト</returns>
+	FireEffectManager* GetEffect() { return m_effect; }
+
+	
+	/// <summary>
+	/// 回転速度取得
+	/// </summary>
+	/// <returns>回転速度</returns>
 	float& GetRotSpeed() { return m_rotSpeed; }
+	/// <summary>
+	/// 回転速度の設定
+	/// </summary>
+	/// <param name="speed">回転速度</param>
 	void SetRotSpeed(float speed) { m_rotSpeed = speed; }
-	float GetMeanderingSpeed() { return m_meanderingSpeed; }
 
-
+	/// <summary>
+	/// プレイヤーの座標取得
+	/// </summary>
+	/// <returns>プレイヤーの座標</returns>
 	DirectX::SimpleMath::Vector3 GetPlayerPosition() { return m_playerPosition; }
+	/// <summary>
+	/// プレイヤーの座標設定
+	/// </summary>
+	/// <param name="playerPos">プレイヤーの座標</param>
 	void SetPlayerPosition(DirectX::SimpleMath::Vector3 playerPos) { m_playerPosition = playerPos; }
 
-
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="targetPosition"></param>
+	/// <returns></returns>
 	DirectX::SimpleMath::Vector3 Seek(const DirectX::SimpleMath::Vector3& targetPosition);
 
+	/// <summary>
+	/// Maxスピード取得
+	/// </summary>
+	/// <returns>Maxスピード</returns>
 	float GetMaxSpeed() const { return m_maxSpeed; }
+	/// <summary>
+	/// Maxフォース取得
+	/// </summary>
+	/// <returns>Maxフォース</returns>
 	float GetMaxForce() const { return m_maxForce; }
+	/// <summary>
+	/// Maxスピード設定
+	/// </summary>
+	/// <param name="speed">Maxスピード</param>
 	void SetMaxSpeed(float speed) { m_maxSpeed = speed; }
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="force"></param>
 	void SetMaxForce(float force) { m_maxForce = force; }
 
 	

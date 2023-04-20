@@ -142,7 +142,7 @@ void StageManager::UpdateVertices()
 			//現在の当たり判定用の頂点座標行列
 			DirectX::SimpleMath::Matrix nowVertexMatrix = DirectX::SimpleMath::Matrix::Identity;
 			//StageのXとZの角度の計算
-			DirectX::SimpleMath::Matrix rot = DirectX::SimpleMath::Matrix::CreateRotationX(m_stage[i]->GetRotation().x / 180.0f * 3.14f) * DirectX::SimpleMath::Matrix::CreateRotationZ(m_stage[i]->GetRotation().z / 180.0f * 3.14f);
+			DirectX::SimpleMath::Matrix rot = DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_stage[i]->GetRotation());
 			//現在の頂点座標の計算
 			nowVertexMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(m_baseVertices[j]) * rot * DirectX::SimpleMath::Matrix::CreateTranslation(m_stage[i]->GetPosition());
 			//計算した行列を現在の頂点座標計算に代入する
@@ -233,7 +233,7 @@ void StageManager::LoadStageJson(const std::wstring& fileName)
 	//ステージの数分配列を確保
 	m_stage.resize(stageNum);
 	
-	DirectX::SimpleMath::Vector3 scale;
+	DirectX::SimpleMath::Vector3 scale = DirectX::SimpleMath::Vector3::One;
 
 	//ステージの作成
 	for (int i = 0; i < stageNum; i++)
@@ -241,7 +241,7 @@ void StageManager::LoadStageJson(const std::wstring& fileName)
 		//ステージのユニークポインタで作成
 		m_stage[i] = std::make_unique<Stage>();
 		//読み込んだステージ情報でステージを初期化する
-		m_stage[i]->Initialize(DirectX::SimpleMath::Vector3::Zero, m_stagePositions[i], scale, true, 0.0f, m_behavior[m_stageType[i]].get(), m_stageModel, m_commonState);
+		m_stage[i]->Initialize(DirectX::SimpleMath::Vector3::Zero, m_stagePositions[i], scale, DirectX::SimpleMath::Vector3::Zero, true, m_behavior[m_stageType[i]].get(), m_stageModel, m_commonState);
 		//ステージのタイプを設定
 		m_stage[i]->SetStageType(static_cast<Stage::StageType>(m_stageType[i]));
 
@@ -338,10 +338,7 @@ bool StageManager::PlayerStageAABBHitCheck(Actor* player)
 				const DirectX::SimpleMath::Vector3& playerPos = player->GetPosition();
 				 DirectX::SimpleMath::Vector3& playerVel = player->GetVelocity();
 
-				 if (playerVel.Length() == 0)
-				 {
-					 playerVel.y = -0.7f;
-				 }
+				 playerVel.y = -0.7f;
 				
 				std::vector<DirectX::SimpleMath::Vector3> playerLinePos = { DirectX::SimpleMath::Vector3(playerPos),DirectX::SimpleMath::Vector3(playerPos.x,playerPos.y + 2.5f,playerPos.z) };
 

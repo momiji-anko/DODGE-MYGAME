@@ -19,18 +19,14 @@ void ReverseRotateStickBehavior::Execute(const DX::StepTimer& timer, Actor* acto
 	//座標の取得
 	DirectX::SimpleMath::Vector3 position = actor->GetPosition();
 	
-	//ワールド行列取得
-	DirectX::SimpleMath::Matrix world = actor->GetWorld();
-	//角度を０度にする
-	world *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0, 0, 0));
-	//ワールド行列を設定
-	actor->SetWorld(world);
+	
+
 
 	//アクター型から障害物型にダイナミックキャスト
 	Obstacle* obstacle = dynamic_cast<Obstacle*>(actor);
 	
 	//角度の取得
-	DirectX::SimpleMath::Quaternion rot = actor->GetRotation();
+	DirectX::SimpleMath::Vector3 rot = actor->GetRotation().ToEuler();
 	//回転速度の取得
 	float speed = obstacle->GetRotSpeed();
 	//回転速度の上げる

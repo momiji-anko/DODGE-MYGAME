@@ -80,12 +80,12 @@ public:
 		 const DirectX::SimpleMath::Vector3& velocity,
 		 const DirectX::SimpleMath::Vector3& position,
 		 const DirectX::SimpleMath::Vector3& scale,
+		 const DirectX::SimpleMath::Vector3& rotation,
 		 bool active,
-		float angle,
-		IBehavior* behavia,
-		DirectX::Model* model,
-		DirectX::CommonStates* commonState)override;
-
+		 IBehavior* behavia,
+		 DirectX::Model* model,
+		 DirectX::CommonStates* commonState
+	 )override;
 	// çXêV
 	 void Update(const DX::StepTimer& timer)override;
 

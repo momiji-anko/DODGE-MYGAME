@@ -15,6 +15,7 @@
 #include"../../Helpers/DODGESound_acf.h"
 #include"../PlayScene/Stage/Stage.h"
 #include"Game/Shader/Fade.h"
+#include"Game/PlayScene/Stage/StageManager.h"
 
 //タイトルシーン
 class TitleScene : public IScene
@@ -87,7 +88,7 @@ private:
 
 	int m_stageNum;
 	std::vector<Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>> m_stageSelectTexture;
-
+	std::unique_ptr<StageManager> m_stageManager;
 public:
 
 	// コンストラクタ

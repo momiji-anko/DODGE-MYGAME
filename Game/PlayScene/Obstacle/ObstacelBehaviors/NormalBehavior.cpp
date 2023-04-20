@@ -30,7 +30,7 @@ void NormalBehavior::Execute(const DX::StepTimer& timer, Actor* actor)
 	//Actor型をObstacle型にダイナミックキャストする
 	Obstacle* obs = dynamic_cast<Obstacle*>(actor);
 	//キャストに成功していればエフェクトを更新する
-	if (obs != nullptr)
+	if (obs != nullptr&& obs->GetEffect() != nullptr)
 	{
 		//エフェクト更新
 		obs->GetEffect()->Update(timer);

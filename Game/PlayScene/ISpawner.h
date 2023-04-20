@@ -38,7 +38,7 @@ public:
 	/// <returns>true=ê∂ê¨ê¨å˜, false=ê∂ê¨é∏îs</returns>
 	virtual bool Create( std::vector< std::unique_ptr<Actor>>& actors,
 		 const DirectX::SimpleMath::Vector3& position,
-		  const float angle,
+		  const DirectX::SimpleMath::Vector3& rotation,
 		  IBehavior* behavior,
 		DirectX::Model* model,
 		DirectX::CommonStates* commonState

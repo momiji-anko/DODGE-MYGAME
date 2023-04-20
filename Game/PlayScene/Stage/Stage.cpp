@@ -30,31 +30,40 @@ Stage::~Stage()
 }
 
 // 初期化
-void Stage::Initialize(const DirectX::SimpleMath::Vector3& velocity, const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Vector3& scale, bool active, float angle, IBehavior* behavia, DirectX::Model* model, DirectX::CommonStates* commonState)
+void Stage::Initialize(const DirectX::SimpleMath::Vector3& velocity, const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Vector3& scale, const DirectX::SimpleMath::Vector3& rotation, bool active, IBehavior* behavia, DirectX::Model* model, DirectX::CommonStates* commonState)
 {
 	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
 	ID3D11DeviceContext1* context = pDR->GetD3DDeviceContext();
+	//パラメータの設定
+	//移動速度
+	SetVelocity(velocity);
 
-	m_commonState = commonState;
-	m_velocity = velocity;
-	m_position = position;
+	//座標
+	SetPosition(position);
 
-	m_active = active;
+	//スケール
+	SetScale(scale);
 
-	m_angle = angle;
+	//アクティブ
+	SetActive(active);
 
-	m_behavia = behavia;
+	//ビヘイビアー
+	SetBehavior(behavia);
+	//モデル
+	SetModel(model);
 
-	m_scale = scale;
-	m_pModel = model;
+	//コモンステート
+	SetCommonState(commonState);
+
+	//角度設定
+	SetRotation(rotation);
 
 	m_time = 0.0f;
 	m_routine = 0;
-	m_AABBObject = std::make_unique<AABBFor3D>();
-	m_AABBObject->Initialize();
-	m_AABBObject->SetData(DirectX::SimpleMath::Vector3(m_position.x - 6.0f, m_position.y - 0.5f, m_position.z - 6.0f), DirectX::SimpleMath::Vector3(m_position.x + 6.0f, m_position.y + 0.5f, m_position.z + 6.0f));
 
-	m_previousRotation = m_rotation.ToEuler();
+	GetAABB()->SetData(DirectX::SimpleMath::Vector3(position.x - 6.0f, position.y - 0.5f, position.z - 6.0f), DirectX::SimpleMath::Vector3(position.x + 6.0f, position.y + 0.5f, position.z + 6.0f));
+
+	m_previousRotation = GetRotation().ToEuler();
 	m_isRotation = false;
 	m_rotationTime_s = 10;
 }
@@ -74,13 +83,13 @@ void Stage::Update(const DX::StepTimer& timer)
 
 	static float rotang;
 
-	if (m_behavia != nullptr)
+	if (GetBehavior() != nullptr)
 	{
-		m_behavia->Execute(timer, this);
+		GetBehavior()->Execute(timer, this);
 	}
-	
+	DirectX::SimpleMath::Vector3 pos = GetPosition();
 
-	m_AABBObject->SetData(DirectX::SimpleMath::Vector3(m_position.x - 6.0f, m_position.y - 0.5f, m_position.z - 6.0f), DirectX::SimpleMath::Vector3(m_position.x + 6.0f, m_position.y + 0.5f, m_position.z + 6.0f));
+	GetAABB()->SetData(DirectX::SimpleMath::Vector3(pos.x - 6.0f, pos.y - 0.5f, pos.z - 6.0f), DirectX::SimpleMath::Vector3(pos.x + 6.0f, pos.y + 0.5f, pos.z + 6.0f));
 }
 
 // 描画
@@ -89,22 +98,16 @@ void Stage::Draw(Camera* camera)
 	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
 	ID3D11DeviceContext1* context = pDR->GetD3DDeviceContext();
 
-	DirectX::SimpleMath::Matrix world = DirectX::SimpleMath::Matrix::Identity;
+	
 
-	DirectX::SimpleMath::Matrix trans = DirectX::SimpleMath::Matrix::CreateTranslation(m_position + m_offsetPosition);
-	DirectX::SimpleMath::Matrix rot = DirectX::SimpleMath::Matrix::CreateRotationX(DirectX::XMConvertToRadians(m_rotation.x)) * DirectX::SimpleMath::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(m_rotation.z)) * DirectX::SimpleMath::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_rotation.y));
-	rot = DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_rotation);
-	if (m_type == StageType::Stage2_1)
-	{
-		//world *= DirectX::SimpleMath::Matrix::CreateScale(0.32f);
-	}
 
-	world *= rot * trans;
-
+	CalculationWorld();
+	DirectX::SimpleMath::Matrix world = GetWorld();
+	world *= DirectX::SimpleMath::Matrix::CreateTranslation(m_offsetPosition);
 	if (m_shadowMap != nullptr)
 	{
 		//モデル＆影描画
-		m_pModel->Draw(context, *m_commonState, world, camera->GetViewMatrix(), camera->GetProjectionMatrix(), false, [&]()
+		GetModel()->Draw(context, *GetCommonState(), world, camera->GetViewMatrix(), camera->GetProjectionMatrix(), false, [&]()
 			{
 				m_shadowMap->DrawShadow(context, false);
 			}
@@ -112,8 +115,10 @@ void Stage::Draw(Camera* camera)
 	}
 	else
 	{
-		m_pModel->Draw(context, *m_commonState, world, camera->GetViewMatrix(), camera->GetProjectionMatrix(), false);
+		//モデル＆影描画
+		GetModel()->Draw(context, *GetCommonState(), world, camera->GetViewMatrix(), camera->GetProjectionMatrix());
 	}
+
 }
 
 // 終了処理
@@ -123,7 +128,7 @@ void Stage::Finalize()
 
 bool Stage::PlayerCheckGruondHit(AABBFor3D* playerAABB)
 {
-	return m_AABBObject->HitCheck(playerAABB);
+	return GetAABB()->HitCheck(playerAABB);
 }
 
 void Stage::Reset()

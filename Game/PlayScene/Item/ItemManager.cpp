@@ -89,7 +89,7 @@ void ItemManager::Update(const DX::StepTimer& timer)
 		//スポーンタイムを初期化する
 		m_spawneTime_s = ITEM_SPAWNE_COOL_TIME_S;
 		//アイテムを生成する
-		CreateItem(DirectX::SimpleMath::Vector3(MyRandom::GetFloatRange(-7.0f, 6.0f), 15.0f, MyRandom::GetFloatRange(-7.0f, 7.0f)), Item::ItemType::SHIELD_ITEM, 0.0f);
+		CreateItem(DirectX::SimpleMath::Vector3(MyRandom::GetFloatRange(-7.0f, 6.0f), 15.0f, MyRandom::GetFloatRange(-7.0f, 7.0f)), Item::ItemType::SHIELD_ITEM, DirectX::SimpleMath::Vector3::Zero);
 	
 	}
 
@@ -216,12 +216,12 @@ void ItemManager::Shadow(ShadowMap* shadowMap, DirectX::SimpleMath::Matrix view,
 /// </summary>
 /// <param name="position">座標</param>
 /// <param name="type">アイテムのタイプ</param>
-/// <param name="angle">アングル</param>
+/// <param name="rot">アングル</param>
 /// <returns>true = 生成成功、false = 生成失敗</returns>
-bool ItemManager::CreateItem(const DirectX::SimpleMath::Vector3& position, Item::ItemType type, float angle)
+bool ItemManager::CreateItem(const DirectX::SimpleMath::Vector3& position, Item::ItemType type, DirectX::SimpleMath::Vector3 rot)
 {
 	//アイテムの生成
-	return m_spawners[type]->Create(m_items, position, angle, nullptr, m_pModel[type], m_commonState);
+	return m_spawners[type]->Create(m_items, position, rot, nullptr, m_pModel[type], m_commonState);
 }
 
 /// <summary>

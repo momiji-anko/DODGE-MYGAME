@@ -24,16 +24,18 @@ void StickBehavior::Execute(const DX::StepTimer& timer, Actor* actor)
 	//“–‚½‚è”»’èAABB‚ÌŽæ“¾
 	AABBFor3D* aabb = actor->GetAABB();
 	//Šp“x‚ÌŽæ“¾
-	float angle = actor->GetAngle();
+	float angle = std::abs(actor->GetRotation().ToEuler().y);
+	
+	float rot = std::floor(angle);
 
 	//Šp“x‚É‚æ‚Á‚Ä“–‚½‚è”»’è‚Ì—Ìˆæ‚ÌÝ’è
-	//0 OR 180‚Å‚ ‚ê‚Î
-	if (angle == 0.0f || angle == DirectX::XM_PI)
+ 	//0 OR 180‚Å‚ ‚ê‚Î
+	if (rot == 0.0f || rot == std::floor(DirectX::XM_PI))
 	{
 		aabb->SetData(DirectX::SimpleMath::Vector3(position.x - 0.5f, position.y - 0.0f, position.z - 12.0f), DirectX::SimpleMath::Vector3(position.x + 0.5f, position.y + 1.5f, position.z + 12.0f));	
 	}
 	//90 OR 270‚Å‚ ‚ê‚Î
-	else if (angle == DirectX::XM_PI / 2.0f || angle == DirectX::XM_PI + (DirectX::XM_PI / 2.0f))
+	else if (rot == std::floor((DirectX::XM_PI / 2.0f)) || rot == std::floor((DirectX::XM_PI + (DirectX::XM_PI / 2.0f))))
 	{
 		aabb->SetData(DirectX::SimpleMath::Vector3(position.x - 12.0f, position.y - 0.0f, position.z - 0.4f), DirectX::SimpleMath::Vector3(position.x + 12.0f, position.y + 1.0f, position.z + 0.4f));
 	}

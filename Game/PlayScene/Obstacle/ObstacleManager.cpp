@@ -103,10 +103,9 @@ void ObstacleManeger::Initialize(DirectX::CommonStates* commonState, StageManage
 	//Stage1とStage2であれば回転する棒を生成する
 	if (stage == StageManager::StageSelect::Stage1 || stage == StageManager::StageSelect::Stage2)
 	{
-		CreateObstacle(DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f), Obstacle::ObstacleType::ROTATESTICK, 0);
-		CreateObstacle(DirectX::SimpleMath::Vector3(0.0f, 3.0f, 0.0f), Obstacle::ObstacleType::REVERSE_ROTATESTICK, 0);
+		CreateObstacle(DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f), Obstacle::ObstacleType::ROTATESTICK, DirectX::SimpleMath::Vector3::Zero);
+		CreateObstacle(DirectX::SimpleMath::Vector3(0.0f, 3.0f, 0.0f), Obstacle::ObstacleType::REVERSE_ROTATESTICK, DirectX::SimpleMath::Vector3::Zero);
 	}
-
 
 }
 
@@ -120,23 +119,28 @@ void ObstacleManeger::Update(const DX::StepTimer& timer)
 	{
 		m_spawneTime_s = m_spawneCoolTime_s;
 		int type = MyRandom::GetIntRange(0, 3);
-		float rad = atan2(m_normalSpawnePosition[type].x - m_playerPosition.x, m_normalSpawnePosition[type].z - m_playerPosition.z);
-		float  birdangle = ((DirectX::XM_PI / 2.0f) * type) ;
+		DirectX::SimpleMath::Vector3 rot = DirectX::SimpleMath::Vector3::Zero;
+		
+		
 
 
-		float  angle = (DirectX::XM_PI / 2.0f) * type;
+		rot.y = (DirectX::XM_PI / 2.0f) * type;
 		if (m_time_s <= 50)
 		{
 			int createObs = MyRandom::GetIntRange(0, 5);
 
 			if(createObs <= 4)
 			{
-				CreateObstacle(m_normalSpawnePosition[type], Obstacle::ObstacleType::NORMAL, rad);
+				rot.y = atan2(m_normalSpawnePosition[type].x - m_playerPosition.x, m_normalSpawnePosition[type].z - m_playerPosition.z);
+				CreateObstacle(m_normalSpawnePosition[type], Obstacle::ObstacleType::NORMAL, rot);
+				
+
 
 			}
 			else if (createObs == 5)
 			{
-				CreateObstacle(m_stickSpawnePosition[type], Obstacle::ObstacleType::STICK, angle);
+				
+				CreateObstacle(m_stickSpawnePosition[type], Obstacle::ObstacleType::STICK, rot);
 			}
 
 			
@@ -147,24 +151,25 @@ void ObstacleManeger::Update(const DX::StepTimer& timer)
 
 			if (random <= 30)
 			{
-				CreateObstacle(m_normalSpawnePosition[type], Obstacle::ObstacleType::NORMAL, rad);
+				rot.y = atan2(m_normalSpawnePosition[type].x - m_playerPosition.x, m_normalSpawnePosition[type].z - m_playerPosition.z);
+				CreateObstacle(m_normalSpawnePosition[type], Obstacle::ObstacleType::NORMAL, rot);
 
 			}
 			else if (random <= 45)
 			{
 				
 
-				CreateObstacle(m_stickSpawnePosition[type], Obstacle::ObstacleType::STICK, angle);
+				CreateObstacle(m_stickSpawnePosition[type], Obstacle::ObstacleType::STICK, rot);
 			}
 			else if (random <= 50)
 			{
-
-				CreateObstacle(m_birdSpawnPosition[type], Obstacle::ObstacleType::BIRD, birdangle);
+				rot.y = ((DirectX::XM_PI / 2.0f) * type);
+				CreateObstacle(m_birdSpawnPosition[type], Obstacle::ObstacleType::BIRD, rot);
 			
 			}else if (random <= 100)
 			{
 
-				CreateObstacle(m_normalSpawnePosition[type], Obstacle::ObstacleType::MEANDERING, rad);
+				CreateObstacle(m_normalSpawnePosition[type], Obstacle::ObstacleType::MEANDERING, rot);
 			}
 
 		}
@@ -200,6 +205,9 @@ void ObstacleManeger::Draw(Camera* camera)
 			continue;
 
 		obstacle->Draw(camera);
+
+		
+
 	}
 
 }
@@ -297,7 +305,7 @@ bool ObstacleManeger::PlayerCapsuleHitCheck(Player* player)
 
 		if (HitCheck_Capsule2Capsule(*cap, *player->GetCapsule()))
 		{
-			DirectX::SimpleMath::Vector3 rot = obstacle->GetRotation();
+			DirectX::SimpleMath::Vector3 rot = obstacle->GetRotation().ToEuler();
 			Obstacle* ob = dynamic_cast<Obstacle*>(obstacle.get());
 
 			bool isRoteStick = ob->GetObstacleType() == Obstacle::ObstacleType::ROTATESTICK;
@@ -413,11 +421,11 @@ bool ObstacleManeger::PlayerCapsuleHitCheck(Player* player)
 /// </summary>
 /// <param name="position">生成座標</param>
 /// <param name="type">障害物のタイプ</param>
-/// <param name="angle">アングル</param>
+/// <param name="rot">アングル</param>
 /// <returns>true = 生成成功 , false = 生成失敗</returns>
-bool ObstacleManeger::CreateObstacle(const DirectX::SimpleMath::Vector3& position, Obstacle::ObstacleType type, float angle)
+bool ObstacleManeger::CreateObstacle(const DirectX::SimpleMath::Vector3& position, Obstacle::ObstacleType type, DirectX::SimpleMath::Vector3 rot)
 {
-	return m_spawners[type]->Create(m_obstacles, position, angle, m_behavior[type].get(), m_models[type], m_commonState);
+	return m_spawners[type]->Create(m_obstacles, position, rot, m_behavior[type].get(), m_models[type], m_commonState);
 }
 
 /// <summary>

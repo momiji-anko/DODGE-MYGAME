@@ -26,7 +26,7 @@ void MeanderingBehavior::Execute(const DX::StepTimer& timer, Actor* actor)
 	//移動量の取得
 	DirectX::SimpleMath::Vector3 velocity = actor->GetVelocity();
 	//角度の取得
-	float angle = actor->GetAngle();
+	float angle = actor->GetRotation().y;
 	//アクター型から障害物型にダイナミックキャスト
 	Obstacle* obstacle = dynamic_cast<Obstacle*>(actor);
 

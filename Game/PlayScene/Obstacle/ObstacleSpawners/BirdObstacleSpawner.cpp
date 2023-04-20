@@ -16,12 +16,12 @@
 /// </summary>
 /// <param name="actors">障害物の配列</param>
 /// <param name="position">生成する位置</param>
-/// <param name="angle">角度（ラジアン）</param>
+/// <param name="rotation">角度（ラジアン）</param>
 /// <param name="behavior">鳥のビヘイビア</param>
 /// <param name="model">鳥のモデル</param>
 /// <param name="commonState">コモンステート</param>
 /// <returns>true=生成成功　false=生成失敗</returns>
-bool BirdObstacleSpawner::Create(std::vector<std::unique_ptr<Actor>>& actors, const DirectX::SimpleMath::Vector3& position, const float angle, IBehavior* behavior, DirectX::Model* model, DirectX::CommonStates* commonState)
+bool BirdObstacleSpawner::Create(std::vector<std::unique_ptr<Actor>>& actors, const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Vector3& rotation, IBehavior* behavior, DirectX::Model* model, DirectX::CommonStates* commonState)
 {
 	//スポーンカウント
 	int spawnCount = 0;
@@ -48,11 +48,10 @@ bool BirdObstacleSpawner::Create(std::vector<std::unique_ptr<Actor>>& actors, co
 
 			
 			//障害物を回転させる（発射角度を計算する行列を作る）
-			DirectX::SimpleMath::Matrix rotetion = DirectX::SimpleMath::Matrix::CreateRotationY(angle);
+			DirectX::SimpleMath::Matrix rotetion = DirectX::SimpleMath::Matrix::CreateRotationY(rotation.y);
 			//速度を計算する（発射角度を加味した移動速度を計算する）
 			velocity = DirectX::SimpleMath::Vector3::TransformNormal(velocity, rotetion);
 
-			DirectX::SimpleMath::Vector3 scale;
 
 			//1体づつのポジションの計算
 			DirectX::SimpleMath::Vector3 pos;
@@ -67,14 +66,16 @@ bool BirdObstacleSpawner::Create(std::vector<std::unique_ptr<Actor>>& actors, co
 			{
 				pos.z = (i - 2) * 4.0f;
 			}
-			
+			//スケール
+			DirectX::SimpleMath::Vector3 scale = DirectX::SimpleMath::Vector3(0.005f, 0.005f, 0.005f);
+
 
 			//障害物の初期化
-			actor->Initialize(velocity, pos, scale, true, angle, behavior, model, commonState);
+			actor->Initialize(velocity, pos, scale, rotation, true, behavior, model, commonState);
 
 			DirectX::SimpleMath::Quaternion rotation;
 
-			rotation = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitY, angle + DirectX::XM_PI);
+			rotation = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitY, rotation.y + DirectX::XM_PI);
 			
 			//角度の設定
 			actor->SetRotation(rotation);

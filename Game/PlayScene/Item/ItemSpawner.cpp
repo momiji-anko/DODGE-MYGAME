@@ -8,12 +8,12 @@
 /// </summary>
 /// <param name="actors">アイテムの配列</param>
 /// <param name="position">アイテムを生成する座標</param>
-/// <param name="angle">角度（ラジアン）</param>
+/// <param name="rotation">角度（ラジアン）</param>
 /// <param name="behavior">NULLでOK</param>
 /// <param name="model">アイテムのモデル</param>
 /// <param name="commonState">コモンステート</param>
 /// <returns>true＝生成成功　false＝生成失敗</returns>
-bool ItemSpawner::Create( std::vector< std::unique_ptr<Actor>>& actors, const DirectX::SimpleMath::Vector3& position, const float angle, IBehavior* behavior,DirectX::Model* model,DirectX::CommonStates* commonState)
+bool ItemSpawner::Create( std::vector< std::unique_ptr<Actor>>& actors, const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Vector3& rotation, IBehavior* behavior,DirectX::Model* model,DirectX::CommonStates* commonState)
 {
 	UNREFERENCED_PARAMETER(behavior);
 
@@ -35,7 +35,7 @@ bool ItemSpawner::Create( std::vector< std::unique_ptr<Actor>>& actors, const Di
 		DirectX::SimpleMath::Vector3 scale = { 0.008f,0.008f ,0.008f };
 
 		//アイテムの初期化
-		actor->Initialize(DirectX::SimpleMath::Vector3(0.0f, -3.0f, 0.0f), position, scale, true, angle, nullptr, model, commonState);
+		actor->Initialize(DirectX::SimpleMath::Vector3(0.0f, -3.0f, 0.0f), position, scale, rotation, true, nullptr, model, commonState);
 
 		//アイテムの生成に成功
 		return true;

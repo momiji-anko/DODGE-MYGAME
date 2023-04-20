@@ -33,7 +33,8 @@ TitleScene::TitleScene()
 	m_titleRotetion(0.0f),
 	m_titleSelect(TitleState::FADEIN),
 	m_modeSelectNum(0),
-	m_stageNum(0)
+	m_stageNum(0), 
+	m_stageManager{}
 {
 }
 
@@ -191,7 +192,6 @@ GAME_SCENE TitleScene::Update(const DX::StepTimer& timer)
 	}
 
 
-
 	
 	m_cameraRot += 0.001f;
 	m_titleTimer_s += time;
@@ -296,11 +296,7 @@ void TitleScene::Draw()
 	camera.SetProjectionMatrix(projection);
 	camera.SetViewMatrix(view);
 
-	for (std::unique_ptr<Stage>& stage : m_stageobj)
-	{
-		stage->Draw(&camera);
-	}
-
+	m_stageManager->Draw(&camera);
 
 	m_spriteBatch->Begin(SpriteSortMode_Deferred, m_commonState->NonPremultiplied());
 
@@ -388,7 +384,6 @@ void TitleScene::Draw()
 
 	}
 	
-	//m_spriteBatch->Draw(m_blackTexture.Get(), pos, nullptr, fadeColor, 0.0f, DirectX::SimpleMath::Vector2::Zero);
 
 
 	m_spriteBatch->End();
@@ -433,45 +428,9 @@ void TitleScene::LoadResources()
 
 
 
-	//	エフェクトファクトリの作成
-	EffectFactory* factory2 = new EffectFactory(pDR->GetD3DDevice());
 
-	//	テクスチャの読み込みパス指定
-	factory2->SetDirectory(L"Resources/Models");
-
-	//	ファイルを指定してモデルデータ読み込み
-	m_stageModel = DirectX::Model::CreateFromCMO(
-		pDR->GetD3DDevice(),
-		L"Resources/Models/StageObject.cmo",
-		*factory2
-	);
-
-	delete factory2;
-
-	m_stagePosition.resize(4);
-	for (int i = 0; i < 4; i++)
-	{
-		if (i < 2)
-		{
-			m_stagePosition[i] = { 6.0f - i * 12.0f,-1.0f,6.0f };
-		}
-		else
-		{
-			m_stagePosition[i] = { 6.0f - (i - 2) * 12.0f ,-1.0f ,-6.0f };
-		}
-
-	}
-
-	int num = 0;
-	m_stageobj.resize(4);
-	for (std::unique_ptr<Stage>& stage : m_stageobj)
-	{
-		stage = std::make_unique<Stage>();
-		stage->Initialize(DirectX::SimpleMath::Vector3::Zero, m_stagePosition[num],DirectX::SimpleMath::Vector3::One, true, 0, nullptr, m_stageModel.get(), m_commonState.get());
-		stage->SetStageType(static_cast <Stage::StageType>(num));
-		stage->SetShadow(nullptr);
-		num++;
-	}
+	m_stageManager = std::make_unique<StageManager>();
+	m_stageManager->Initialize(m_commonState.get(), StageManager::StageSelect::Stage1);
 
 	//プレイヤーモードのテクスチャのロード
 	m_modeSelectTextures.resize(static_cast<int>(GameMain::PlayerMode::Player2));

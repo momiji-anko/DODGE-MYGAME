@@ -51,7 +51,7 @@ Player::~Player()
 /// <param name="behavia">ビヘイビアー（Playrでは使わないのでNULLでOK）</param>
 /// <param name="model">プレイヤーのモデルだがNULLでOK</param>
 /// <param name="commonState">コモンステート</param>
-void Player::Initialize(const DirectX::SimpleMath::Vector3& velocity, const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Vector3& scale, bool active, float angle, IBehavior* behavia, DirectX::Model* model, DirectX::CommonStates* commonState)
+void Player::Initialize(const DirectX::SimpleMath::Vector3& velocity, const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Vector3& scale, const DirectX::SimpleMath::Vector3& rotation, bool active, IBehavior* behavia, DirectX::Model* model, DirectX::CommonStates* commonState)
 {
 	//デバイスリソースの取得
 	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
@@ -59,37 +59,44 @@ void Player::Initialize(const DirectX::SimpleMath::Vector3& velocity, const Dire
 	ID3D11DeviceContext1* context = pDR->GetD3DDeviceContext();
 	//デバイスの取得
 	ID3D11Device1* device = pDR->GetD3DDevice();
-	//ステータスの初期化
-	m_commonState = commonState;
-	m_velocity = velocity;
-	m_position = position;
-	m_active = active;
-	m_angle = angle;
-	m_behavia = behavia;
-	m_pModel = model;
-	m_scale = scale;
+
+	//パラメータの設定
+	//移動速度
+	SetVelocity(velocity);
+
+	//座標
+	SetPosition(position);
+
+	//スケール
+	SetScale(scale);
+
+	//アクティブ
+
+	SetActive(active);
+
+
+	//ビヘイビアー
+	SetBehavior(behavia);
+	//モデル
+	SetModel(model);
+
+	//コモンステート
+	SetCommonState(commonState);
 
 	//モデルの生成
 	CreatePlayerModel();
 
-	//当たり判定AABBの作成
-	m_AABBObject = std::make_unique<AABBFor3D>();
-	//AABBの初期化
-	m_AABBObject->Initialize();
+	
 	//当たり判定の領域の設定
-	m_AABBObject->SetData(DirectX::SimpleMath::Vector3(m_position.x - 0.5f, m_position.y - 0.9f, m_position.z - 0.5f), DirectX::SimpleMath::Vector3(m_position.x + 0.5f, m_position.y + 0.5f, m_position.z + 0.5f));
+	GetAABB()->SetData(DirectX::SimpleMath::Vector3(position.x - 0.5f, position.y - 0.9f, position.z - 0.5f), DirectX::SimpleMath::Vector3(position.x + 0.5f, position.y + 0.5f, position.z + 0.5f));
 
 
 	//ADX2のインスタンス取得
 	m_pAdx2 = &ADX2::GetInstance();
 
-	//当たり判定カプセルの作成
-	m_capsule = std::make_unique<Capsule>();
 	//当たり判定の領域の設定
-	m_capsule->a = DirectX::SimpleMath::Vector3(m_position.x, m_position.y + 0.5f, m_position.z);
-	m_capsule->b = DirectX::SimpleMath::Vector3(m_position.x, m_position.y + 1.5f, m_position.z);
-	//カプセルの半径
-	m_capsule->r = 0.5f;
+	GetCapsule()->a = DirectX::SimpleMath::Vector3(position.x, position.y + 0.5f, position.z);
+	GetCapsule()->b = DirectX::SimpleMath::Vector3(position.x, position.y + 1.5f, position.z);
 
 	//盾のテクスチャ読み込み
 	m_shieldTexture = TextureManager::GetInstance().LoadTexture(L"Resources/Textures/haet.png");
@@ -110,7 +117,7 @@ void Player::Update(const DX::StepTimer& timer)
 	Item::ItemType itemType = m_itemManager->PlayerHitItemType(GetAABB());
 
 	//アクティブでなければ処理を終わる
-	if (!m_active)
+	if (!IsActive())
 		return;
 
 	if (itemType == Item::ItemType::SHIELD_ITEM)
@@ -118,20 +125,15 @@ void Player::Update(const DX::StepTimer& timer)
 		ShieldCountUp();
 	}
 	
-	//ベロシティのXとZを０にする
-	m_velocity.z = 0.0f;
-	m_velocity.x = 0.0f;
-
+	
+	
 
 	PlayerMove(timer);
 
 
-	m_position += m_velocity;
-	
-
 	if (m_flyVelocity.Length() != 0.0f)
 	{
-		m_position += m_flyVelocity;
+		SetPosition(GetPosition() + m_flyVelocity);
 
 		m_flyVelocity *= DirectX::SimpleMath::Vector3(0.91f, 0.91f, 0.91f);
 	}
@@ -151,16 +153,19 @@ void Player::Update(const DX::StepTimer& timer)
 		m_invincbleTime = 0;
 	}
 
-	m_AABBObject->SetData(DirectX::SimpleMath::Vector3(m_position.x - 0.5f, m_position.y - 0, m_position.z - 0.5f), DirectX::SimpleMath::Vector3(m_position.x + 0.5f, m_position.y + 2.0f, m_position.z + 0.5f));
 
-	m_capsule->a = DirectX::SimpleMath::Vector3(m_position.x, m_position.y+0.5f, m_position.z);
-	m_capsule->b = DirectX::SimpleMath::Vector3(m_position.x, m_position.y + 1.5f, m_position.z);
+	DirectX::SimpleMath::Vector3 pos = GetPosition();
+
+	GetAABB()->SetData(DirectX::SimpleMath::Vector3(pos.x - 0.5f, pos.y - 0, pos.z - 0.5f), DirectX::SimpleMath::Vector3(pos.x + 0.5f, pos.y + 2.0f, pos.z + 0.5f));
+
+	GetCapsule()->a = DirectX::SimpleMath::Vector3(pos.x, pos.y + 0.5f, pos.z);
+	GetCapsule()->b = DirectX::SimpleMath::Vector3(pos.x, pos.y + 1.5f, pos.z);
 
 
 
 	if (GetPosition().y < -50.0f)
 	{
-		m_active = false;
+		SetActive(false);
 
 	}
 
@@ -178,7 +183,7 @@ void Player::Draw(Camera* camera)
 	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
 	ID3D11DeviceContext1* context = pDR->GetD3DDeviceContext();
 	
-	if (!m_active)
+	if (!IsActive())
 		return;
 
 	
@@ -188,7 +193,7 @@ void Player::Draw(Camera* camera)
 	{
 		int modelTime = static_cast<int>(m_modelTime_s);
 
-		m_playerModel[m_playerModelNum[modelTime]]->Draw(context, *m_commonState, m_world, camera->GetViewMatrix(), camera->GetProjectionMatrix());
+		m_playerModel[m_playerModelNum[modelTime]]->Draw(context, *GetCommonState(), GetWorld(), camera->GetViewMatrix(), camera->GetProjectionMatrix());
 	}
 
 }
@@ -217,7 +222,7 @@ void Player::PlayerShadow( ShadowMap* shadowMap, DirectX::SimpleMath::Matrix vie
 	{
 		int modelTime = static_cast<int >(m_modelTime_s);
 
-		m_playerModel[m_playerModelNum[modelTime]]->Draw(context, *m_commonState, m_world, view, projection, false, [&]()
+		m_playerModel[m_playerModelNum[modelTime]]->Draw(context, *GetCommonState(), GetWorld(), view, projection, false, [&]()
 			{
 				shadowMap->DrawShadowMap(context);
 			}
@@ -242,7 +247,7 @@ void Player::ShieldCountDown()
 		m_blink->Start();
 		if (m_shieldCount <= -1)
 		{
-			m_active = false;
+			SetActive(false);
 		}
 	}
 
@@ -277,49 +282,57 @@ void Player::PlayerMove(const DX::StepTimer& timer)
 	// キー入力情報を取得する
 	DirectX::Keyboard::State keyState = DirectX::Keyboard::Get().GetState();
 
+	DirectX::SimpleMath::Vector3 velocity = GetVelocity();
+	DirectX::SimpleMath::Vector3 position = GetPosition();
+	DirectX::SimpleMath::Vector3 rotation = GetRotation().ToEuler();
+
+	velocity.x = 0.0f;
+	velocity.z = 0.0f;
+
+
 	if (keyState.IsKeyDown(right))
 	{
-		m_position.x += MOVE_SPEED * elapsedTime;
+		velocity.x += MOVE_SPEED * elapsedTime;
 
-		m_rotation.y = -90;
+		rotation.y = -90;
 
 	}
 
 	if (keyState.IsKeyDown(left))
 	{
-		m_position.x -= MOVE_SPEED * elapsedTime;
+		velocity.x -= MOVE_SPEED * elapsedTime;
 
-		m_rotation.y = 90;
+		rotation.y = 90;
 	}
 
 	if (keyState.IsKeyDown(backward))
 	{
-		m_position.z += MOVE_SPEED * elapsedTime;
+		velocity.z += MOVE_SPEED * elapsedTime;
 
-		m_rotation.y = 180;
+		rotation.y = 180;
 	}
 
 	if (keyState.IsKeyDown(forward))
 	{
-		m_position.z -= MOVE_SPEED * elapsedTime;
+		velocity.z -= MOVE_SPEED * elapsedTime;
 
-		m_rotation.y = 0;
+		rotation.y = 0;
 	}
 
 
 
 
 	if ((keyState.IsKeyDown(right)) && (keyState.IsKeyDown(backward)))
-		m_rotation.y = -(90 + 45);
+		rotation.y = DirectX::XMConvertToRadians(-(90 + 45));
 
 	if ((keyState.IsKeyDown(right)) && (keyState.IsKeyDown(forward)))
-		m_rotation.y = -(45);
+		rotation.y = DirectX::XMConvertToRadians(-(45));
 
 	if ((keyState.IsKeyDown(left)) && (keyState.IsKeyDown(backward)))
-		m_rotation.y = (90 + 45);
+		rotation.y = DirectX::XMConvertToRadians((90 + 45));
 
 	if ((keyState.IsKeyDown(left)) && (keyState.IsKeyDown(forward)))
-		m_rotation.y = (45);
+		rotation.y = DirectX::XMConvertToRadians((45));
 
 
 	if (keyState.IsKeyDown(right) || keyState.IsKeyDown(left) || keyState.IsKeyDown(forward) || keyState.IsKeyDown(backward))
@@ -340,13 +353,13 @@ void Player::PlayerMove(const DX::StepTimer& timer)
 	if (m_stageManager->PlayerStageAABBHitCheck(this))
 	{
 
-		m_velocity.y = 0;
+		velocity.y = 0;
 
 
 		if (keyState.IsKeyDown(jump))
 		{
 
-			m_velocity.y += JUMP_FORCE;
+			velocity.y += JUMP_FORCE;
 
 			m_pAdx2->Play(CRI_CUESHEET_0_JUMP08);
 
@@ -356,7 +369,12 @@ void Player::PlayerMove(const DX::StepTimer& timer)
 	else
 	{
 		m_modelTime_s = 4;
-		m_velocity.y += GRAVITY_FORCE * timer.GetElapsedSeconds();
+		velocity.y += GRAVITY_FORCE * timer.GetElapsedSeconds();
 
 	}
+
+	SetVelocity(velocity);
+	SetPosition(GetPosition() + velocity);
+
+	SetRotation(DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(rotation));
 }

@@ -135,7 +135,7 @@ void PlayScene::Initialize()
 		m_players[i]->SetPlayerModelFile(playerModelFile[i]);
 		m_players[i]->SetKeys(playerKeyData[i]);
 		m_players[i]->SetID(i + 1);
-		m_players[i]->Initialize(DirectX::SimpleMath::Vector3::Zero, playersStartPos[i],DirectX::SimpleMath::Vector3(2.0f,2.0f,2.0f), true, 0.0f, nullptr, nullptr, m_commonState.get());
+		m_players[i]->Initialize(DirectX::SimpleMath::Vector3::Zero, playersStartPos[i], DirectX::SimpleMath::Vector3(2.0f, 2.0f, 2.0f), DirectX::SimpleMath::Vector3::Zero, true, nullptr, nullptr, m_commonState.get());
 	}
 
 	m_aliveTime = &AliveTimer::GetInstance();

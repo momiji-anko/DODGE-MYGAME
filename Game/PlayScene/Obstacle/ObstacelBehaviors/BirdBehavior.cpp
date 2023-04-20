@@ -21,7 +21,7 @@ void BirdBehavior::Execute(const DX::StepTimer& timer, Actor* actor)
 	//ˆÚ“®—Ê‚ÌŽæ“¾
 	DirectX::SimpleMath::Vector3 velocity = actor->GetVelocity();
 	//Šp“xŽæ“¾
-	float angle = actor->GetAngle();
+	float angle = actor->GetRotation().y;
 
 	//“–‚½‚è”»’èAABBŽæ“¾
 	AABBFor3D* aabb = actor->GetAABB();

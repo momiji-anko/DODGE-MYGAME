@@ -5,13 +5,7 @@
 * 麻生　楓
 */
 #pragma once
-#include<SimpleMath.h>
-#include<Model.h>
-#include"../IBehavior.h"
-#include <CommonStates.h>
-#include"Libraries/MyLibraries/Camera.h"
-#include"../AABBFor3D/AABBFor3D.h"
-#include"../Objects.h"
+#include"IActor.h"
 
 /// <summary>
 /// アクター
@@ -68,8 +62,8 @@ public:
 		const DirectX::SimpleMath::Vector3& velocity,
 		const DirectX::SimpleMath::Vector3& position,
 		const DirectX::SimpleMath::Vector3& scale,
+		const DirectX::SimpleMath::Vector3& rotataion,
 		bool active,
-		float angle,
 		IBehavior* behavia,
 		DirectX::Model* model, 
 		DirectX::CommonStates* commonState
@@ -131,6 +125,11 @@ public:
 	/// <param name="rotate">角度</param>
 	void SetRotation(DirectX::SimpleMath::Quaternion rotate) { m_rotation = rotate; }
 	/// <summary>
+	/// 角度の設定
+	/// </summary>
+	/// <param name="rotation">角度</param>
+	void SetRotation(DirectX::SimpleMath::Vector3 rotation) { m_rotation = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(rotation); }
+	/// <summary>
 	/// 角度の取得
 	/// </summary>
 	/// <returns>角度</returns>
@@ -142,17 +141,7 @@ public:
 	/// <returns>AABBの生ポインタ</returns>
 	AABBFor3D* GetAABB() const { return m_AABBObject.get(); }
 
-	/// <summary>
-	/// アングル設定
-	/// </summary>
-	/// <param name="angle">アングル</param>
-	void SetAngle(float angle) { m_angle = angle; }
 
-	/// <summary>
-	/// アングルの取得
-	/// </summary>
-	/// <returns>アングル</returns>
-	float GetAngle()const { return m_angle; }
 
 
 	/// <summary>
