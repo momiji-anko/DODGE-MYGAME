@@ -1,11 +1,17 @@
+/*
+* 2023/04/20
+* Obstacle.h
+* 障害物クラス
+* 麻生　楓
+*/
 #pragma once 
 #include"../Actor/Actor.h"
 #include"../../Shader/FireEffectManager.h"
 #include"../ShadowMap.h"
-#include"../Objects.h"
-#include <GeometricPrimitive.h>
 
-
+/// <summary>
+/// 障害物
+/// </summary>
 class Obstacle :public Actor
 {
 public:
@@ -31,8 +37,7 @@ public:
 		
 	};
 private:
-	//定数
-	//移動速度
+
 
 								 
 	//変数					   
@@ -109,7 +114,7 @@ public :
 	/// <summary>
 	/// リセット
 	/// </summary>
-	virtual void Reset();
+	void Reset();
 
 	/// <summary>
 	/// タイプ設定
@@ -165,40 +170,49 @@ public :
 	void SetPlayerPosition(DirectX::SimpleMath::Vector3 playerPos) { m_playerPosition = playerPos; }
 
 	/// <summary>
-	/// 
+	/// 探索行動
 	/// </summary>
-	/// <param name="targetPosition"></param>
-	/// <returns></returns>
+	/// <param name="targetPosition">目標座標</param>
+	/// <returns>目標へのベクトル</returns>
 	DirectX::SimpleMath::Vector3 Seek(const DirectX::SimpleMath::Vector3& targetPosition);
 
-	/// <summary>
-	/// Maxスピード取得
-	/// </summary>
-	/// <returns>Maxスピード</returns>
-	float GetMaxSpeed() const { return m_maxSpeed; }
-	/// <summary>
-	/// Maxフォース取得
-	/// </summary>
-	/// <returns>Maxフォース</returns>
-	float GetMaxForce() const { return m_maxForce; }
 	/// <summary>
 	/// Maxスピード設定
 	/// </summary>
 	/// <param name="speed">Maxスピード</param>
 	void SetMaxSpeed(float speed) { m_maxSpeed = speed; }
 	/// <summary>
-	/// 
+	/// Maxスピード取得
 	/// </summary>
+	/// <returns>Maxスピード</returns>
+	float GetMaxSpeed() const { return m_maxSpeed; }
+
+	/// <summary>
+	/// Maxフォース設定
+	/// </sumary>
 	/// <param name="force"></param>
 	void SetMaxForce(float force) { m_maxForce = force; }
+	/// <summary>
+	/// Maxフォース取得
+	/// </summary>
+	/// <returns>Maxフォース</returns>
+	float GetMaxForce() const { return m_maxForce; }
 
-	
-
+	/// <summary>
+	/// シークタイム設定
+	/// </summary>
+	/// <param name="time">シークタイム</param>
+	void SetSeekTime(float time) { m_seekTime_s = time; }
+	/// <summary>
+	/// シークタイム取得
+	/// </summary>
+	/// <returns>シークタイム</returns>
 	float GetSeekTime() { return m_seekTime_s; }
 
 private:
+	/// <summary>
+	/// 障害物がエリア外にいるか確認
+	/// </summary>
+	/// <returns>true = エリア外、false = エリア内</returns>
 	bool  CheckInArea();
-
-
-	
 };

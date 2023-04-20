@@ -1,37 +1,57 @@
+/*
+* 2023/04/20
+* Obstacle.cpp
+* 障害物クラス
+* 麻生　楓
+*/
 #include"pch.h"
 #include"Obstacle.h"
 #include"DeviceResources.h"
-#include<random>
 
 
-//コンストラクタ
+/// <summary>
+/// コンストラクタ
+/// </summary>
 Obstacle::Obstacle()
 	:
 	Actor(),
+	m_type(ObstacleType::NONE), 
+	m_effect(nullptr),
 	m_rotSpeed(0.3f),
-	m_type(ObstacleType::NORMAL), 
+	m_mass(0.0f),
+	m_maxSpeed{ 1.0f },
+	m_maxForce{ 4.0f },
 	m_force{ DirectX::SimpleMath::Vector3::Zero },
-	m_maxSpeed{ 0.0f },
-	m_maxForce{ 0.0f }
+	m_playerPosition{ DirectX::SimpleMath::Vector3::Zero },
+	m_seekTime_s(0.0f)
 {
 	
 }
-//デストラクタ
+
+/// <summary>
+/// デストラクタ
+/// </summary>
 Obstacle::~Obstacle()
 {
-
+	Reset();
 }
 
-// 初期化
-void Obstacle::Initialize(const DirectX::SimpleMath::Vector3& velocity,const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Vector3& scale, const DirectX::SimpleMath::Vector3& rotation,bool active,IBehavior* behavia,DirectX::Model* model,DirectX::CommonStates* commonState)
+/// <summary>
+/// 初期化
+/// </summary>
+/// <param name="velocity">移動ベロシティ</param>
+/// <param name="position">座標</param>
+/// <param name="scale">スケール</param>
+/// <param name="rotation">角度</param>
+/// <param name="active">アクティブ</param>
+/// <param name="behavia">ビヘイビアーの生ポインタ</param>
+/// <param name="model">モデルの生ポインタ</param>
+/// <param name="commonState">コモンステートの生ポインタ</param>
+void Obstacle::Initialize(const DirectX::SimpleMath::Vector3& velocity, const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Vector3& scale, const DirectX::SimpleMath::Vector3& rotation, bool active, IBehavior* behavia, DirectX::Model* model, DirectX::CommonStates* commonState)
 {
 
 	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
-	SetMaxSpeed(1.0f);
-	SetMaxForce(4.0f);
-	
 
-	
 	//パラメータの設定
 	//移動速度
 	SetVelocity(velocity);
@@ -44,7 +64,7 @@ void Obstacle::Initialize(const DirectX::SimpleMath::Vector3& velocity,const Dir
 
 	//アクティブ
 	SetActive(active);
-	
+
 	//角度
 	SetRotation(rotation);
 
@@ -56,56 +76,63 @@ void Obstacle::Initialize(const DirectX::SimpleMath::Vector3& velocity,const Dir
 	//コモンステート
 	SetCommonState(commonState);
 
-	DirectX::SimpleMath::Vector3 vel = GetVelocity();
-
-	
-	
-
-	GetAABB()->SetData({100,100,100}, {100,100,100});
-	m_seekTime_s = 0.f;
-
 
 }
 
-// 更新
+/// <summary>
+/// 更新
+/// </summary>
+/// <param name="timer">タイマー</param>
 void Obstacle::Update(const DX::StepTimer& timer)
 {
-	m_seekTime_s += timer.GetElapsedSeconds();
 
+	//エフェクトがNULLでなければ更新する
 	if (m_effect != nullptr)
 	{
+		//エフェクト更新
 		m_effect->Update(timer);
 	}
 	
-	
+	//ビヘイビアーがNULLでなければ実行する
 	if (GetBehavior() != nullptr)
 	{
+		//実行する
 		GetBehavior()->Execute(timer, this);
 	}
 
-
+	//エリア内にいるか確認エリア外であれば死亡
 	if (CheckInArea())
 	{
+		//リセット
 		Reset();
 	}
 }
 
-// 描画
+/// <summary>
+/// 描画
+/// </summary>
+/// <param name="camera">カメラの生ポインタ</param>
 void Obstacle::Draw(Camera* camera)
 {
+	//デバイスリソース取得
 	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
+	//デバイスコンテキスト取得
 	ID3D11DeviceContext1* context = pDR->GetD3DDeviceContext();
 
 	
-
+	//ワールド行列を計算する
 	CalculationWorld();
 
+	//炎でなければモデル表示する
 	if (m_type != ObstacleType::NORMAL && m_type != ObstacleType::MEANDERING)
 	{
+		//モデル表示する
 		GetModel()->Draw(context, *GetCommonState(), GetWorld(), camera->GetViewMatrix(), camera->GetProjectionMatrix());
 	}
+	//炎であればエフェクト表示する
 	else if(m_type == ObstacleType::NORMAL || m_type == ObstacleType::MEANDERING)
 	{
+		//エフェクト表示する
 		m_effect->SetRenderState(camera->GetEyePosition(), camera->GetViewMatrix(), camera->GetProjectionMatrix());
 		m_effect->SetOffsetPosition(GetPosition());
 		m_effect->Render();
@@ -115,26 +142,42 @@ void Obstacle::Draw(Camera* camera)
 	
 }
 
-// 終了処理
+/// <summary>
+/// 終了処理
+/// </summary>
 void Obstacle::Finalize()
 {
-
+	Reset();
 }
 
+/// <summary>
+/// リセット
+/// </summary>
 void Obstacle::Reset()
 {
 	SetActive(false);
 }
 
+/// <summary>
+/// 障害物の影生成
+/// </summary>
+/// <param name="shadow">シャドウマップの生ポインタ</param>
+/// <param name="view">ビュー行列</param>
+/// <param name="projection">プロジェクション行列</param>
 void Obstacle::ObstacleShadow(ShadowMap* shadow, DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix projection)
 {
-
+	//デバイスリソース取得
 	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
+	//デバイスコンテキスト取得
 	ID3D11DeviceContext1* context = pDR->GetD3DDeviceContext();
 
+	//モデルがあれば影を生成する
 	if (GetModel() != nullptr)
 	{
+		//ワールド行列を計算する
+		CalculationWorld();
 
+		//影生成
 		GetModel()->Draw(context, *GetCommonState(), GetWorld(), view, projection, false, [&]()
 			{
 				shadow->DrawShadowMap(context);
@@ -145,7 +188,11 @@ void Obstacle::ObstacleShadow(ShadowMap* shadow, DirectX::SimpleMath::Matrix vie
 }
 
 
-
+/// <summary>
+/// 探索行動
+/// </summary>
+/// <param name="targetPosition">目標座標</param>
+/// <returns>目標へのベクトル</returns>
 DirectX::SimpleMath::Vector3 Obstacle::Seek(const DirectX::SimpleMath::Vector3& targetPosition)
 {
 	DirectX::SimpleMath::Vector3 desiredVelocity = targetPosition - GetPosition();
@@ -156,15 +203,23 @@ DirectX::SimpleMath::Vector3 Obstacle::Seek(const DirectX::SimpleMath::Vector3& 
 	return steeringForce;
 }
 
+/// <summary>
+/// 障害物がエリア外にいるか確認
+/// </summary>
+/// <returns>true = エリア外、false = エリア内</returns>
 bool Obstacle::CheckInArea()
 {
+	//エリア設定
 	static const float Area = 30.0f;
+	//座標設定
 	DirectX::SimpleMath::Vector3 position = GetPosition();
 
-	if ((position.y <= -Area || position.y >= Area)||(position.z <= -Area || position.z >= Area))
+	//エリア外にいるか確認
+	if ((position.x <= -Area || position.x >= Area)||(position.z <= -Area || position.z >= Area))
 	{
+		//エリア外
 		return true;
 	}
-	
+	//エリア内
 	return false;
 }

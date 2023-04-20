@@ -41,6 +41,9 @@ void MeanderingBehavior::Execute(const DX::StepTimer& timer, Actor* actor)
 	//蛇行タイム取得
 	float seekTime_s = obstacle->GetSeekTime();
 	
+	//蛇行タイムに経過時間を足す
+	seekTime_s += elapsedTime;
+
 	//蛇行ベロシティ
 	DirectX::SimpleMath::Vector3 meanderingVelocity{ velocity.z,0,-velocity.x };
 
@@ -61,10 +64,10 @@ void MeanderingBehavior::Execute(const DX::StepTimer& timer, Actor* actor)
 	velocity.Normalize();
 	//ベロシティの移動量計算
 	velocity *= MOVE_SPEED;
-	//ベロシティに１フレームの秒数をかける
+	//ベロシティに経過時間をかける
 	velocity *= elapsedTime;
 
 	//移動する
-	actor->SetPosition(DirectX::SimpleMath::Vector3(position.x + velocity.x, position.y, position.z + velocity.z));
+	actor->SetPosition(position + velocity);
 
 }
