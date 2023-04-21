@@ -34,12 +34,6 @@ void SecondFloorToFallBehavior::Execute(const DX::StepTimer& timer, Actor* actor
 	time_s += elapsedTime_s;
 
 
-	if (time_s > MOVE_TIME_S)
-	{
-		time_s = MOVE_TIME_S;
-		routine++;
-	}
-
 	switch (routine)
 	{
 	case 0:
@@ -158,6 +152,12 @@ void SecondFloorToFallBehavior::Execute(const DX::StepTimer& timer, Actor* actor
 
 		break;
 
+	}
+
+	if (time_s > MOVE_TIME_S)
+	{
+		time_s = MOVE_TIME_S;
+		routine++;
 	}
 
 	stage->SetPosition(position);

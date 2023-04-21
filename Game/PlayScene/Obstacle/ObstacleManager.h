@@ -132,8 +132,8 @@ public:
 	/// <summary>
 	/// プレイヤーの座標設定
 	/// </summary>
-	/// <param name="position"></param>
-	void SetPlayerPosition(DirectX::SimpleMath::Vector3 position) { m_playerPosition = position; }
+	/// <param name="position">プレイヤーの座標</param>
+	void SetPlayerPosition(DirectX::SimpleMath::Vector3 position);
 
 	/// <summary>
 	/// プレイヤーと障害物のAABBの当たり判定
@@ -181,8 +181,6 @@ private:
 	/// <returns>丸め処理を行った結果となる数値</returns>
 	float Clamp(float n, float min, float max);
 
-
-
 	/// <summary>
 	/// ２つの線分の最短距離の平方を返す関数
 	/// </summary>
@@ -208,7 +206,6 @@ private:
 	/// <param name="capsule2">当たり判定を取りたいカプセル 2 つ目</param>
 	/// <returns>true= 当たった、false=当たってない</returns>
 	bool HitCheck_Capsule2Capsule(Capsule capsule1, Capsule capsule2);
-
 
 
 };

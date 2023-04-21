@@ -348,7 +348,7 @@ void PlayScene::Draw()
 
 	for (std::vector<std::unique_ptr<Player>>::iterator player = m_players.begin(); player != m_players.end(); ++player)
 	{
-		(*player)->PlayerShadow(m_shadowMap.get(), lightView, projection);
+		(*player)->CreateShadow(m_shadowMap.get(), lightView, projection);
 	}	
 	
 	m_itemManeger->Shadow(m_shadowMap.get(),lightView,projection);

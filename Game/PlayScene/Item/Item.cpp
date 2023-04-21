@@ -192,26 +192,3 @@ void Item::Reset()
 	SetActive(false);
  }
 
-/// <summary>
-/// アイテムの影生成
-/// </summary>
-/// <param name="shadowMap">シャドウマップ</param>
-/// <param name="view">ビュー行列</param>
-/// <param name="projection">プロジェクション行列</param>
-void Item::Shadow(ShadowMap* shadowMap, DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix projection)
- {
-
-	//デバイスリソース取得
-	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
-	//デバイスリソースからデバイスコンテキスト取得
-	ID3D11DeviceContext1* context = pDR->GetD3DDeviceContext();
-
-	 //影作成
-	 GetModel()->Draw(context, *GetCommonState(), GetWorld(), view, projection, false, [&]()
-		 {
-			 shadowMap->DrawShadowMap(context);
-		 }
-	 );
-
- }
-

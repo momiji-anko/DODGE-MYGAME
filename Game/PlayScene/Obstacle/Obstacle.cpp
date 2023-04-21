@@ -49,7 +49,7 @@ Obstacle::~Obstacle()
 /// <param name="commonState">コモンステートの生ポインタ</param>
 void Obstacle::Initialize(const DirectX::SimpleMath::Vector3& velocity, const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Vector3& scale, const DirectX::SimpleMath::Vector3& rotation, bool active, IBehavior* behavia, DirectX::Model* model, DirectX::CommonStates* commonState)
 {
-
+	//デバイスリソース取得
 	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
 
 	//パラメータの設定
@@ -137,9 +137,6 @@ void Obstacle::Draw(Camera* camera)
 		m_effect->SetOffsetPosition(GetPosition());
 		m_effect->Render();
 	}
-
-
-	
 }
 
 /// <summary>
@@ -157,36 +154,6 @@ void Obstacle::Reset()
 {
 	SetActive(false);
 }
-
-/// <summary>
-/// 障害物の影生成
-/// </summary>
-/// <param name="shadow">シャドウマップの生ポインタ</param>
-/// <param name="view">ビュー行列</param>
-/// <param name="projection">プロジェクション行列</param>
-void Obstacle::ObstacleShadow(ShadowMap* shadow, DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix projection)
-{
-	//デバイスリソース取得
-	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
-	//デバイスコンテキスト取得
-	ID3D11DeviceContext1* context = pDR->GetD3DDeviceContext();
-
-	//モデルがあれば影を生成する
-	if (GetModel() != nullptr)
-	{
-		//ワールド行列を計算する
-		CalculationWorld();
-
-		//影生成
-		GetModel()->Draw(context, *GetCommonState(), GetWorld(), view, projection, false, [&]()
-			{
-				shadow->DrawShadowMap(context);
-			}
-		);
-	}
-
-}
-
 
 /// <summary>
 /// 探索行動
@@ -209,7 +176,7 @@ DirectX::SimpleMath::Vector3 Obstacle::Seek(const DirectX::SimpleMath::Vector3& 
 /// <returns>true = エリア外、false = エリア内</returns>
 bool Obstacle::CheckInArea()
 {
-	//エリア設定
+	//エリア
 	static const float Area = 30.0f;
 	//座標設定
 	DirectX::SimpleMath::Vector3 position = GetPosition();

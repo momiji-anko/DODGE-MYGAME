@@ -8,7 +8,7 @@
 #include<SimpleMath.h>
 
 /// <summary>
-/// 反時計回りに回転する棒のビヘイビアー
+/// 時計回りに回転する棒のビヘイビアー
 /// </summary>
 class ReverseRotateStickBehavior :public IBehavior
 {
@@ -19,7 +19,7 @@ public:
 	~ReverseRotateStickBehavior()override = default;
 
 	/// <summary>
-	/// 反時計回りに回転する棒の動き
+	/// 時計回りに回転する棒の動き
 	/// </summary>
 	/// <param name="timer">タイマー</param>
 	/// <param name="actor">障害物のポインター（this）</param>

@@ -107,13 +107,5 @@ public:
 	/// </summary>
 	void Reset();
 
-	
-	/// <summary>
-	/// アイテムの影生成
-	/// </summary>
-	/// <param name="shadowMap">シャドウマップ</param>
-	/// <param name="view">ビュー行列</param>
-	/// <param name="projection">プロジェクション行列</param>
-	void Shadow(ShadowMap* shadowMap, DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix projection);
 
 };

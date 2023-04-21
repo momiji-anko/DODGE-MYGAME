@@ -198,15 +198,8 @@ void ItemManager::Shadow(ShadowMap* shadowMap, DirectX::SimpleMath::Matrix view,
 			continue;
 		}
 
-		//ActorからItemにダイナミックキャスト
-		Item* i = dynamic_cast<Item*>(item.get());
-		//NULLチェック
-		if (i != nullptr)
-		{
-			//影の生成
-			i->Shadow(shadowMap, view, projection);
-		}
-
+		//影生成
+		item->CreateShadow(shadowMap, view, projection);
 		
 	}
 }

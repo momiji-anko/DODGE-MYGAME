@@ -213,23 +213,6 @@ void Player::Finalize()
 
 }
 
-void Player::PlayerShadow( ShadowMap* shadowMap, DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix projection)
-{
-	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
-	ID3D11DeviceContext1* context = pDR->GetD3DDeviceContext();
-
-	if (m_blink->IsBlink())
-	{
-		int modelTime = static_cast<int >(m_modelTime_s);
-
-		m_playerModel[m_playerModelNum[modelTime]]->Draw(context, *GetCommonState(), GetWorld(), view, projection, false, [&]()
-			{
-				shadowMap->DrawShadowMap(context);
-			}
-		);
-	}
-}
-
 
 void Player::ShieldCountUp()
 {

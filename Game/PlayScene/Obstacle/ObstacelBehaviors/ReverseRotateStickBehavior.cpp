@@ -1,8 +1,8 @@
 /*
 * 2023/03/21
 * ReverseRotateStickBehavior.cpp
+* 時計回りに回転する棒の動き
 * 麻生　楓
-* 反時計回りに回転する棒の動き
 */
 #include"pch.h"
 #include"../../Actor/Actor.h"
@@ -10,7 +10,7 @@
 #include"ReverseRotateStickBehavior.h"
 
 /// <summary>
-/// 反時計回りに回転する棒の動き
+/// 時計回りに回転する棒の動き
 /// </summary>
 /// <param name="timer">タイマー</param>
 /// <param name="actor">障害物のポインター（this）</param>
@@ -18,9 +18,6 @@ void ReverseRotateStickBehavior::Execute(const DX::StepTimer& timer, Actor* acto
 {
 	//座標の取得
 	DirectX::SimpleMath::Vector3 position = actor->GetPosition();
-	
-	
-
 
 	//アクター型から障害物型にダイナミックキャスト
 	Obstacle* obstacle = dynamic_cast<Obstacle*>(actor);

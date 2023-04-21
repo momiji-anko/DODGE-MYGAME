@@ -13,12 +13,17 @@
 #include"../../GameMain.h"
 #include"Libraries/MyLibraries/ModelManager.h"
 
+//障害物最大数
 const int ObstacleManeger::OBSTACLE_MAX_NUM = 100;
+//スポーンクールタイム
 const int ObstacleManeger::EFFECT_MAX_NUM = 5;
+//炎エフェクトの最大数
 const float ObstacleManeger::SPAWN_COOL_TIME_S = 3.0f;
 
-//コンストラクタ
-ObstacleManeger::ObstacleManeger() 
+/// <summary>
+/// コンストラクタ
+/// </summary>
+ObstacleManeger::ObstacleManeger()
 	:
 	m_obstacles{},
 	m_spawners{},
@@ -49,13 +54,19 @@ ObstacleManeger::ObstacleManeger()
 {
 }
 
-//デストラクタ
+/// <summary>
+/// デストラクタ
+/// </summary>
 ObstacleManeger::~ObstacleManeger()
 {
 	
 }
 
-// 初期化
+/// <summary>
+/// 初期化
+/// </summary>
+/// <param name="commonState">コモンステートの生ポインタ</param>
+/// <param name="stage">ステージの番号</param>
 void ObstacleManeger::Initialize(DirectX::CommonStates* commonState, StageManager::StageSelect stage)
 {
 	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
@@ -63,38 +74,41 @@ void ObstacleManeger::Initialize(DirectX::CommonStates* commonState, StageManage
 
 	m_commonState = commonState;
 
+
+	//エフェクト配列をエフェクトの最大数でリサイズ
 	m_effectlist.resize(EFFECT_MAX_NUM);
-
-
-
+	//エフェクトの作成
 	for (int i = 0; i < m_effectlist.size(); i++)
 	{
 		m_effectlist[i] = std::make_unique<FireEffectManager>();
 		m_effectlist[i]->Create();
+		//エフェクトの初期化
 		m_effectlist[i]->Initialize(2.0f, DirectX::SimpleMath::Vector3::Zero);
 	}
 
+	//障害物の配列を障害物の最大数でリサイズ
 	m_obstacles.resize(OBSTACLE_MAX_NUM);
-
+	//障害物の作成
 	for (std::unique_ptr<Actor>& obstacle : m_obstacles)
 	{
-		obstacle = std::make_unique<Obstacle>();
-
-		Obstacle* o = dynamic_cast<Obstacle*>(obstacle.get());
-		if (o != nullptr)
-		{
-			int num = MyRandom::GetIntRange(0, EFFECT_MAX_NUM - 1);
-			o->SetEffect(m_effectlist[num].get());
-			
-		}
+		//障害物の作成
+		std::unique_ptr<Obstacle> obs = std::make_unique<Obstacle>();
+		//ランダムで炎のエフェクトを障害物に渡す
+		int num = MyRandom::GetIntRange(0, EFFECT_MAX_NUM - 1);
+		//エフェクトを渡す
+		obs->SetEffect(m_effectlist[num].get());
+		//障害物型からアクター型にする
+		obstacle = std::move(obs);
+		
 	}
 	//障害物スポナ作成
 	CreateSpawner();
 	//障害物ビヘイビアー作成
 	CreateBehavior();
 	
-
+	//スポーンクールタイム設定
 	m_spawneCoolTime_s = SPAWN_COOL_TIME_S;
+	//スポーンタイム設定
 	m_spawneTime_s = SPAWN_COOL_TIME_S;
 
 	//障害物モデル作成
@@ -103,100 +117,124 @@ void ObstacleManeger::Initialize(DirectX::CommonStates* commonState, StageManage
 	//Stage1とStage2であれば回転する棒を生成する
 	if (stage == StageManager::StageSelect::Stage1 || stage == StageManager::StageSelect::Stage2)
 	{
+		//回転する棒の生成
 		CreateObstacle(DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f), Obstacle::ObstacleType::ROTATESTICK, DirectX::SimpleMath::Vector3::Zero);
 		CreateObstacle(DirectX::SimpleMath::Vector3(0.0f, 3.0f, 0.0f), Obstacle::ObstacleType::REVERSE_ROTATESTICK, DirectX::SimpleMath::Vector3::Zero);
 	}
 
 }
 
-// 更新
+/// <summary>
+/// 更新
+/// </summary>
+/// <param name="timer">タイマー</param>
 void ObstacleManeger::Update(const DX::StepTimer& timer)
 {
-	float time = timer.GetElapsedSeconds();
-	m_time_s += time;
-	m_spawneTime_s -= time;
+	//経過時間
+	float elapsedtime = timer.GetElapsedSeconds();
+	//タイムを経過時間で足す
+	m_time_s += elapsedtime;
+
+	//スポーンタイムを経過時間で引く
+	m_spawneTime_s -= elapsedtime;
+
+	//スポーンタイムが０になったら障害物を生成する
 	if (m_spawneTime_s <= 0.0f)
 	{
-		m_spawneTime_s = m_spawneCoolTime_s;
+		
+		//出現させる障害物をランダムで決める
 		int type = MyRandom::GetIntRange(0, 3);
+
+		//角度
 		DirectX::SimpleMath::Vector3 rot = DirectX::SimpleMath::Vector3::Zero;
-		
-		
-
-
+		//角度設定		
 		rot.y = (DirectX::XM_PI / 2.0f) * type;
-		if (m_time_s <= 50)
+
+		static const float LEVEL1_CREATE_OBSTACLE_TIME_S = 50.0f;
+
+
+
+
+		//タイムがLEVEL1_CREATE_OBSTACLE_TIME_S以下であればノーマルの炎と棒の障害物わランダムで生成する
+		if (m_time_s <= LEVEL1_CREATE_OBSTACLE_TIME_S)
 		{
-			int createObs = MyRandom::GetIntRange(0, 5);
+			//０から１００の乱数を取る
+			int createObsRand = MyRandom::GetIntRange(0, 100);
 
-			if(createObs <= 4)
+			//乱数が80以下であれば普通の炎を生成する
+			if(createObsRand <= 80)
 			{
+				//出現させる位置からプレイヤーのベクトルから向かうを設定する
 				rot.y = atan2(m_normalSpawnePosition[type].x - m_playerPosition.x, m_normalSpawnePosition[type].z - m_playerPosition.z);
+				//普通の炎生成
 				CreateObstacle(m_normalSpawnePosition[type], Obstacle::ObstacleType::NORMAL, rot);
-				
-
-
 			}
-			else if (createObs == 5)
+			//乱数が８１以上１００以下であれば棒の障害物を作成
+			else if (createObsRand <= 100)
 			{
-				
+				//棒の障害物生成
 				CreateObstacle(m_stickSpawnePosition[type], Obstacle::ObstacleType::STICK, rot);
 			}
-
-			
 		}
 		else 
 		{
-			int random = MyRandom::GetIntRange(0, 100);
 
-			if (random <= 30)
+			//０から１００の乱数を取る
+			int createObsRand = MyRandom::GetIntRange(0, 100);
+			//乱数が３０以下であれば普通の炎を生成する
+			if (createObsRand <= 30)
 			{
+				//出現させる位置からプレイヤーのベクトルから向かうを設定する
 				rot.y = atan2(m_normalSpawnePosition[type].x - m_playerPosition.x, m_normalSpawnePosition[type].z - m_playerPosition.z);
+				//普通の炎生成
 				CreateObstacle(m_normalSpawnePosition[type], Obstacle::ObstacleType::NORMAL, rot);
 
 			}
-			else if (random <= 45)
+			//乱数が３１以上４５以下であれば棒の障害物を作成
+			else if (createObsRand <= 45)
 			{
-				
-
+				//棒の障害物生成
 				CreateObstacle(m_stickSpawnePosition[type], Obstacle::ObstacleType::STICK, rot);
 			}
-			else if (random <= 50)
+			//乱数が４６以上５０以下であれば鳥の障害物を作成
+			else if (createObsRand <= 50)
 			{
-				rot.y = ((DirectX::XM_PI / 2.0f) * type);
+				//鳥の障害物を作成
 				CreateObstacle(m_birdSpawnPosition[type], Obstacle::ObstacleType::BIRD, rot);
 			
-			}else if (random <= 100)
+			}
+			//乱数が５１以上１００以下であれば蛇行する炎の障害物を作成
+			else if (createObsRand <= 100)
 			{
-
+				//蛇行する炎の障害物を作成
 				CreateObstacle(m_normalSpawnePosition[type], Obstacle::ObstacleType::MEANDERING, rot);
 			}
-
 		}
 		
 
-		
+		//スポーンタイムにスポーンクールタイムを入れる
+		m_spawneTime_s = m_spawneCoolTime_s;
+		//だんだんスポーンクールタイムを減らしてスポーンタイムを早くする
 		m_spawneCoolTime_s -= 0.003f;
-
-		
-	}
-	for (std::unique_ptr<Actor>& obstacle : m_obstacles)
-	{
-		Obstacle* obs = dynamic_cast<Obstacle*> (obstacle.get());
-
-		obs->SetPlayerPosition(m_playerPosition);
 	}
 
+	
+	//障害物の更新
 	for (std::unique_ptr<Actor>& obstacle : m_obstacles)
 	{
+		//非アクティブ状態であれば更新しない
 		if (obstacle->IsActive() == false)
 			continue;
-
+		
+		//更新
 		obstacle->Update(timer);
 	}
 }
 
-// 描画
+/// <summary>
+/// 描画
+/// </summary>
+/// <param name="camera">カメラの生ポインタ</param>
 void ObstacleManeger::Draw(Camera* camera)
 {
 	for (std::unique_ptr<Actor>& obstacle : m_obstacles)
@@ -205,78 +243,139 @@ void ObstacleManeger::Draw(Camera* camera)
 			continue;
 
 		obstacle->Draw(camera);
-
-		
-
 	}
 
 }
 
-// 終了処理
+/// <summary>
+/// 終了処理
+/// </summary>
 void ObstacleManeger::Finalize()
 {
 
 }
 
+/// <summary>
+/// スポナー作成
+/// </summary>
 void ObstacleManeger::CreateSpawner()
 {
-
+	//普通の炎
 	m_spawners[Obstacle::ObstacleType::NORMAL] = std::make_unique<NormalObstacleSpawner>();
+	//棒
 	m_spawners[Obstacle::ObstacleType::STICK] = std::make_unique<StickObstacleSpawner>();
+	//隕石
 	m_spawners[Obstacle::ObstacleType::METEORITE] = std::make_unique<MeteoriteObstacleSpawner>();
+	//回転する棒
 	m_spawners[Obstacle::ObstacleType::ROTATESTICK] = std::make_unique<RotateStickObstacleSpawner>();
+	//
 	m_spawners[Obstacle::ObstacleType::REVERSE_ROTATESTICK] = std::make_unique<ReverseRotateStickObstacleSpawner>();
+	//蛇行する炎
 	m_spawners[Obstacle::ObstacleType::MEANDERING] = std::make_unique<MeanderingObstacleSpawner>();
+	//鳥
 	m_spawners[Obstacle::ObstacleType::BIRD] = std::make_unique<BirdObstacleSpawner>();
 }
 
+
+/// <summary>
+/// ビヘイビアー作成
+/// </summary>
 void ObstacleManeger::CreateBehavior()
 {
+	//普通の炎
 	m_behavior[Obstacle::ObstacleType::NORMAL] = std::make_unique<NormalBehavior>();
+	//棒
 	m_behavior[Obstacle::ObstacleType::STICK] = std::make_unique<StickBehavior>();
+	//隕石
 	m_behavior[Obstacle::ObstacleType::METEORITE] = std::make_unique<MeteoriteBehavior>();
+	//回転する棒
 	m_behavior[Obstacle::ObstacleType::ROTATESTICK] = std::make_unique<RotateStickBehavior>();
+	//時計回りに回転する棒
 	m_behavior[Obstacle::ObstacleType::REVERSE_ROTATESTICK] = std::make_unique<ReverseRotateStickBehavior>();
+	//蛇行する炎
 	m_behavior[Obstacle::ObstacleType::MEANDERING] = std::make_unique<MeanderingBehavior>();
+	//鳥
 	m_behavior[Obstacle::ObstacleType::BIRD] = std::make_unique<BirdBehavior>();
 
 }
 
-bool ObstacleManeger::PlayerHitCheck(AABBFor3D* playerAABB)
+/// <summary>
+/// プレイヤーの座標設定
+/// </summary>
+/// <param name="position">プレイヤーの座標</param>
+void ObstacleManeger::SetPlayerPosition(DirectX::SimpleMath::Vector3 position)
 {
+	//プレイヤーの座標設定
+	m_playerPosition = position;
+
+	//全ての障害物にプレイヤーの座標設定
 	for (std::unique_ptr<Actor>& obstacle : m_obstacles)
 	{
+		//Actor型からObstacle型にダイナミックキャスト
+		Obstacle* obs = dynamic_cast<Obstacle*> (obstacle.get());
+		//NULLチェック（NULLであれば実行しない）
+		if (obs == nullptr)
+			continue;
+
+		//プレイヤーの座標設定
+		obs->SetPlayerPosition(m_playerPosition);
+	}
+
+}
+
+/// <summary>
+/// プレイヤーと障害物のカプセルの当たり判定
+/// </summary>
+/// <param name="player">プレイヤー</param>
+/// <returns>true = 当たった , false = 当っていない</returns>
+bool ObstacleManeger::PlayerHitCheck(AABBFor3D* playerAABB)
+{
+	//全ての障害物にプレイヤー当たり判定
+	for (std::unique_ptr<Actor>& obstacle : m_obstacles)
+	{
+		//障害物がアクティブ状態でなければ処理しない
 		if (obstacle->IsActive() == false)
 			continue;
 
+		//障害物をプレイヤーと当たり判定を取る
 		if (obstacle->GetAABB()->HitCheck(playerAABB))
 		{
+			//当たっている
 			return true;
 		}
 		
 	}
-
+	//全ての障害物を当っていない
 	return false;
 }
 
+
+/// <summary>
+/// 障害物の影作成
+/// </summary>
+/// <param name="shadowMap">シャドウマップの生ポインタ</param>
+/// <param name="view">ビュー行列</param>
+/// <param name="projection">プロジェクション行列</param>
 void ObstacleManeger::ObstacleShadow( ShadowMap* shadowMap, DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix projection)
 {
+	//全ての障害物の影を生成する
 	for (std::unique_ptr<Actor>& obstacle : m_obstacles)
 	{
+		//障害物がアクティブ状態でなければ処理しない
 		if (obstacle->IsActive() == false)
 			continue;
 
-		Obstacle* o = dynamic_cast<Obstacle*> (obstacle.get());
-		if (o != nullptr)
-		{
-			o->ObstacleShadow(shadowMap, view, projection);
-		}
 
+		obstacle->CreateShadow(shadowMap, view, projection);
 	}
 
 }
 
-
+/// <summary>
+/// プレイヤーと障害物のカプセルの当たり判定
+/// </summary>
+/// <param name="player">プレイヤー</param>
+/// <returns>true = 当たった , false = 当っていない</returns>
 bool ObstacleManeger::PlayerCapsuleHitCheck(Player* player)
 {
 	for (std::unique_ptr<Actor>& obstacle : m_obstacles)

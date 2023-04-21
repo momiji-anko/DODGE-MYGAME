@@ -5,6 +5,7 @@
 * 麻生　楓
 */
 #include"pch.h"
+#include"DeviceResources.h"
 #include"Actor.h"
 
 /// <summary>
@@ -41,6 +42,29 @@ DirectX::SimpleMath::Matrix Actor::CalculationWorld()
 	m_world *= scale * rot * trans;
 
 	return m_world;
+}
+
+void Actor::CreateShadow(ShadowMap* shadow, DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix projection)
+{
+	//デバイスリソース取得
+	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
+	//デバイスコンテキスト取得
+	ID3D11DeviceContext1* context = pDR->GetD3DDeviceContext();
+
+	//モデルがあれば影を生成する
+	if (GetModel() != nullptr)
+	{
+		//ワールド行列を計算する
+		CalculationWorld();
+
+		//影生成
+		GetModel()->Draw(context, *GetCommonState(), GetWorld(), view, projection, false, [&]()
+			{
+				shadow->DrawShadowMap(context);
+			}
+		);
+	}
+
 }
 
 void Actor::CreateAABB()

@@ -127,13 +127,6 @@ public :
 	/// <returns>障害物のタイプ</returns>
 	ObstacleType GetObstacleType() { return m_type; }
 
-	/// <summary>
-	/// 障害物の影生成
-	/// </summary>
-	/// <param name="shadow">シャドウマップの生ポインタ</param>
-	/// <param name="view">ビュー行列</param>
-	/// <param name="projection">プロジェクション行列</param>
-	void ObstacleShadow(ShadowMap* shadow, DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix projection);
 
 	/// <summary>
 	/// エフェクト設定

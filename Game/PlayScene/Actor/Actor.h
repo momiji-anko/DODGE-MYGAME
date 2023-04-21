@@ -6,6 +6,7 @@
 */
 #pragma once
 #include"IActor.h"
+#include"Game/PlayScene/ShadowMap.h"
 
 /// <summary>
 /// アクター
@@ -217,7 +218,24 @@ public:
 	/// </summary>
 	/// <returns>コモンステート</returns>
 	DirectX::CommonStates* GetCommonState() { return m_commonState; }
+
+	/// <summary>
+	/// 影生成
+	/// </summary>
+	/// <param name="shadow">シャドウマップの生ポインタ</param>
+	/// <param name="view">ビュー行列</param>
+	/// <param name="projection">プロジェクション行列</param>
+	void CreateShadow(ShadowMap* shadow, DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix projection);
+
 private:
+	
+	/// <summary>
+	/// AABBの作成
+	/// </summary>
 	void CreateAABB();
+
+	/// <summary>
+	/// カプセルの生成
+	/// </summary>
 	void CreateCapsule();
 };

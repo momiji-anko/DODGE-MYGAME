@@ -146,14 +146,6 @@ public:
 	/// <returns>プレイヤーの状態</returns>
 	PlayerState GetNowPlayerState() { return m_playerState; }
 
-	/// <summary>
-	/// プレイヤーの影生成用関数
-	/// </summary>
-	/// <param name="shadowMap">シャドウマップの生ポインター</param>
-	/// <param name="view">ビュー行列</param>
-	/// <param name="projection">プロジェクション行列</param>
-	void PlayerShadow(ShadowMap* shadowMap,DirectX::SimpleMath::Matrix view,DirectX::SimpleMath::Matrix projection);
-
 
 	/// <summary>
 	/// 回転する棒の障害物に当たった時に吹き飛ばされる用のベロシティ
@@ -182,8 +174,6 @@ public:
 	/// 持っている盾の数を１減らす　盾を一個も持っていない場合死亡させる
 	/// </summary>
 	void ShieldCountDown();
-
-	void ShieldNumCheck();
 
 	/// <summary>
 	/// プレイヤーが持っている盾の数を取得
