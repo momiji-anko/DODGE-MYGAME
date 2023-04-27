@@ -33,7 +33,7 @@ void RotationCubeBehavior::Execute(const DX::StepTimer& timer, Actor* actor)
 	}
 
 	//経過時間
-	float elapsedTime_s = timer.GetElapsedSeconds();
+	float elapsedTime_s = static_cast<float>(timer.GetElapsedSeconds());
 	//回転時間
 	float rotationTime_s = stage->GetRotationTime();
 	//回転しているかどうか
@@ -42,7 +42,7 @@ void RotationCubeBehavior::Execute(const DX::StepTimer& timer, Actor* actor)
 	float time_s = stage->GetTime();
 
 	//現在のの角度
-	DirectX::SimpleMath::Quaternion nowRotation = stage->GetRotation();
+	DirectX::SimpleMath::Vector3 nowRotation = stage->GetRotation().ToEuler();
 	//前の角度
 	DirectX::SimpleMath::Vector3 previousRotation = stage->GetPreviousRotation();
 	//次の角度
@@ -76,9 +76,10 @@ void RotationCubeBehavior::Execute(const DX::StepTimer& timer, Actor* actor)
 		}
 		//タイムを経過時間で足す
 		time_s += elapsedTime_s;
+
 		//回転する
-		DirectX::SimpleMath::Vector3 rot = DirectX::SimpleMath::Vector3::Lerp(previousRotation, nextRotation, time_s / MOVE_TIME_S);
-		nowRotation = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(rot);
+		nowRotation = DirectX::SimpleMath::Vector3::Lerp(previousRotation, nextRotation, time_s / MOVE_TIME_S);
+		 
 
 		//タイムが移動時間より大きくなったらタイムをリセット
 		if (time_s > MOVE_TIME_S)
@@ -88,7 +89,7 @@ void RotationCubeBehavior::Execute(const DX::StepTimer& timer, Actor* actor)
 			rotationTime_s = ROTATION_COOL_TIME_S;
 			time_s = 0;
 			//前の角度を更新
-			previousRotation = nowRotation.ToEuler();
+			previousRotation = nowRotation;
 			//回転していない状態にする
 			isRotation = false;
 		}

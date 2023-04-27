@@ -28,15 +28,9 @@ bool MeteoriteObstacleSpawner::Create(std::vector< std::unique_ptr<Actor>>& acto
 		if (actor->IsActive())
 			continue;
 
-		//障害物型にダイナミックキャストする
-		Obstacle* obstale = dynamic_cast<Obstacle*>(actor.get());
-		//キャスト出来たか
-		if (obstale != nullptr)
-		{
-			//障害物にのタイプ設定
-			obstale->SetType(Obstacle::ObstacleType::METEORITE);
+		//障害物にのタイプ設定
+		actor->SetTypeInt(static_cast<int>(Obstacle::ObstacleType::METEORITE));
 
-		}
 		//移動ベクトル
 		DirectX::SimpleMath::Vector3 velocity = { 0.0f, -1.0f, 0.0f };
 		//スケール

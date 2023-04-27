@@ -45,10 +45,7 @@ Item:: ~Item()
 /// <param name="commonState">コモンステートの生ポインタ</param>
 void Item::Initialize(const DirectX::SimpleMath::Vector3& velocity,const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Vector3& scale, const DirectX::SimpleMath::Vector3& rotation, bool active,IBehavior* behavia,DirectX::Model* model,DirectX::CommonStates* commonState)
  {
-	//デバイスリソース取得
-	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
-	//デバイスリソースからデバイスコンテキスト取得
-	ID3D11DeviceContext1* context = pDR->GetD3DDeviceContext();
+
 	
 	//パラメータの設定
 	//移動速度
@@ -65,17 +62,17 @@ void Item::Initialize(const DirectX::SimpleMath::Vector3& velocity,const DirectX
 		
 	//ビヘイビアー
 	SetBehavior(behavia);
+
 	//モデル
 	SetModel(model);
 	
 	//コモンステート
 	SetCommonState(commonState);
 	
+
 	
 	//角度設定
-	DirectX::SimpleMath::Vector3 rot = GetRotation().ToEuler();
-	rot.y = DirectX::XM_PI;
-	SetRotation(DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(rot));
+	SetRotation(rotation);
 
 	
 	//死亡タイム
@@ -97,7 +94,7 @@ void Item::Initialize(const DirectX::SimpleMath::Vector3& velocity,const DirectX
 void Item::Update(const DX::StepTimer& timer)
 {
 	//経過時間
-	float elapsedTime = timer.GetElapsedSeconds();
+	float elapsedTime = static_cast<float>(timer.GetElapsedSeconds());
 	//死亡タイムを経過時間で引く
 	m_deleteTime_s -= elapsedTime;
 
@@ -164,24 +161,6 @@ void Item::Draw(Camera* camera)
 void Item::Finalize()
  {
 
- }
-
-/// <summary>
-/// アイテムのタイプの取得
-/// </summary>
-/// <returns>タイプ</returns>
-Item::ItemType Item::GetItemType()
- {
-	 return m_itemType;
- }
-
-/// <summary>
-/// アイテムタイプの設定
-/// </summary>
-/// <param name="item">アイテムタイプ</param>
-void Item::SetItemType(ItemType item)
- {
-	 m_itemType = item;
  }
 
 /// <summary>

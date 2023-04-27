@@ -17,26 +17,6 @@
 
 class LoadingScreen : public ILoadingScreen
 {
-private:
-
-	// リソース読み込み用
-	std::thread m_loadingThread;
-	std::atomic<bool> m_isLoading;
-
-	// コモンステート
-	std::unique_ptr<DirectX::CommonStates> m_commonState;
-	// スプライトバッチ
-	std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
-	// スプライトフォント
-	std::unique_ptr<DirectX::SpriteFont> m_spriteFont;
-
-	// テクスチャ
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_texture;
-
-	DirectX::SimpleMath::Vector2 m_texPosition;
-	std::vector<DirectX::SimpleMath::Vector2> m_texturePositions;
-
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_blackTexture;
 
 public:
 
@@ -64,5 +44,26 @@ public:
 private:
 	// 対象シーンのリソースの読み込み
 	void LoadSceneResources(IScene* targetScene) override;
+
+private:
+
+	// リソース読み込み用
+	std::thread m_loadingThread;
+	std::atomic<bool> m_isLoading;
+
+	// コモンステート
+	std::unique_ptr<DirectX::CommonStates> m_commonState;
+	// スプライトバッチ
+	std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
+	// スプライトフォント
+	std::unique_ptr<DirectX::SpriteFont> m_spriteFont;
+
+	// テクスチャ
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_texture;
+
+	DirectX::SimpleMath::Vector2 m_texPosition;
+	std::vector<DirectX::SimpleMath::Vector2> m_texturePositions;
+
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_blackTexture;
 
 };

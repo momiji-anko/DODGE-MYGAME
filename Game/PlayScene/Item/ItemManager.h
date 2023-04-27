@@ -19,26 +19,22 @@ class StageManager;
 /// </summary>
 class ItemManager
 {
-private:
-	//定数
-	//アイテムの最大数
-	static const int ITEM_MAX_NUM;
-	//アイテムのスポーンクールタイム
-	static const float ITEM_SPAWNE_COOL_TIME_S;
+public:
 
-	//変数
-	//アイテムのオブジェクトプール
-	std::vector< std::unique_ptr<Actor>>                        m_items;
-	//アイテムのスポナー
-	std::map<Item::ItemType, std::unique_ptr<ISpawner>>         m_spawners;
-	//アイテムのモデル生成
-	std::map < Item::ItemType, DirectX::Model*> m_pModel;
-	//コモンステート
-	DirectX::CommonStates*                                      m_commonState;
-	//アイテムスポーンタイム
-	float                                                       m_spawneTime_s;
-	//ステージマネージャー
-	StageManager*                                               m_stageManeger;
+	/// <summary>
+	/// 影の生成
+	/// </summary>
+	/// <param name="shadowMap">シャドウマップの生ポインタ</param>
+	/// <param name="view">ビュー行列</param>
+	/// <param name="projection">プロジェクション行列</param>
+	void Shadow(ShadowMap* shadowMap, DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix projection);
+
+	/// <summary>
+	/// ステージマネージャーの設定
+	/// </summary>
+	/// <param name="stageManeger">ステージマネージャーの生ポインタ</param>
+	void SetStageManeger(StageManager* stageManeger) { m_stageManeger = stageManeger; }
+
 
 public:
 	/// <summary>
@@ -82,20 +78,6 @@ public:
 	Item::ItemType PlayerHitItemType(AABBFor3D* player);
 
 
-	/// <summary>
-	/// 影の生成
-	/// </summary>
-	/// <param name="shadowMap">シャドウマップの生ポインタ</param>
-	/// <param name="view">ビュー行列</param>
-	/// <param name="projection">プロジェクション行列</param>
-	void Shadow(ShadowMap* shadowMap, DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix projection);
-
-	/// <summary>
-	/// ステージマネージャーの設定
-	/// </summary>
-	/// <param name="stageManeger">ステージマネージャーの生ポインタ</param>
-	void SetStageManeger(StageManager* stageManeger) { m_stageManeger = stageManeger; }
-
 private:
 	/// <summary>
 	/// アイテムの生成
@@ -110,4 +92,31 @@ private:
 	/// アイテムとステージが当たっているか判定
 	/// </summary>
 	void ItemToStageCheckHit();
+
+private:
+	//定数
+	//アイテムの最大数
+	static const int ITEM_MAX_NUM;
+	//アイテムのスポーンクールタイム
+	static const float ITEM_SPAWNE_COOL_TIME_S;
+
+	//アイテムのスポーン範囲
+	static const float ITEM_SPAWNE_EREA;
+	//アイテムのスポーンする高さ
+	static const float ITEM_SPAWNE_HEIGHT;
+
+	//変数
+	//アイテムのオブジェクトプール
+	std::vector< std::unique_ptr<Actor>>                        m_items;
+	//アイテムのスポナー
+	std::map<Item::ItemType, std::unique_ptr<ISpawner>>         m_spawners;
+	//アイテムのモデル生成
+	std::map < Item::ItemType, DirectX::Model*> m_pModel;
+	//コモンステート
+	DirectX::CommonStates* m_commonState;
+	//アイテムスポーンタイム
+	float                                                       m_spawneTime_s;
+	//ステージマネージャー
+	StageManager* m_stageManeger;
+
 };

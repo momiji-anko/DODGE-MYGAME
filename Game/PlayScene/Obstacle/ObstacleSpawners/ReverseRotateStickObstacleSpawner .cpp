@@ -29,21 +29,21 @@ bool ReverseRotateStickObstacleSpawner::Create(std::vector<std::unique_ptr<Actor
 		if (actor->IsActive())
 			continue;
 
-		//障害物型にダイナミックキャストする
-		Obstacle* obstale = dynamic_cast<Obstacle*>(actor.get());
-		//キャスト出来たか
-		if (obstale != nullptr)
-		{
-			//障害物にのタイプ設定
-			obstale->SetType(Obstacle::ObstacleType::REVERSE_ROTATESTICK);
-			//回転する速度の設定
-			obstale->SetRotSpeed(-0.005f);
-		}
+
+		//回転する速度の設定
+		actor->SetRotSpeed(-0.005f);
+
+		//障害物にのタイプ設定
+		actor->SetTypeInt(static_cast<int>(Obstacle::ObstacleType::REVERSE_ROTATESTICK));
+
 		//スケール
 		DirectX::SimpleMath::Vector3 scale = DirectX::SimpleMath::Vector3(0.005f, 0.005f, 0.005f);
 
+		//ベロシティ
+		DirectX::SimpleMath::Vector3 velocity = DirectX::SimpleMath::Vector3::Zero;
+
 		//障害物の初期化
-		actor->Initialize(DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f), position, scale, rotation, true, behavior, model, commonState);
+		actor->Initialize(velocity, position, scale, rotation, true, behavior, model, commonState);
 
 		//障害物の生成に成功
 		return true;

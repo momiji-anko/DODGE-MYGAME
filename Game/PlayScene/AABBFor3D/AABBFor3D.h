@@ -17,8 +17,27 @@
 //AABBの当たり判定
 class AABBFor3D
 {
-private:
 public:
+	//AABB用の当たり判定データを設定する
+	void SetData(DirectX::SimpleMath::Vector3 minPos, DirectX::SimpleMath::Vector3 maxPos);
+
+public:
+	//コンストラクタ
+	AABBFor3D();
+	//デストラクタ
+	~AABBFor3D();
+
+	//初期化
+	void Initialize();
+	//描画
+	void Draw(DirectX::SimpleMath::Matrix world, DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix projection, DirectX::XMFLOAT4 color);
+
+	//当たり判定を行う
+	bool HitCheck(AABBFor3D* other);
+
+private:
+
+	void DrawBox(DirectX::XMFLOAT4 color);
 
 private:
 	//中心座標
@@ -35,27 +54,5 @@ private:
 	std::unique_ptr<DirectX::BasicEffect> m_basicEffect;
 	//インプットレイアウト
 	Microsoft::WRL::ComPtr<ID3D11InputLayout> m_inputLayout;
-
-public:
-
-private:
-
-	void DrawBox(DirectX::XMFLOAT4 color);
-
-public:
-	//コンストラクタ
-	AABBFor3D();
-	//デストラクタ
-	~AABBFor3D();
-
-	//初期化
-	void Initialize();
-	//描画
-	void Draw(DirectX::SimpleMath::Matrix world, DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix projection, DirectX::XMFLOAT4 color);
-
-	//AABB用の当たり判定データを設定する
-	void SetData(DirectX::SimpleMath::Vector3 minPos,DirectX::SimpleMath::Vector3 maxPos);
-	//当たり判定を行う
-	bool HitCheck(AABBFor3D* other);
 
 };

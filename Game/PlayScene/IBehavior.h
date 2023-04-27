@@ -17,10 +17,7 @@ class Actor;
 class IBehavior
 {
 public:
-	/// <summary>
-	/// コンストラクタ
-	/// </summary>
-	IBehavior() = default;
+
 	/// <summary>
 	/// デストラクタ
 	/// </summary>

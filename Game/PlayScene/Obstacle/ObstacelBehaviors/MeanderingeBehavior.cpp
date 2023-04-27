@@ -19,14 +19,13 @@ void MeanderingBehavior::Execute(const DX::StepTimer& timer, Actor* actor)
 {
 	//移動速度
 	const float MOVE_SPEED = 4.0f;
-	//1フレームの経過時間
-	float elapsedTime = timer.GetElapsedSeconds();
+	//経過時間
+	float elapsedTime = static_cast<float>(timer.GetElapsedSeconds());
 	//座標の取得
 	DirectX::SimpleMath::Vector3 position = actor->GetPosition();
 	//移動量の取得
 	DirectX::SimpleMath::Vector3 velocity = actor->GetVelocity();
-	//角度の取得
-	float angle = actor->GetRotation().y;
+
 	//アクター型から障害物型にダイナミックキャスト
 	Obstacle* obstacle = dynamic_cast<Obstacle*>(actor);
 
@@ -39,23 +38,26 @@ void MeanderingBehavior::Execute(const DX::StepTimer& timer, Actor* actor)
 	obstacle->GetEffect()->Update(timer);
 
 	//蛇行タイム取得
-	float seekTime_s = obstacle->GetSeekTime();
+	float meandelingTime_s = obstacle->GetTime();
 	
 	//蛇行タイムに経過時間を足す
-	seekTime_s += elapsedTime;
+	meandelingTime_s += elapsedTime;
 
 	//蛇行ベロシティ
 	DirectX::SimpleMath::Vector3 meanderingVelocity{ velocity.z,0,-velocity.x };
 
 	//２で割ったあまりが０であればベクトルを反転
-	if (static_cast<int>(seekTime_s) % 2 != 0)
+	if (static_cast<int>(meandelingTime_s) % 2 != 0)
 	{
 		meanderingVelocity *= -1;
 	}
 
-	//当たり判定AABBのエリア設定
-	actor->GetAABB()->SetData(DirectX::SimpleMath::Vector3(position.x - 0.3f, position.y - 0.5f, position.z - 0.3f), DirectX::SimpleMath::Vector3(position.x + 0.3f, position.y + 0.5f, position.z + 0.3f));
-	
+	//当たり判定の領域
+	DirectX::SimpleMath::Vector3 AABBArea{ 0.3f,0.5f,0.3f };
+
+	//当たり判定AABBの当たり判定領域の設定
+	actor->GetAABB()->SetData(position - AABBArea, position + AABBArea);
+
 	//蛇行ベロシティの影響力を強めるためをMOVE_SPEEDでかける
 	meanderingVelocity *= MOVE_SPEED;
 	//ベロシティに蛇行ベロシティを足す
@@ -69,5 +71,7 @@ void MeanderingBehavior::Execute(const DX::StepTimer& timer, Actor* actor)
 
 	//移動する
 	actor->SetPosition(position + velocity);
+
+	obstacle->SetTime(meandelingTime_s);
 
 }

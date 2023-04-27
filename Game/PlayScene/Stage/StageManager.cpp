@@ -1,3 +1,9 @@
+/*
+* 2023/04/26
+* StageManager.cpp
+* ステージマネージャー
+* 麻生　楓
+*/
 #include"pch.h"
 #include <iostream>
 #include <fstream>
@@ -13,55 +19,68 @@
 #include"StageBehaviors/FirstFloorToFallBehavior.h"
 #include"StageBehaviors/SecondFloorToFallBehavior.h"
 #include"StageBehaviors/ThirdFloorToFallBehavior.h"
+#include"StageBehaviors/NormalFloorBehavior.h"
 #include"StageBehaviors/TiltingFloorbehavior.h"
 #include"StageBehaviors/RotationCubeBehavior.h"
 
-void StageManager::SetShadow(ShadowMap* shadow)
+
+/// <summary>
+/// ステージにシャドウマップを渡す
+/// </summary>
+/// <param name="shadow">シャドウマップの生ポインタ</param>
+void StageManager::SetShadowMap(ShadowMap* shadow)
 {
 	for (std::unique_ptr<Stage>& stage : m_stage)
 	{
-		stage->SetShadow(shadow);
+		stage->SetShadowMap(shadow);
 	}
 }
 
+/// <summary>
+/// コンストラクタ
+/// </summary>
 StageManager::StageManager()
 	:
 	m_commonState(nullptr),
-	m_stageSelect(StageSelect::Stage1),
-	m_stageModel()
+	m_stage{},
+	m_behavior{}
 {
 	
 
 }
 
+/// <summary>
+/// デストラクタ
+/// </summary>
 StageManager::~StageManager()
 {
 }
 
+/// <summary>
+/// 初期化
+/// </summary>
+/// <param name="commonState">コモンステートの生ポインタ</param>
+/// <param name="stage">ステージ選択</param>
 void StageManager::Initialize(DirectX::CommonStates* commonState, StageSelect stage)
 {
-	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
-	ID3D11DeviceContext1* context = pDR->GetD3DDeviceContext();
 
-	std::wstring StageFileName;
-
-	
+	//コモンステート
 	m_commonState = commonState;
 
-	m_stageSelect = stage;
+	//ステージjsonファイルパス
+	std::wstring stageFileName;
 
-	
-	
-	switch (m_stageSelect)
+	//ステージによって読み込むjsonを変える
+	switch (stage)
 	{
 	case StageSelect::Stage1:
-		StageFileName = L"Resources/StageData/Stage1.json";
+		stageFileName = L"Resources/StageData/Stage1.json";
 		break;
 	case StageSelect::Stage2:
-		StageFileName = L"Resources/StageData/Stage2.json";
+		stageFileName = L"Resources/StageData/Stage2.json";
 		break;
 	case StageSelect::Stage3:
-		StageFileName = L"Resources/StageData/Stage3.json";
+		stageFileName = L"Resources/StageData/Stage3.json";
 		break;
 	default:
 		break;
@@ -71,13 +90,17 @@ void StageManager::Initialize(DirectX::CommonStates* commonState, StageSelect st
 	//ビヘイビアー作成
 	CreateBehavior();
 	//jsonを読み込みステージを作成
-	LoadStageJson(StageFileName);
+	LoadStageJson(stageFileName);
 
 }
 
+/// <summary>
+/// 更新
+/// </summary>
+/// <param name="timer">タイマー</param>
 void StageManager::Update(const DX::StepTimer& timer)
 {
-	
+	//ステージが行動を終了しているか確認
 	CheckStageMoveEnd();
 
 	//ステージの更新
@@ -86,10 +109,12 @@ void StageManager::Update(const DX::StepTimer& timer)
 		m_stage[i]->Update(timer);
 	}
 
-	//頂点座標の更新
-	UpdateVertices();
 }
 
+/// <summary>
+/// 描画
+/// </summary>
+/// <param name="camera">カメラの生ポインタ</param>
 void StageManager::Draw(Camera* camera)
 {
 	for (std::unique_ptr<Stage>& stage : m_stage)
@@ -97,16 +122,19 @@ void StageManager::Draw(Camera* camera)
 		stage->Draw(camera);
 	}
 
-
-
 }
 
+/// <summary>
+/// 終了処理
+/// </summary>
 void StageManager::Finalize()
 {
 
-
 }
 
+/// <summary>
+/// ビヘイビアー作成
+/// </summary>
 void StageManager::CreateBehavior()
 {
 	//ビヘイビアーの数
@@ -119,37 +147,15 @@ void StageManager::CreateBehavior()
 	m_behavior[1] = std::make_unique<SecondFloorToFallBehavior>();
 	//三番目に落ちる床のビヘイビアー
 	m_behavior[2] = std::make_unique<ThirdFloorToFallBehavior>();
-
-	m_behavior[3] = nullptr;
+	//普通の床
+	m_behavior[3] = std::make_unique<NormalFloorBehavior>();
 	//傾く床
 	m_behavior[4] = std::make_unique<TiltingFloorbehavior>();
 	//回転するキューブ
 	m_behavior[5] = std::make_unique<RotationCubeBehavior>();
 
-
-
-
 }
 
-void StageManager::UpdateVertices()
-{
-	//ステージの数分for文で回す
-	for (int i = 0; i < m_stage.size(); i++)
-	{
-		//vertexの数分回す
-		for (int j = 0; j < m_baseVertices.size(); j++)
-		{
-			//現在の当たり判定用の頂点座標行列
-			DirectX::SimpleMath::Matrix nowVertexMatrix = DirectX::SimpleMath::Matrix::Identity;
-			//StageのXとZの角度の計算
-			DirectX::SimpleMath::Matrix rot = DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_stage[i]->GetRotation());
-			//現在の頂点座標の計算
-			nowVertexMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(m_baseVertices[j]) * rot * DirectX::SimpleMath::Matrix::CreateTranslation(m_stage[i]->GetPosition());
-			//計算した行列を現在の頂点座標計算に代入する
-			m_nowVertices[j] = DirectX::SimpleMath::Vector3(nowVertexMatrix._41, nowVertexMatrix._42, nowVertexMatrix._43);
-		}
-	}
-}
 
 /// <summary>
 /// ステージjsonを読み込み
@@ -164,12 +170,22 @@ void StageManager::LoadStageJson(const std::wstring& fileName)
 	//ファイルを閉じる
 	file.close();
 
+	//ステージの座標
+	std::vector<DirectX::SimpleMath::Vector3> stagePositions;
+
+	//ベース頂点座標
+	std::vector<DirectX::SimpleMath::Vector3> baseVertices;
+	//インデックス
+	std::vector<std::vector<int>> indices;
+	//ステートタイプ
+	std::vector<int> stageType;
+
 	//ステージの数取得
 	int stageNum = stageJson["StageNum"];
 	//ステージの数分確保
-	m_stagePositions.resize(stageNum);
+	stagePositions.resize(stageNum);
 	//ステージの数分確保
-	m_stageType.resize(stageNum);
+	stageType.resize(stageNum);
 
 	//ステージじの情報を読み込む
 	for (int i = 0; i < stageNum; i++)
@@ -177,18 +193,17 @@ void StageManager::LoadStageJson(const std::wstring& fileName)
 		//番号をストリングにする
 		std::string str = std::to_string(i);
 		//ステージタイプ取得
-		m_stageType[i] = stageJson["Stage"][str.c_str()]["StageType"];
+		stageType[i] = stageJson["Stage"][str.c_str()]["StageType"];
 		//ステージのポジションを取得
-		m_stagePositions[i].x = stageJson["Stage"][str.c_str()]["X"];
-		m_stagePositions[i].y = stageJson["Stage"][str.c_str()]["Y"];
-		m_stagePositions[i].z = stageJson["Stage"][str.c_str()]["Z"];
+		stagePositions[i].x = stageJson["Stage"][str.c_str()]["X"];
+		stagePositions[i].y = stageJson["Stage"][str.c_str()]["Y"];
+		stagePositions[i].z = stageJson["Stage"][str.c_str()]["Z"];
 	}
 
 	//頂点の数取得
 	int vertexNum = stageJson["VertexNum"];
 	//頂点の数分確保
-	m_baseVertices.resize(vertexNum);
-	m_nowVertices.resize(vertexNum);
+	baseVertices.resize(vertexNum);
 	
 	//頂点座標の取得
 	for (int i = 0; i < vertexNum; i++)
@@ -196,31 +211,30 @@ void StageManager::LoadStageJson(const std::wstring& fileName)
 		//番号をストリングにする
 		std::string str = std::to_string(i);
 		//頂点座標の取得
-		m_baseVertices[i].x = stageJson["VertexPosition"][str.c_str()]["X"];
-		m_baseVertices[i].y = stageJson["VertexPosition"][str.c_str()]["Y"];
-		m_baseVertices[i].z = stageJson["VertexPosition"][str.c_str()]["Z"];
+		baseVertices[i].x = stageJson["VertexPosition"][str.c_str()]["X"];
+		baseVertices[i].y = stageJson["VertexPosition"][str.c_str()]["Y"];
+		baseVertices[i].z = stageJson["VertexPosition"][str.c_str()]["Z"];
 	}
 
-	//ベース頂点座標を現在の頂点座標に代入
-	m_nowVertices = m_baseVertices;
+	
 
 	//頂点座標インデックスの数取得
 	int vertexIndex = stageJson["VertexIndexNum"];
 
 	//頂点インデックスの数分確保
-	m_indices.resize(vertexIndex);
+	indices.resize(vertexIndex);
 
 	//頂点インデックスの読み込み
 	for (int i = 0; i < vertexIndex; i++)
 	{
 		//インデックスの配列確保
-		m_indices[i].resize(3);
+		indices[i].resize(3);
 		//番号をストリングにする
 		std::string str = std::to_string(i);
 		//インデックス番号の取得
-		m_indices[i][0] = stageJson["VertexIndex"][str.c_str()]["1"];
-		m_indices[i][1] = stageJson["VertexIndex"][str.c_str()]["2"];
-		m_indices[i][2] = stageJson["VertexIndex"][str.c_str()]["3"];
+		indices[i][0] = stageJson["VertexIndex"][str.c_str()]["1"];
+		indices[i][1] = stageJson["VertexIndex"][str.c_str()]["2"];
+		indices[i][2] = stageJson["VertexIndex"][str.c_str()]["3"];
 	}
 
 	//モデルのファイルのパスを取得（string）
@@ -228,7 +242,7 @@ void StageManager::LoadStageJson(const std::wstring& fileName)
 	//取得したファイルパスをstringからwstringに変換する
 	std::wstring modelFile = ConvertWString(modelFileName);
 	//モデル作成
-	m_stageModel = ModelManager::GetInstance().LoadModel(modelFile.c_str());
+	DirectX::Model* stageModel = ModelManager::GetInstance().LoadModel(modelFile.c_str());
 
 	//ステージの数分配列を確保
 	m_stage.resize(stageNum);
@@ -240,11 +254,18 @@ void StageManager::LoadStageJson(const std::wstring& fileName)
 	{
 		//ステージのユニークポインタで作成
 		m_stage[i] = std::make_unique<Stage>();
-		//読み込んだステージ情報でステージを初期化する
-		m_stage[i]->Initialize(DirectX::SimpleMath::Vector3::Zero, m_stagePositions[i], scale, DirectX::SimpleMath::Vector3::Zero, true, m_behavior[m_stageType[i]].get(), m_stageModel, m_commonState);
-		//ステージのタイプを設定
-		m_stage[i]->SetStageType(static_cast<Stage::StageType>(m_stageType[i]));
 
+		//ステージタイプ
+		m_stage[i]->SetTypeInt(stageType[i]);
+		//ベース頂点座標
+		m_stage[i]->SetBaseVertices(baseVertices);
+		//インデックス
+		m_stage[i]->SetIndices(indices);
+
+		//読み込んだステージ情報でステージを初期化する
+		m_stage[i]->Initialize(DirectX::SimpleMath::Vector3::Zero, stagePositions[i], scale, DirectX::SimpleMath::Vector3::Zero, true, m_behavior[stageType[i]].get(), stageModel, m_commonState);
+		
+		
 	}
 
 }
@@ -272,20 +293,24 @@ std::wstring StageManager::ConvertWString(const std::string& str)
 
 void StageManager::CheckStageMoveEnd()
 {
+
+	int stageEndCount = 0;
+
 	//全てのステージが行動を終了したか確認
 	for (int n = 0; n < m_stage.size(); n++)
 	{
-		//確認用カウント
-		int count = 0;
+
 		//終わっていなければ次へ行く
-		if (!m_stage[n]->GetEndFlag())
+		if (!m_stage[n]->GetMoveEndFlag())
 		{
 			continue;
 		}
-		//終わっているのカウントを増やす
-		count++;
+
+		//終わっているのでカウントを増やす
+		stageEndCount++;
+
 		//全てのステージが行動を終了した場合ステージの行動を変化させる
-		if (count >= m_stage.size())
+		if (stageEndCount == m_stage.size())
 		{
 			//行動する番号
 			std::vector<int> stageNum = { 0,1,2,3 };
@@ -294,139 +319,124 @@ void StageManager::CheckStageMoveEnd()
 			std::mt19937 engine(seed_gen());
 			//番号をシャッフルさせる
 			std::shuffle(stageNum.begin(), stageNum.end(), engine);
-			//シャッフルさせた番号をステージに渡す
+
+			//シャッフルした番号をステージに渡す
 			for (int j = 0; j < m_stage.size(); j++)
 			{
-				//番号をセット
-				m_stage[j]->SetStageType(static_cast<Stage::StageType>(stageNum[j]));
 				//ステージにリセットをかける
 				m_stage[j]->Reset();
+
+				//番号をセット
+				m_stage[j]->SetBehavior(m_behavior[stageNum[j]].get());
+
 			}
-			//for文を抜ける
-			break;
+
 		}
 	}
 }
 
 
-
-bool StageManager::PlayerStageAABBHitCheck(Actor* player)
+/// <summary>
+/// ステージのポリゴンとアクターのめり込み処理
+/// </summary>
+/// <param name="actor">アクター/param>
+/// <param name="polygonVertexPos">ポリゴンの頂点座標</param>
+/// <param name="normalVec">法線ベクトル</param>
+void StageManager::ActorPolygonPenetration(Actor* actor, std::vector<DirectX::SimpleMath::Vector3> polygonVertexPos, DirectX::SimpleMath::Vector3 normalVec)
 {
-	switch (m_stageSelect)
-	{
-	case StageSelect::Stage1:
-		for (std::unique_ptr<Stage>& stage : m_stage)
-		{
-			if (stage->GetAABB()->HitCheck(player->GetAABB()))
-			{
-				DirectX::SimpleMath::Vector3 pos = player->GetPosition();
-				player->SetPosition(DirectX::SimpleMath::Vector3(pos.x, stage->GetPosition().y + 0.48f, pos.z));
+	//アクターを少しめり込ませる用変数
+	float actorPenetration = 0.1f;
 
+	//めり込み処理
+	//アクターの座標取得
+	DirectX::SimpleMath::Vector3 actorPos = actor->GetPosition();
+	//アクターの立つY座標計算
+	actorPos.y = polygonVertexPos[0].y + (-normalVec.x * (actorPos.x - polygonVertexPos[0].x) - normalVec.z * (actorPos.z - polygonVertexPos[0].z)) / normalVec.y;
+	//アクターがガクガクするので少しだけ下にめり込ませる
+	actorPos.y -= actorPenetration;
+	//計算したポジションをアクターにセットする
+	actor->SetPosition(actorPos);
+}
+
+
+DirectX::SimpleMath::Vector3 StageManager::SlideVecCalculation(DirectX::SimpleMath::Vector3 normalVec, DirectX::SimpleMath::Vector3 actorVel)
+{
+	//法線ベクトルの正規化
+	normalVec.Normalize();
+	//プレイヤーの移動ベクトルと法線ベクトルの内積の計算
+	float dot = actorVel.Dot(normalVec);
+	//スライドする量計算
+	DirectX::SimpleMath::Vector3 slideAmount = { actorVel.x - dot,actorVel.y - dot,actorVel.z - dot };
+	//スライドベクトルを計算
+	DirectX::SimpleMath::Vector3 slideVec = normalVec * slideAmount;
+	//スライドベクトルを返す
+	return slideVec;
+}
+
+/// <summary>
+/// ステージとアクターの当たり判定
+/// </summary>
+/// <param name="actor">アクター</param>
+/// <returns>true=当たっている　false=当っていない</returns>
+bool StageManager::StageToActorHitCheck(Actor* actor)
+{
+	//全てステージと当たり判定を取る
+	for (std::unique_ptr<Stage>& stage : m_stage)
+	{
+		//ステージからインデックス取得
+		std::vector<std::vector<int>> index(stage->GetIndices());
+		//現在の頂点座標取得
+		std::vector<DirectX::SimpleMath::Vector3> nowVertices(stage->GetNowVertices());
+
+		//ステージのポリゴンとアクター線分の当たり判定を取る
+		for (int i = 0; i < index.size(); i++)
+		{
+			//１ポリゴンを座標取得
+			std::vector<DirectX::SimpleMath::Vector3> polygonVertexPos = { nowVertices[index[i][0]],nowVertices[index[i][1]] ,nowVertices[index[i][2]] };
+			//アクターのポジション取得
+			const DirectX::SimpleMath::Vector3 actorPos = actor->GetPosition();
+
+			//アクターの当たり判定の線分
+			std::vector<DirectX::SimpleMath::Vector3> actorLinePos = { DirectX::SimpleMath::Vector3(actorPos),DirectX::SimpleMath::Vector3(actorPos.x,actorPos.y + 2.5f,actorPos.z) };
+			//法線ベクトル
+			DirectX::SimpleMath::Vector3 normalVec = DirectX::SimpleMath::Vector3::Zero;
+
+			//当たっていた場合スライドする
+			if (StageHitCheck(polygonVertexPos, actorLinePos, &normalVec))
+			{
+				//めり込み処理
+				ActorPolygonPenetration(actor, polygonVertexPos, normalVec);
+
+
+				//アクターのベクトル
+				DirectX::SimpleMath::Vector3 actorVel = actor->GetVelocity();
+
+				//アクターのスライドする量
+				float actorSlideGravity = -0.7f;
+				actorVel.y = actorSlideGravity;
+
+				//スライドベクトル計算
+				DirectX::SimpleMath::Vector3 slideVec = SlideVecCalculation(normalVec, actorVel);
+
+				//アクターをスライドさせる
+				actor->SetPosition((actor->GetPosition() + slideVec));
+
+				//当たった
 				return true;
 
 			}
+
 		}
-		break;
-	case StageSelect::Stage2:
-	case StageSelect::Stage3:
 
-		for (std::unique_ptr<Stage>& stage : m_stage)
-		{
-			for (int i = 0; i < m_indices.size(); i++)
-			{
-				std::vector<DirectX::SimpleMath::Vector3> v = { m_nowVertices[m_indices[i][0] ],m_nowVertices[m_indices[i][1] ] ,m_nowVertices[m_indices[i][2] ] };
-				const DirectX::SimpleMath::Vector3& playerPos = player->GetPosition();
-				 DirectX::SimpleMath::Vector3& playerVel = player->GetVelocity();
-
-				 playerVel.y = -0.7f;
-				
-				std::vector<DirectX::SimpleMath::Vector3> playerLinePos = { DirectX::SimpleMath::Vector3(playerPos),DirectX::SimpleMath::Vector3(playerPos.x,playerPos.y + 2.5f,playerPos.z) };
-
-				DirectX::SimpleMath::Vector3 normalVec = DirectX::SimpleMath::Vector3::Zero;
-				if (StageHitCheck(v, playerLinePos, &normalVec))
-				{
-					//めり込み処理
-					//プレイヤーの座標取得
-					DirectX::SimpleMath::Vector3 newPlayerPos = player->GetPosition();
-					//プレイヤーの立つY座標計算
-					newPlayerPos.y = v[0].y + (-normalVec.x * (newPlayerPos.x - v[0].x) - normalVec.z * (newPlayerPos.z - v[0].z)) / normalVec.y;
-					//プレイヤーがガクガクするので少しだけ下にずらす
-					newPlayerPos.y -= 0.1;
-					//計算したポジションをプレイヤーにセットする
-					player->SetPosition(newPlayerPos);
-
-					//スライドベクトル計算
-					//法線ベクトルの正規化
-					normalVec.Normalize();
-					//プレイヤーの移動ベクトルと法線ベクトルの内積の計算
-					float aa = playerVel.Dot(normalVec);
-					//プレイヤーの移動ベクトルを計算した内積で引く
-					DirectX::SimpleMath::Vector3  f = { playerVel.x - aa,playerVel.y - aa,playerVel.z - aa };
-					//法線ベクトルと	ｆ掛け算しスライドベクトルをけいさん
-					DirectX::SimpleMath::Vector3 slideVec = normalVec * f  ;
-					//現在のプレイヤー座標にスライドベクトルを足しプレイヤーにセットする
-					player->SetPosition((player->GetPosition() + slideVec));
-					return true;
-				}
-
-
-			}
-		}
-		break;
-	default:
-		break;
 	}
 	
+	//当っていない
 	return false;
 }
 
 
 
 
-bool StageManager::ItemHitCheck(Actor* item)
-{
-	
-	switch (m_stageSelect)
-	{
-	case StageSelect::Stage1:
-		for (std::unique_ptr<Stage>& stage : m_stage)
-		{
-			if (stage->GetAABB()->HitCheck(item->GetAABB()))
-			{
-				return true;
-
-			}
-		}
-		break;
-	case StageSelect::Stage2:
-	case StageSelect::Stage3:
-		for (std::unique_ptr<Stage>& stage : m_stage)
-		{
-			for (int i = 0; i < m_indices.size(); i++)
-			{
-				std::vector<DirectX::SimpleMath::Vector3> v = { m_nowVertices[m_indices[i][0]],m_nowVertices[m_indices[i][1]] ,m_nowVertices[m_indices[i][2]] };
-				const DirectX::SimpleMath::Vector3& itemPos = item->GetPosition();
-				const DirectX::SimpleMath::Vector3& itemVel = item->GetVelocity();
-				std::vector<DirectX::SimpleMath::Vector3> itemLinePos = { DirectX::SimpleMath::Vector3(itemPos),DirectX::SimpleMath::Vector3(itemPos.x,itemPos.y + 0.5f,itemPos.z) };
-				DirectX::SimpleMath::Vector3 normalVec = DirectX::SimpleMath::Vector3::Zero;
-				if (StageHitCheck(v, itemLinePos, &normalVec))
-				{
-					normalVec.Normalize();
-					float aa = itemVel.Dot(normalVec);
-					DirectX::SimpleMath::Vector3  f = { itemVel.x - aa,itemVel.y - aa,itemVel.z - aa };
-					DirectX::SimpleMath::Vector3 slideVec = f * normalVec;
-					item->SetPosition(itemPos + slideVec);
-					return true;
-				}
-			}
-		}
-		break;
-
-	default:
-		break;
-	}
-	return false;
-}
 
 /// <summary>
 /// 線分と板ポリゴンの当たり判定

@@ -15,26 +15,22 @@
 class Item :public Actor
 {
 public:
-	//アイテムタイプの列挙体
-	enum class ItemType
-	{
-		//盾のアイテム
-		SHIELD_ITEM,
-		
-		NONE,
-	};
+	/// <summary>
+	/// アイテムタイプを整数型で取得
+	/// </summary>
+	/// <returns>アイテムタイプ</returns>
+	int GetTypeInt()const override { return static_cast<int>(m_itemType); }
+	/// <summary>
+	/// アイテムタイプを整数型で設定
+	/// </summary>
+	/// <param name="item">アイテムタイプ</param>
+	void SetTypeInt(int item) override { m_itemType = static_cast<ItemType>(item); }
 
-private:
-	//アイテムの死亡する時間
-	static const float ITEM_DELETE_TIME_S;
-	//アイテムタイプ
-	ItemType m_itemType;
-	//地面についているか
-	bool m_stageHit;
-	//死亡タイム
-	float m_deleteTime_s;
-	//点滅
-	std::unique_ptr<Blink> m_blink;
+	/// <summary>
+	/// 床との衝突フラグ
+	/// </summary>
+	/// <param name="hit">true = 当たった、　false = 当っていない</param>
+	void SetStageHit(bool hit) { m_stageHit = hit; }
 
 public:
 	/// <summary>
@@ -85,27 +81,33 @@ public:
 	/// </summary>
 	void Finalize()override;
 	
-	/// <summary>
-	/// アイテムのタイプの取得
-	/// </summary>
-	/// <returns>タイプ</returns>
-	ItemType GetItemType();
-	/// <summary>
-	/// アイテムタイプの設定
-	/// </summary>
-	/// <param name="item">アイテムタイプ</param>
-	void SetItemType(ItemType item);
 
-	/// <summary>
-	/// 床との衝突フラグ
-	/// </summary>
-	/// <param name="hit">true = 当たった、　false = 当っていない</param>
-	void SetStageHit(bool hit) { m_stageHit = hit; }
+
 
 	/// <summary>
 	/// リセット
 	/// </summary>
-	void Reset();
+	void Reset()override;
 
+public:
+	//アイテムタイプの列挙体
+	enum class ItemType
+	{
+		//盾のアイテム
+		SHIELD_ITEM,
 
+		NONE,
+	};
+
+private:
+	//アイテムの死亡する時間
+	static const float ITEM_DELETE_TIME_S;
+	//アイテムタイプ
+	ItemType m_itemType;
+	//地面についているか
+	bool m_stageHit;
+	//死亡タイム
+	float m_deleteTime_s;
+	//点滅
+	std::unique_ptr<Blink> m_blink;
 };

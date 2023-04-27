@@ -22,26 +22,27 @@
 /// <returns>true=生成成功　false=生成失敗</returns>
 bool MeanderingObstacleSpawner::Create(std::vector<std::unique_ptr<Actor>>& actors, const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Vector3& rotation, IBehavior* behavior, DirectX::Model* model, DirectX::CommonStates* commonState)
 {
+	static const float SPEED = 4.0f;
+
 	for (std::unique_ptr<Actor>& actor : actors)
 	{
 		//使用中でなければ、敵を初期化する
 		if (actor->IsActive())
 			continue;
 
-		//障害物型にダイナミックキャストする
-		Obstacle* obstale = dynamic_cast<Obstacle*>(actor.get());
 
 		//移動ベクトル
 		DirectX::SimpleMath::Vector3 velocity;
-		
 
-		//キャスト出来たか
-		if (obstale != nullptr)
-		{
-			//障害物にのタイプ設定
-			obstale->SetType(Obstacle::ObstacleType::MEANDERING);
-			velocity = obstale->Seek(obstale->GetPlayerPosition());
-		}
+		velocity = actor->GetPlayerPosition() - position;
+
+		velocity.Normalize();
+
+		velocity *= SPEED;
+
+		//障害物にのタイプ設定
+		actor->SetTypeInt(static_cast<int>(Obstacle::ObstacleType::MEANDERING));
+
 		//スケール
 		DirectX::SimpleMath::Vector3 scale;
 

@@ -81,7 +81,7 @@ void Blink::Update(const DX::StepTimer& timer)
 	//経過時間
 	float elapsedTime = static_cast<float>(timer.GetElapsedSeconds());
 
-	//IsBlinkがtrue & 点滅回数が０より高ければ点滅する
+	//m_isBlinkがtrue & 点滅回数が０より高ければ点滅する
 	if (m_isBlink && m_blinkCount > 0)
 	{
 		//ブリンクタイムを経過時間で引く
@@ -151,17 +151,19 @@ void Blink::BlinkedCheck()
 		//点滅した回数を増やす
 		m_blinkedCount++;
 
-		//
+		//だんだん早くするか
 		if (m_isGettingFaster)
 		{
-
+			//タイムを減らす
 			m_blinkTimeFast -= m_blinkSpeed;
 
+			//ブリンクタイムをだんだん早くする
 			m_blinkTime_s = m_blinkTimeFast;
 
 		}
 		else
 		{
+			//ブリンクタイムを初期化
 			m_blinkTime_s = m_startBlinkTime_s;
 		}
 	}

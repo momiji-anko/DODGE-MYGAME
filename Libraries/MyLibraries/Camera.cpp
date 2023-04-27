@@ -7,7 +7,6 @@
 #include "DeviceResources.h"
 
 
-using namespace DirectX;
 
 // ’è”‚Ì‰Šú‰»
 const float Camera::DEFAULT_CAMERA_DISTANCE = 5.0f;
@@ -21,6 +20,7 @@ Camera::Camera()
 	, m_target(0.0f, 0.0f, 3.0f)
 	, m_up(0.0f, 1.0f, 0.0f)
 {
+
 	CalculateViewMatrix();
 	CalculateProjectionMatrix();
 }
@@ -52,9 +52,9 @@ void Camera::CalculateProjectionMatrix()
 	float width = static_cast<float>(pDR->GetOutputSize().right);
 	float height = static_cast<float>(pDR->GetOutputSize().bottom);
 
-	constexpr float fieldOfView = XMConvertToRadians(45.0f);    // ‰æŠp
+	constexpr float fieldOfView = DirectX::XMConvertToRadians(45.0f);    // ‰æŠp
 	float aspectRatio = width / height;							// ‰æ–Êc‰¡”ä
 	float nearPlane = 1.0f;                                     // ƒJƒƒ‰‚©‚çˆê”Ô‹ß‚¢“Š‰e–Ê
 	float farPlane = 1000.0f;                                    // ƒJƒƒ‰‚©‚çˆê”Ô‰“‚¢“Š‰e–Ê
-	m_projection = SimpleMath::Matrix::CreatePerspectiveFieldOfView(fieldOfView, aspectRatio, nearPlane, farPlane);
+	m_projection = DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(fieldOfView, aspectRatio, nearPlane, farPlane);
 }

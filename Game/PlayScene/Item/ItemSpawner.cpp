@@ -17,25 +17,22 @@ bool ItemSpawner::Create( std::vector< std::unique_ptr<Actor>>& actors, const Di
 {
 	UNREFERENCED_PARAMETER(behavior);
 
-	for ( std::unique_ptr<Actor>& actor : actors)
+	for (std::unique_ptr<Actor>& actor : actors)
 	{
 		//使用中でなければ、敵を初期化する
 		if (actor->IsActive())
 			continue;
 
-		//アクターからアイテム型にダイナミックキャスト
-		Item* item = dynamic_cast<Item*>(actor.get());
-		//NULLチェック
-		if (item != nullptr)
-		{
-			//アイテムタイプの設定
-			item->SetItemType(Item::ItemType::SHIELD_ITEM);
-		}
+		
+		actor->SetTypeInt(static_cast<int>(Item::ItemType::SHIELD_ITEM));
 
 		DirectX::SimpleMath::Vector3 scale = { 0.008f,0.008f ,0.008f };
 
+		DirectX::SimpleMath::Vector3 velocity = { 0.0f, -3.0f, 0.0 };
+
+
 		//アイテムの初期化
-		actor->Initialize(DirectX::SimpleMath::Vector3(0.0f, -3.0f, 0.0f), position, scale, rotation, true, nullptr, model, commonState);
+		actor->Initialize(velocity, position, scale, rotation, true, behavior, model, commonState);
 
 		//アイテムの生成に成功
 		return true;

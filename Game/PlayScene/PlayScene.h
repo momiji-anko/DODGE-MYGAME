@@ -29,84 +29,51 @@
 class GridFloor;
 class Camera;
 
+/// <summary>
+/// プレイシーン
+/// </summary>
 class PlayScene : public IScene
 {
-private:
-	// コモンステート
-	std::unique_ptr<DirectX::CommonStates>           m_commonState;
-	DirectX::Model*                  m_pModel;
-	DirectX::Model*                  m_pTenModel;
-
-	
-	std::unique_ptr<Player>                          m_actor;
-	std::unique_ptr<ObstacleManeger>                 m_obstacleManeger;
-	std::unique_ptr<ItemManager>                     m_itemManeger;
-
-	DebugCamera*                                     m_pCamera;
-	GridFloor*                                       m_pGridFloor;
-
-
-	// スプライトバッチ
-	std::unique_ptr<DirectX::SpriteBatch>            m_spriteBatch;
-	// スプライトフォント
-	std::unique_ptr<DirectX::SpriteFont>             m_spriteFont;
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_numTexture;
-	float                                            m_waitTime;
-
-
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_blackTexture;
-	float                                            m_fade;
-	bool                                             m_flag;
-	bool                                             m_flagFadeIn;
-	float                                            m_timer;
-
-
-	std::unique_ptr<ShadowMap>                       m_shadowMap;
-	
-
-
-	ADX2*                                            m_pAdx2;
-	int                                              m_musicID;
-
-
-	std::unique_ptr<StageManager>                    m_stageManeger;
-
-	DirectX::Model*                  m_model[2];
-	std::unique_ptr<Fade>                  m_fadeInOut;
-	
-	bool                                             m_stratFlag;
-
-	AliveTimer* m_aliveTime;
-	//2P用に配列でプレイヤーを定義
-	std::vector<std::unique_ptr<Player>> m_players;
-	
-	GameMain::PlayerMode m_playerMode;
-	StageManager::StageSelect m_stageNum;
 
 public:
 
-	// コンストラクタ
+	/// <summary>
+	/// コンストラクタ
+	/// </summary>
 	PlayScene();
 
-	// デストラクタ
+	/// <summary>
+	/// デストラクタ
+	/// </summary>
 	~PlayScene();
 
-	// 初期化
+	/// <summary>
+	/// 初期化
+	/// </summary>
 	void Initialize() override;
 
-	// 更新
+	/// <summary>
+	/// 更新
+	/// </summary>
+	/// <param name="timer">タイマー</param>
+	/// <returns>次のシーン</returns>
 	GAME_SCENE Update(const DX::StepTimer& timer) override;
 
-	// 描画
+	/// <summary>
+	/// 描画
+	/// </summary>
 	void Draw() override;
 
-	// 終了処理
+	/// <summary>
+	/// 終了処理
+	/// </summary>
 	void Finalize() override;
 
-	// リソースの読み込み
+	/// <summary>
+	/// リソース読み込み
+	/// </summary>
 	void LoadResources() override;
 
-	float GetTime() { return m_timer; }
 
 	/// <summary>
 	/// プレイヤーのモード（一人か二人か）
@@ -114,5 +81,85 @@ public:
 	/// <param name="mode">Player1=一人、Player2=二人、</param>
 	void SetPlayerMode(GameMain::PlayerMode mode) { m_playerMode = mode; }
 
-	void SetStageNum(int stage) { m_stageNum = static_cast<StageManager::StageSelect>(stage); }
+	/// <summary>
+	/// ステージ番号
+	/// </summary>
+	/// <param name="stageNum">ステージ番号</param>
+	void SetStageNum(int stageNum)override { m_stageNum = static_cast<StageManager::StageSelect>(stageNum); }
+
+private:
+
+	/// <summary>
+	/// プレイヤーの作成
+	/// </summary>
+	void CreatePlayer();
+
+	/// <summary>
+	/// 全てプレイヤーが死んでいるか確認
+	/// </summary>
+	/// <returns>true=全て死んでいる、false=全て死んでいない</returns>
+	bool AllPlayerIsDead();
+
+	/// <summary>
+	/// カウントダウンの表示
+	/// </summary>
+	void DrawCountDown();
+
+	/// <summary>
+	/// 影生成
+	/// </summary>
+	void CreateShadow();
+
+private:
+	//カウントダウンタイム
+	static const float COUNT_DOWN_TIME_S;
+
+	// コモンステート
+	std::unique_ptr<DirectX::CommonStates> m_commonState;
+	//天球
+	DirectX::Model* m_pModel;
+
+	//障害物マネージャー
+	std::unique_ptr<ObstacleManager>                 m_obstacleManager;
+	//アイテムマネージャー
+	std::unique_ptr<ItemManager>                     m_itemManeger;
+	//ステージマネージャー
+	std::unique_ptr<StageManager>                    m_stageManeger;
+
+	//カメラ
+	std::unique_ptr<Camera> m_pCamera;
+
+	// スプライトバッチ
+	std::unique_ptr<DirectX::SpriteBatch>            m_spriteBatch;
+	// スプライトフォント
+	std::unique_ptr<DirectX::SpriteFont>             m_spriteFont;
+	//カウントダウンテクスチャ
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_countDownTexture;
+	//カウントダウン
+	float                                            m_countDownTime;
+
+
+
+	//シャドウマップ
+	std::unique_ptr<ShadowMap>                       m_shadowMap;
+
+
+	//音関連
+	ADX2* m_pAdx2;
+	//BGMのID
+	int                                              m_musicID;
+
+	//フェード
+	std::unique_ptr<Fade>                  m_fadeInOut;
+
+	//アライブタイム
+	AliveTimer* m_aliveTime;
+	//2P用に配列でプレイヤーを定義
+	std::vector<std::unique_ptr<Player>> m_players;
+
+	//プレイヤーモード
+	GameMain::PlayerMode m_playerMode;
+	//ステージ
+	StageManager::StageSelect m_stageNum;
+
 };

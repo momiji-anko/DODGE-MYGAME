@@ -21,11 +21,18 @@ void NormalBehavior::Execute(const DX::StepTimer& timer, Actor* actor)
 	//移動量の取得
 	DirectX::SimpleMath::Vector3 velocity = actor->GetVelocity();
 	
+	//当たり判定の領域
+	DirectX::SimpleMath::Vector3 AABBArea{ 0.3f,0.5f,0.3f };
+
+
 	//当たり判定AABBの当たり判定領域の設定
-	actor->GetAABB()->SetData(DirectX::SimpleMath::Vector3(position.x - 0.3f, position.y - 0.5f, position.z - 0.3f), DirectX::SimpleMath::Vector3(position.x + 0.3f, position.y + 0.5f, position.z + 0.3f));
+	actor->GetAABB()->SetData(position - AABBArea, position + AABBArea);
+
+	//経過時間
+	float elapsedTime_s = static_cast<float>(timer.GetElapsedSeconds());
 
 	//移動する
-	actor->SetPosition(position + (velocity * timer.GetElapsedSeconds()));
+	actor->SetPosition(position + (velocity * elapsedTime_s));
 
 	//Actor型をObstacle型にダイナミックキャストする
 	Obstacle* obs = dynamic_cast<Obstacle*>(actor);

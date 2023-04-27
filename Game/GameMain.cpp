@@ -17,8 +17,8 @@
 
 
 
-// 名前空間の利用
-using namespace DirectX;
+
+
 
 //-------------------------------------------------------------------
 // コンストラクタ
@@ -47,7 +47,7 @@ void GameMain::Initialize()
 	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
 
 	// キーボード関連
-	m_keybord             = std::make_unique<DirectX::Keyboard>();
+	m_keybord = std::make_unique<DirectX::Keyboard>();
 
 	// マウス関連
 	m_mouse = std::make_unique<DirectX::Mouse>();
@@ -146,20 +146,20 @@ void GameMain::CreateScene()
 	{
 	case GAME_SCENE::TITLE:
 	{
-		m_pScene = new TitleScene();
+		m_pTitleScene = new TitleScene();
+		m_pScene = m_pTitleScene;
 		break;
 	}
 	case GAME_SCENE::PLAY:
 	{
-		m_pScene = new PlayScene();
 
-		PlayScene* playScene = dynamic_cast<PlayScene*> (m_pScene);
+		PlayScene* playScene = new PlayScene();
 
-		if (playScene != nullptr)
-		{
-			playScene->SetPlayerMode(m_playerMode);
-			playScene->SetStageNum(m_stageNum);
-		}
+		playScene->SetPlayerMode(m_playerMode);
+		playScene->SetStageNum(m_stageNum);
+
+		m_pScene = playScene;
+		
 
 		break;
 	}
@@ -167,7 +167,7 @@ void GameMain::CreateScene()
 	{
 		m_pScene = new ResultScene();
 
-
+		m_pScene->SetStageNum(m_stageNum);
 	
 
 		break;
@@ -211,19 +211,18 @@ void GameMain::DeleteScene()
 	}
 	case GAME_SCENE::PLAY:
 	{
-		TitleScene* titleScene = dynamic_cast<TitleScene*> (m_pScene);
 
-		if (titleScene != nullptr)
+		if (m_pTitleScene != nullptr)
 		{
-			m_playerMode = titleScene->GetPlayerMode();
-			m_stageNum   = titleScene->GetStageNum();
+			m_playerMode = m_pTitleScene->GetPlayerMode();
+			m_stageNum   = m_pTitleScene->GetStageNum();
 		}
 
 		break;
 	}
 	case GAME_SCENE::RESULT:
 	{
-
+		
 
 		break;
 	}

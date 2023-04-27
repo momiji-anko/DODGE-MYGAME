@@ -11,8 +11,7 @@
 #include<time.h>
 #include<random>
 
-using namespace DirectX;
-using namespace DirectX::SimpleMath;
+
 
 void FireEffectManager::Create()
 {
@@ -21,7 +20,7 @@ void FireEffectManager::Create()
 	ID3D11Device1* device = pDR->GetD3DDevice();
 
 	//バッチエフェクトの作成
-	m_batchEffect = std::make_unique<AlphaTestEffect>(device);
+	m_batchEffect = std::make_unique<DirectX::AlphaTestEffect>(device);
 	m_batchEffect->SetAlphaFunction(D3D11_COMPARISON_EQUAL);
 	m_batchEffect->SetReferenceAlpha(255);
 
@@ -30,12 +29,12 @@ void FireEffectManager::Create()
 	size_t byteCodeLength;
 	m_batchEffect->GetVertexShaderBytecode(&shaderByteCode, &byteCodeLength);
 	device->CreateInputLayout(
-		VertexPositionTexture::InputElements,
-		VertexPositionTexture::InputElementCount,
+		DirectX::VertexPositionTexture::InputElements,
+		DirectX::VertexPositionTexture::InputElementCount,
 		shaderByteCode, byteCodeLength, m_inputLayout.GetAddressOf());
 	
 	//プリミティブバッチの作成
-	m_batch = std::make_unique<PrimitiveBatch<VertexPositionTexture>>(pDR->GetD3DDeviceContext());
+	m_batch = std::make_unique<DirectX::PrimitiveBatch<DirectX::VertexPositionTexture>>(pDR->GetD3DDeviceContext());
 	
 	//テクスチャのロード
 	DirectX::CreateWICTextureFromFile(
@@ -55,7 +54,7 @@ void FireEffectManager::Create()
 
 }
 
-void FireEffectManager::Initialize(float life,Vector3 pos)
+void FireEffectManager::Initialize(float life, DirectX::SimpleMath::Vector3 pos)
 {
 	srand((unsigned int)time(NULL));
 	//life,pos,vel の値でm_effectを初期化する
@@ -63,10 +62,10 @@ void FireEffectManager::Initialize(float life,Vector3 pos)
 		ite != m_effectList.end(); ite++)
 	{
 		int range = 200;
-		Vector3 vel = Vector3(((rand() % (range * 2)) - range) / (float)range * 0.04f, ((rand() % (range * 2))) / (float)range * 0.01f, 0);
+		DirectX::SimpleMath::Vector3 vel = DirectX::SimpleMath::Vector3(((rand() % (range * 2)) - range) / (float)range * 0.04f, ((rand() % (range * 2))) / (float)range * 0.01f, 0);
 		while (vel.Length() < 0.001f)
 		{
-			vel = Vector3(((rand() % (range * 2)) - range) / (float)range * 0.04f, ((rand() % (range * 2))) / (float)range * 0.01f, 0);
+			vel = DirectX::SimpleMath::Vector3(((rand() % (range * 2)) - range) / (float)range * 0.04f, ((rand() % (range * 2))) / (float)range * 0.01f, 0);
 		}
 		//float a = (std::rand()%10) - 5.0f / 10.0f;
 

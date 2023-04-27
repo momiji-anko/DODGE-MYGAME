@@ -90,8 +90,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\DirectXTK\Inc;$(ProjectDir)\cri\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\DirectXTK\Bin\Desktop_2019\x64\Release;$(ProjectDir)\cri\libs\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)\DirectXTK\Inc;$(ProjectDir)\cri\include;$(WindowsSDK_IncludePath);$(VC_IncludePath);$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)\DirectXTK\Libs;$(ProjectDir)\cri\libs\x64;$(WindowsSDK_LibraryPath_x64);$(VC_LibraryPath_x64);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -184,11 +184,12 @@
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>d3d11.lib;dxgi.lib;dxguid.lib;uuid.lib;kernel32.lib;user32.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;DirectXTK.lib;cri_ware_pcx64_le_import.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)\cri\libs\x64</AdditionalLibraryDirectories>
+      <AdditionalDependencies>d3d11.lib;dxgi.lib;dxguid.lib;uuid.lib;kernel32.lib;user32.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;DirectXTK_Release.lib;cri_ware_pcx64_le_import.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
     </Link>
     <Manifest>
       <EnableDpiAwareness>PerMonitorHighDPIAware</EnableDpiAwareness>
@@ -234,6 +235,7 @@
     <ClInclude Include="Game\PlayScene\ShadowMap.h" />
     <ClInclude Include="Game\PlayScene\Stage\Stage.h" />
     <ClInclude Include="Game\PlayScene\Stage\StageBehaviors\FirstFloorToFallBehavior.h" />
+    <ClInclude Include="Game\PlayScene\Stage\StageBehaviors\NormalFloorBehavior.h" />
     <ClInclude Include="Game\PlayScene\Stage\StageBehaviors\RotationCubeBehavior.h" />
     <ClInclude Include="Game\PlayScene\Stage\StageBehaviors\SecondFloorToFallBehavior.h" />
     <ClInclude Include="Game\PlayScene\Stage\StageBehaviors\ThirdFloorToFallBehavior.h" />
@@ -248,7 +250,6 @@
     <ClInclude Include="Game\TitleScene\TitleScene.h" />
     <ClInclude Include="Helpers\CueSheet_0.h" />
     <ClInclude Include="Helpers\DODGESound_acf.h" />
-    <ClInclude Include="IActor.h" />
     <ClInclude Include="Libraries\AXD2\Adx2.h" />
     <ClInclude Include="Libraries\Json\json.hpp" />
     <ClInclude Include="Libraries\MyLibraries\Camera.h" />
@@ -296,6 +297,7 @@
     <ClCompile Include="Game\PlayScene\ShadowMap.cpp" />
     <ClCompile Include="Game\PlayScene\Stage\Stage.cpp" />
     <ClCompile Include="Game\PlayScene\Stage\StageBehaviors\FirstFloorToFallBehavior.cpp" />
+    <ClCompile Include="Game\PlayScene\Stage\StageBehaviors\NormalFloorBehavior.cpp" />
     <ClCompile Include="Game\PlayScene\Stage\StageBehaviors\RotationCubeBehavior.cpp" />
     <ClCompile Include="Game\PlayScene\Stage\StageBehaviors\SecondFloorToFallBehavior.cpp" />
     <ClCompile Include="Game\PlayScene\Stage\StageBehaviors\ThirdFloorToFallBehavior.cpp" />
@@ -308,7 +310,6 @@
     <ClCompile Include="Game\Shader\FireEffectManager.cpp" />
     <ClCompile Include="Game\Shader\FireShader.cpp" />
     <ClCompile Include="Game\TitleScene\TitleScene.cpp" />
-    <ClCompile Include="IActor.cpp" />
     <ClCompile Include="Libraries\AXD2\Adx2.cpp" />
     <ClCompile Include="Libraries\MyLibraries\Camera.cpp" />
     <ClCompile Include="Libraries\MyLibraries\DebugCamera.cpp" />

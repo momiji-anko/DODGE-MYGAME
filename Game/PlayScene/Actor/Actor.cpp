@@ -5,6 +5,7 @@
 * 麻生　楓
 */
 #include"pch.h"
+#include"Game/PlayScene/Item/Item.h"
 #include"DeviceResources.h"
 #include"Actor.h"
 
@@ -44,7 +45,7 @@ DirectX::SimpleMath::Matrix Actor::CalculationWorld()
 	return m_world;
 }
 
-void Actor::CreateShadow(ShadowMap* shadow, DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix projection)
+void Actor::CreateShadow(ShadowMap* shadow, const DirectX::SimpleMath::Matrix& view, const DirectX::SimpleMath::Matrix& projection)
 {
 	//デバイスリソース取得
 	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
@@ -67,6 +68,8 @@ void Actor::CreateShadow(ShadowMap* shadow, DirectX::SimpleMath::Matrix view, Di
 
 }
 
+
+
 void Actor::CreateAABB()
 {
 	//AABB当たり判定作成
@@ -77,7 +80,7 @@ void Actor::CreateAABB()
 	DirectX::SimpleMath::Vector3 length = { 0.5f,0.5f,0.5f };
 
 	//AABBの当たり判定を設定
-	m_AABBObject->SetData(m_position + length, m_position - length);
+	m_AABBObject->SetData(DirectX::SimpleMath::Vector3::Zero, DirectX::SimpleMath::Vector3::Zero);
 
 
 }
@@ -87,6 +90,6 @@ void Actor::CreateCapsule()
 	//カプセルの作成
 	m_capsule = std::make_unique<Capsule>();
 	//半径設定
-	m_capsule->r = 0.5f;
+	m_capsule->r = 1.0f;
 }
 

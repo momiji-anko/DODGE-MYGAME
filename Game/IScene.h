@@ -27,4 +27,11 @@ public:
 
 	// リソースの読み込み
 	virtual void LoadResources() = 0;
+
+	/// <summary>
+	/// ステージ番号の設定
+	/// </summary>
+	/// <param name="stageNum">ステージ番号</param>
+	virtual void SetStageNum(int stageNum) = 0;
+
 };

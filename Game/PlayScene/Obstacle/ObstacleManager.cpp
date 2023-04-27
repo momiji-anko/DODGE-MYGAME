@@ -14,16 +14,18 @@
 #include"Libraries/MyLibraries/ModelManager.h"
 
 //障害物最大数
-const int ObstacleManeger::OBSTACLE_MAX_NUM = 100;
+const int ObstacleManager::OBSTACLE_MAX_NUM = 100;
 //スポーンクールタイム
-const int ObstacleManeger::EFFECT_MAX_NUM = 5;
+const int ObstacleManager::EFFECT_MAX_NUM = 5;
 //炎エフェクトの最大数
-const float ObstacleManeger::SPAWN_COOL_TIME_S = 3.0f;
+const float ObstacleManager::SPAWN_COOL_TIME_S = 3.0f;
+//スポーンクールタイムの減る数
+const float ObstacleManager::SPAWNE_COOL_TIME_DECREASE_AMOUNT = 0.003f;
 
 /// <summary>
 /// コンストラクタ
 /// </summary>
-ObstacleManeger::ObstacleManeger()
+ObstacleManager::ObstacleManager()
 	:
 	m_obstacles{},
 	m_spawners{},
@@ -57,7 +59,7 @@ ObstacleManeger::ObstacleManeger()
 /// <summary>
 /// デストラクタ
 /// </summary>
-ObstacleManeger::~ObstacleManeger()
+ObstacleManager::~ObstacleManager()
 {
 	
 }
@@ -67,11 +69,9 @@ ObstacleManeger::~ObstacleManeger()
 /// </summary>
 /// <param name="commonState">コモンステートの生ポインタ</param>
 /// <param name="stage">ステージの番号</param>
-void ObstacleManeger::Initialize(DirectX::CommonStates* commonState, StageManager::StageSelect stage)
+void ObstacleManager::Initialize(DirectX::CommonStates* commonState, StageManager::StageSelect stage)
 {
-	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
-	ID3D11DeviceContext1* context = pDR->GetD3DDeviceContext();
-
+	//コモンステート
 	m_commonState = commonState;
 
 
@@ -122,92 +122,102 @@ void ObstacleManeger::Initialize(DirectX::CommonStates* commonState, StageManage
 		CreateObstacle(DirectX::SimpleMath::Vector3(0.0f, 3.0f, 0.0f), Obstacle::ObstacleType::REVERSE_ROTATESTICK, DirectX::SimpleMath::Vector3::Zero);
 	}
 
+
 }
 
 /// <summary>
 /// 更新
 /// </summary>
 /// <param name="timer">タイマー</param>
-void ObstacleManeger::Update(const DX::StepTimer& timer)
+void ObstacleManager::Update(const DX::StepTimer& timer)
 {
 	//経過時間
-	float elapsedtime = timer.GetElapsedSeconds();
+	float elapsedTime = static_cast<float>(timer.GetElapsedSeconds());
+
 	//タイムを経過時間で足す
-	m_time_s += elapsedtime;
+	m_time_s += elapsedTime;
 
 	//スポーンタイムを経過時間で引く
-	m_spawneTime_s -= elapsedtime;
+	m_spawneTime_s -= elapsedTime;
 
 	//スポーンタイムが０になったら障害物を生成する
 	if (m_spawneTime_s <= 0.0f)
 	{
-		
-		//出現させる障害物をランダムで決める
-		int type = MyRandom::GetIntRange(0, 3);
+		static const float LEVEL1_CREATE_OBSTACLE_TIME_S = 50.0f;
+
+		//障害物の角度と出現位置を決める
+		int obstacleRand = MyRandom::GetIntRange(0, 3);
 
 		//角度
 		DirectX::SimpleMath::Vector3 rot = DirectX::SimpleMath::Vector3::Zero;
 		//角度設定		
-		rot.y = (DirectX::XM_PI / 2.0f) * type;
-
-		static const float LEVEL1_CREATE_OBSTACLE_TIME_S = 50.0f;
+		rot.y = (DirectX::XM_PI / 2.0f) * obstacleRand;
 
 
 
+		//０から１００の乱数を取る
+		int createObsRand = MyRandom::GetIntRange(0, 100);
 
-		//タイムがLEVEL1_CREATE_OBSTACLE_TIME_S以下であればノーマルの炎と棒の障害物わランダムで生成する
+		//タイムが50以下であればノーマルの炎と棒の障害物をランダムで生成する
 		if (m_time_s <= LEVEL1_CREATE_OBSTACLE_TIME_S)
 		{
-			//０から１００の乱数を取る
-			int createObsRand = MyRandom::GetIntRange(0, 100);
+			
+
+			//乱数で出現させる障害物のボーダーライン
+			static const int NOERMAL_FIRE_SPAWNE_NUM = 80;
+			static const int STICK_SPAWNE_NUM = 100;
 
 			//乱数が80以下であれば普通の炎を生成する
-			if(createObsRand <= 80)
+			if(createObsRand <= NOERMAL_FIRE_SPAWNE_NUM)
 			{
 				//出現させる位置からプレイヤーのベクトルから向かうを設定する
-				rot.y = atan2(m_normalSpawnePosition[type].x - m_playerPosition.x, m_normalSpawnePosition[type].z - m_playerPosition.z);
+				rot.y = atan2(m_normalSpawnePosition[obstacleRand].x - m_playerPosition.x, m_normalSpawnePosition[obstacleRand].z - m_playerPosition.z);
 				//普通の炎生成
-				CreateObstacle(m_normalSpawnePosition[type], Obstacle::ObstacleType::NORMAL, rot);
+				CreateObstacle(m_normalSpawnePosition[obstacleRand], Obstacle::ObstacleType::NORMAL, rot);
 			}
 			//乱数が８１以上１００以下であれば棒の障害物を作成
-			else if (createObsRand <= 100)
+			else if (createObsRand <= STICK_SPAWNE_NUM)
 			{
 				//棒の障害物生成
-				CreateObstacle(m_stickSpawnePosition[type], Obstacle::ObstacleType::STICK, rot);
+				CreateObstacle(m_stickSpawnePosition[obstacleRand], Obstacle::ObstacleType::STICK, rot);
 			}
 		}
-		else 
+		//タイムが50より大きなければノーマルの炎と棒と鳥と蛇行する炎の障害物をランダムで生成する
+		else if(m_time_s > LEVEL1_CREATE_OBSTACLE_TIME_S)
 		{
+			//乱数で出現させる障害物のボーダーライン
+			static const int NOERMAL_FIRE_SPAWNE_NUM = 30;
+			static const int STICK_SPAWNE_NUM = 45;
+			static const int BIRD_SPAWNE_NUM = 60;
+			static const int MEANDERING_FIRE_SPAWNE_NUM = 100;
 
-			//０から１００の乱数を取る
-			int createObsRand = MyRandom::GetIntRange(0, 100);
 			//乱数が３０以下であれば普通の炎を生成する
-			if (createObsRand <= 30)
+			if (createObsRand <= NOERMAL_FIRE_SPAWNE_NUM)
 			{
 				//出現させる位置からプレイヤーのベクトルから向かうを設定する
-				rot.y = atan2(m_normalSpawnePosition[type].x - m_playerPosition.x, m_normalSpawnePosition[type].z - m_playerPosition.z);
+				rot.y = atan2(m_normalSpawnePosition[obstacleRand].x - m_playerPosition.x, m_normalSpawnePosition[obstacleRand].z - m_playerPosition.z);
 				//普通の炎生成
-				CreateObstacle(m_normalSpawnePosition[type], Obstacle::ObstacleType::NORMAL, rot);
+				CreateObstacle(m_normalSpawnePosition[obstacleRand], Obstacle::ObstacleType::NORMAL, rot);
 
 			}
 			//乱数が３１以上４５以下であれば棒の障害物を作成
-			else if (createObsRand <= 45)
+			else if (createObsRand <= STICK_SPAWNE_NUM)
 			{
 				//棒の障害物生成
-				CreateObstacle(m_stickSpawnePosition[type], Obstacle::ObstacleType::STICK, rot);
+				CreateObstacle(m_stickSpawnePosition[obstacleRand], Obstacle::ObstacleType::STICK, rot);
 			}
 			//乱数が４６以上５０以下であれば鳥の障害物を作成
-			else if (createObsRand <= 50)
+			else if (createObsRand <= BIRD_SPAWNE_NUM)
 			{
 				//鳥の障害物を作成
-				CreateObstacle(m_birdSpawnPosition[type], Obstacle::ObstacleType::BIRD, rot);
+				CreateObstacle(m_birdSpawnPosition[obstacleRand], Obstacle::ObstacleType::BIRD, rot);
 			
 			}
 			//乱数が５１以上１００以下であれば蛇行する炎の障害物を作成
-			else if (createObsRand <= 100)
+			else if (createObsRand <= MEANDERING_FIRE_SPAWNE_NUM)
 			{
 				//蛇行する炎の障害物を作成
-				CreateObstacle(m_normalSpawnePosition[type], Obstacle::ObstacleType::MEANDERING, rot);
+				CreateObstacle(m_normalSpawnePosition[obstacleRand], Obstacle::ObstacleType::MEANDERING, rot);
 			}
 		}
 		
@@ -215,7 +225,7 @@ void ObstacleManeger::Update(const DX::StepTimer& timer)
 		//スポーンタイムにスポーンクールタイムを入れる
 		m_spawneTime_s = m_spawneCoolTime_s;
 		//だんだんスポーンクールタイムを減らしてスポーンタイムを早くする
-		m_spawneCoolTime_s -= 0.003f;
+		m_spawneCoolTime_s -= SPAWNE_COOL_TIME_DECREASE_AMOUNT;
 	}
 
 	
@@ -235,13 +245,15 @@ void ObstacleManeger::Update(const DX::StepTimer& timer)
 /// 描画
 /// </summary>
 /// <param name="camera">カメラの生ポインタ</param>
-void ObstacleManeger::Draw(Camera* camera)
+void ObstacleManager::Draw(Camera* camera)
 {
 	for (std::unique_ptr<Actor>& obstacle : m_obstacles)
 	{
+		//非アクティブ状態であれば描画しない
 		if (obstacle->IsActive() == false)
 			continue;
 
+		//障害物の描画
 		obstacle->Draw(camera);
 	}
 
@@ -250,7 +262,7 @@ void ObstacleManeger::Draw(Camera* camera)
 /// <summary>
 /// 終了処理
 /// </summary>
-void ObstacleManeger::Finalize()
+void ObstacleManager::Finalize()
 {
 
 }
@@ -258,7 +270,7 @@ void ObstacleManeger::Finalize()
 /// <summary>
 /// スポナー作成
 /// </summary>
-void ObstacleManeger::CreateSpawner()
+void ObstacleManager::CreateSpawner()
 {
 	//普通の炎
 	m_spawners[Obstacle::ObstacleType::NORMAL] = std::make_unique<NormalObstacleSpawner>();
@@ -280,7 +292,7 @@ void ObstacleManeger::CreateSpawner()
 /// <summary>
 /// ビヘイビアー作成
 /// </summary>
-void ObstacleManeger::CreateBehavior()
+void ObstacleManager::CreateBehavior()
 {
 	//普通の炎
 	m_behavior[Obstacle::ObstacleType::NORMAL] = std::make_unique<NormalBehavior>();
@@ -303,7 +315,7 @@ void ObstacleManeger::CreateBehavior()
 /// プレイヤーの座標設定
 /// </summary>
 /// <param name="position">プレイヤーの座標</param>
-void ObstacleManeger::SetPlayerPosition(DirectX::SimpleMath::Vector3 position)
+void ObstacleManager::SetPlayerPosition(DirectX::SimpleMath::Vector3 position)
 {
 	//プレイヤーの座標設定
 	m_playerPosition = position;
@@ -311,14 +323,9 @@ void ObstacleManeger::SetPlayerPosition(DirectX::SimpleMath::Vector3 position)
 	//全ての障害物にプレイヤーの座標設定
 	for (std::unique_ptr<Actor>& obstacle : m_obstacles)
 	{
-		//Actor型からObstacle型にダイナミックキャスト
-		Obstacle* obs = dynamic_cast<Obstacle*> (obstacle.get());
-		//NULLチェック（NULLであれば実行しない）
-		if (obs == nullptr)
-			continue;
 
 		//プレイヤーの座標設定
-		obs->SetPlayerPosition(m_playerPosition);
+		obstacle->SetPlayerPosition(m_playerPosition);
 	}
 
 }
@@ -328,7 +335,7 @@ void ObstacleManeger::SetPlayerPosition(DirectX::SimpleMath::Vector3 position)
 /// </summary>
 /// <param name="player">プレイヤー</param>
 /// <returns>true = 当たった , false = 当っていない</returns>
-bool ObstacleManeger::PlayerHitCheck(AABBFor3D* playerAABB)
+bool ObstacleManager::PlayerHitCheck(AABBFor3D* playerAABB)
 {
 	//全ての障害物にプレイヤー当たり判定
 	for (std::unique_ptr<Actor>& obstacle : m_obstacles)
@@ -356,7 +363,7 @@ bool ObstacleManeger::PlayerHitCheck(AABBFor3D* playerAABB)
 /// <param name="shadowMap">シャドウマップの生ポインタ</param>
 /// <param name="view">ビュー行列</param>
 /// <param name="projection">プロジェクション行列</param>
-void ObstacleManeger::ObstacleShadow( ShadowMap* shadowMap, DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix projection)
+void ObstacleManager::ObstacleShadow( ShadowMap* shadowMap, DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix projection)
 {
 	//全ての障害物の影を生成する
 	for (std::unique_ptr<Actor>& obstacle : m_obstacles)
@@ -365,7 +372,7 @@ void ObstacleManeger::ObstacleShadow( ShadowMap* shadowMap, DirectX::SimpleMath:
 		if (obstacle->IsActive() == false)
 			continue;
 
-
+		//影の生成
 		obstacle->CreateShadow(shadowMap, view, projection);
 	}
 
@@ -376,118 +383,39 @@ void ObstacleManeger::ObstacleShadow( ShadowMap* shadowMap, DirectX::SimpleMath:
 /// </summary>
 /// <param name="player">プレイヤー</param>
 /// <returns>true = 当たった , false = 当っていない</returns>
-bool ObstacleManeger::PlayerCapsuleHitCheck(Player* player)
+bool ObstacleManager::PlayerCapsuleHitCheck(Actor* player, DirectX::SimpleMath::Vector3* flyVelocity)
 {
+	//障害物とプレイヤーのカプセルの当たり判定
 	for (std::unique_ptr<Actor>& obstacle : m_obstacles)
 	{
+		//非アクティブ状態であれば実行しない
 		if (obstacle->IsActive() == false)
 			continue;
 
+		//障害物の角度取得
 		Capsule* cap = obstacle->GetCapsule();
-
+		//当たっていれば実行する
 		if (HitCheck_Capsule2Capsule(*cap, *player->GetCapsule()))
 		{
-			DirectX::SimpleMath::Vector3 rot = obstacle->GetRotation().ToEuler();
-			Obstacle* ob = dynamic_cast<Obstacle*>(obstacle.get());
+			
+			
 
-			bool isRoteStick = ob->GetObstacleType() == Obstacle::ObstacleType::ROTATESTICK;
+		
 
-			if (ob != nullptr && isRoteStick)
+			bool isRoteStick = obstacle->GetTypeInt() == static_cast<int>(Obstacle::ObstacleType::ROTATESTICK);
+
+			//下の回転棒に当たった時の処理
+			if ( isRoteStick)
 			{
-				
-				m_hitvel = m_capsuleHitC2 - m_capsuleHitC1;
-
-				m_hitvel.Normalize();
-
-				float playerR = player->GetCapsule()->r;
-				float obstacleR = cap->r;
-				DirectX::SimpleMath::Vector3 vec = m_capsuleHitC1 - m_capsuleHitC2;
-				float len = vec.Length();
-				if (len < playerR + obstacleR)
-				{
-					float a = len - (playerR + obstacleR);
-					vec.Normalize();
-					vec *= a;
-					player->SetPosition(player->GetPosition() + vec);
-				}
-				float dot = 0;;
-
-				if (ob->GetObstacleType() == Obstacle::ObstacleType::REVERSE_ROTATESTICK)
-				{
-					dot = m_hitvel.Dot(DirectX::SimpleMath::Vector3(cos(rot.y + (-90)), 0, -sin(rot.y + (-90))));
-				}
-				else
-				{
-					dot = m_hitvel.Dot(DirectX::SimpleMath::Vector3(cos(rot.y + (90)), 0, -sin(rot.y + (90))));
-				}
-				 
-				float speed = ob->GetRotSpeed();
-
-				if (speed <	 0)
-				{
-					speed * -1;
-				}
-
-				if (dot > 0.0f)
-				{
-					player->SetFlyVelocity(DirectX::SimpleMath::Vector3(m_hitvel) * (0.5f + (speed * 2.0f)));
-
-				}
+				*flyVelocity = RotaStickHit(obstacle.get(), player);
 			}
 
-			if (ob != nullptr && ob->GetObstacleType() == Obstacle::ObstacleType::REVERSE_ROTATESTICK)
+			bool isReveseRoteStick = obstacle->GetTypeInt() == static_cast<int>(Obstacle::ObstacleType::REVERSE_ROTATESTICK);
+
+			//上の回転する棒障害物に当たった時の処理
+			if ( isReveseRoteStick)
 			{
-				m_hitvel = m_capsuleHitC2 + m_capsuleHitC1;
-
-				m_hitvel.Normalize();
-				m_hitvel *= cap->r;
-
-				DirectX::SimpleMath::Vector3 targetVector;
-				DirectX::SimpleMath::Vector3 playerVector;
-				targetVector = m_hitvel + player->GetCapsule()->b;
-				playerVector = player->GetCapsule()->a + player->GetCapsule()->b;
-
-				targetVector.Normalize();
-				playerVector.Normalize();
-				
-				float dot = targetVector.Dot(playerVector);
-				float sita = acos(dot);
-				if (sita < 0)
-				{
-					sita *= -1.0f;
-				}
-
-				if (sita >= 0.0877f)
-				{
-					 DirectX::SimpleMath::Vector3 playerVec = player->GetVelocity();
-					 player->SetVelocity(DirectX::SimpleMath::Vector3(playerVec.x, -0.1f, playerVec.z));
-				}
-				else 
-				{
-					m_hitvel = m_capsuleHitC2 - m_capsuleHitC1;
-
-					m_hitvel.Normalize();
-
-					float speed = ob->GetRotSpeed();
-					if (speed < 0)
-					{
-						speed *= -1;
-					}
-
-					player->SetFlyVelocity(DirectX::SimpleMath::Vector3(m_hitvel) * (0.5f + (speed * 2.0f)));
-				}
-
-				float playerR = player->GetCapsule()->r;
-				float obstacleR = cap->r;
-				DirectX::SimpleMath::Vector3 vec = m_capsuleHitC1 - m_capsuleHitC2;
-				float length = vec.Length();
-				if (length < playerR + obstacleR)
-				{
-					float a = length - (playerR + obstacleR);
-					vec.Normalize();
-					vec *= a;
-					player->SetPosition(player->GetPosition() + vec);
-				}
+				*flyVelocity = ReverseRotaStickHit(obstacle.get(), player);
 
 			}
 			return true;
@@ -505,7 +433,7 @@ bool ObstacleManeger::PlayerCapsuleHitCheck(Player* player)
 /// <param name="type">障害物のタイプ</param>
 /// <param name="rot">アングル</param>
 /// <returns>true = 生成成功 , false = 生成失敗</returns>
-bool ObstacleManeger::CreateObstacle(const DirectX::SimpleMath::Vector3& position, Obstacle::ObstacleType type, DirectX::SimpleMath::Vector3 rot)
+bool ObstacleManager::CreateObstacle(const DirectX::SimpleMath::Vector3& position, Obstacle::ObstacleType type, DirectX::SimpleMath::Vector3 rot)
 {
 	return m_spawners[type]->Create(m_obstacles, position, rot, m_behavior[type].get(), m_models[type], m_commonState);
 }
@@ -514,7 +442,7 @@ bool ObstacleManeger::CreateObstacle(const DirectX::SimpleMath::Vector3& positio
 /// 障害物のモデル生成
 /// 障害物のモデル生成
 /// </summary>
-void ObstacleManeger::CreateModel()
+void ObstacleManager::CreateModel()
 {
 	//モデルマネージャー取得
 	ModelManager& modelManager = ModelManager::GetInstance();
@@ -542,7 +470,7 @@ void ObstacleManeger::CreateModel()
 /// <param name="min">丸め処理を行う最小値</param>
 /// <param name="max">丸め処理を行う最大値</param>
 /// <returns>丸め処理を行った結果となる数値</returns>
-float ObstacleManeger::Clamp(float n, float min, float max)
+float ObstacleManager::Clamp(float n, float min, float max)
 {
 	return std::min(std::max(min, n), max);
 }
@@ -559,7 +487,7 @@ float ObstacleManeger::Clamp(float n, float min, float max)
 /// <param name="c1">線分１上の最短距離の位置 </param>
 /// <param name="c2">線分 2 上の最短距離の位置</param>
 /// <returns>２つの線分の最短距離の平方</returns>
-float ObstacleManeger::ClosestPtSegmentSegment(DirectX::SimpleMath::Vector3 p1, DirectX::SimpleMath::Vector3 q1, DirectX::SimpleMath::Vector3 p2, DirectX::SimpleMath::Vector3 q2, float& s, float& t, DirectX::SimpleMath::Vector3& c1, DirectX::SimpleMath::Vector3& c2)
+float ObstacleManager::ClosestPtSegmentSegment(DirectX::SimpleMath::Vector3 p1, DirectX::SimpleMath::Vector3 q1, DirectX::SimpleMath::Vector3 p2, DirectX::SimpleMath::Vector3 q2, float& s, float& t, DirectX::SimpleMath::Vector3& c1, DirectX::SimpleMath::Vector3& c2)
 {
 	// p1→q1 のベクトルを算出
 	DirectX::SimpleMath::Vector3 d1 = q1 - p1;
@@ -645,8 +573,7 @@ float ObstacleManeger::ClosestPtSegmentSegment(DirectX::SimpleMath::Vector3 p1, 
 	c1 = p1 + d1 * s;
 	c2 = p2 + d2 * t;
 
-	m_hitvel = (c1 - c2);
-
+	//カプセルの当たった一番近い点を記録する
 	m_capsuleHitC1 = c1;
 	m_capsuleHitC2 = c2;
 
@@ -660,7 +587,7 @@ float ObstacleManeger::ClosestPtSegmentSegment(DirectX::SimpleMath::Vector3 p1, 
 /// <param name="capsule1">当たり判定を取りたいカプセル 1 つ目</param>
 /// <param name="capsule2">当たり判定を取りたいカプセル 2 つ目</param>
 /// <returns>true= 当たった、false=当たってない</returns>
-bool ObstacleManeger::HitCheck_Capsule2Capsule(Capsule capsule1, Capsule capsule2)
+bool ObstacleManager::HitCheck_Capsule2Capsule(Capsule capsule1, Capsule capsule2)
 {
 	float s, t;
 	DirectX::SimpleMath::Vector3 c1, c2;
@@ -669,4 +596,167 @@ bool ObstacleManeger::HitCheck_Capsule2Capsule(Capsule capsule1, Capsule capsule
 	float dist2 = ClosestPtSegmentSegment(capsule1.a, capsule1.b, capsule2.a, capsule2.b, s, t, c1, c2);
 	float radius = capsule1.r + capsule2.r;
 	return dist2 <= radius * radius;
+}
+
+/// <summary>
+/// プレイヤーを吹き飛ばす	
+/// </summary>
+/// <param name="rotSpeed">障害物の回転速度</param>
+/// <param name="player">プレイヤー</param>
+DirectX::SimpleMath::Vector3 ObstacleManager::FlyPlayer(float rotSpeed)
+{
+
+	//飛ばすためにスピードに２掛ける
+	float speedTwice = 2.0f;
+	//飛ばすための補正
+	float speedCorrection = 0.5f;
+	//飛ぶ量
+	float flyAmount = speedCorrection + (std::abs(rotSpeed) * speedTwice);
+
+	return m_hitvel * flyAmount;
+
+}
+
+/// <summary>
+/// プレイヤーのめり込み処理
+/// </summary>
+/// <param name="player">プレイヤー</param>
+/// <param name="cupseleToCupseVector">当たったカプセルとカプセルのベクトル</param>
+/// <param name="playerCapsleRadius">プレイヤーのカプセルの半径</param>
+/// <param name="obstacleCupsleRadius">障害物のカプセルの半径</param>
+void ObstacleManager::PlayerCapuslePenetration(Actor* player, DirectX::SimpleMath::Vector3 cupseleToCupseVector, float playerCapsleRadius, float obstacleCupsleRadius)
+{
+	//当たったカプセルとカプセルの距離
+	float cupseleToCupselLenth = cupseleToCupseVector.Length();
+	//プレイヤーと障害物の半径の合計
+	float radius = playerCapsleRadius + obstacleCupsleRadius;
+
+	//当たったカプセルとカプセルの距離がプレイヤーと障害物の半径の合計より小さければめり込み処理をする
+	if (cupseleToCupselLenth < radius)
+	{
+		//どれだけめり込んでいるか計算
+		float capToCapLengthToRasiusDifference = cupseleToCupselLenth - radius;
+		//当たったカプセルとカプセルのベクトルを正規化
+		cupseleToCupseVector.Normalize();
+		//当たったカプセルとカプセルのベクトルにめり込んだ量をかける		
+		DirectX::SimpleMath::Vector3 playerPenetrationVelocity = cupseleToCupseVector * capToCapLengthToRasiusDifference;
+		//プレイヤーのめり込んだ量を押し出す
+		player->SetPosition(player->GetPosition() + playerPenetrationVelocity);
+	}
+
+
+}
+
+/// <summary>
+/// 回転する棒に当たった時の処理
+/// </summary>
+/// <param name="obstacle">回転する棒の障害物</param>
+/// <param name="player">プレイヤー</param>
+DirectX::SimpleMath::Vector3 ObstacleManager::RotaStickHit(Actor* obstacle, Actor* player)
+{
+	//障害物の角度取得
+	DirectX::SimpleMath::Vector3 rot = obstacle->GetRotation().ToEuler();
+
+	//障害物カプセルからプレイヤーカプセルのベクトル
+	m_hitvel = m_capsuleHitC2 - m_capsuleHitC1;
+
+	//プレイヤーカプセルの半径
+	float playerR = player->GetCapsule()->r;
+	//障害物カプセルの半径
+	float obstacleR = obstacle->GetCapsule()->r;
+	//めり込み処理
+	PlayerCapuslePenetration(player, -m_hitvel, playerR, obstacleR);
+
+	DirectX::SimpleMath::Vector3 flyVel = DirectX::SimpleMath::Vector3::Zero;
+
+	//直角
+	static const float NINETY_ANGLE = DirectX::XMConvertToDegrees(DirectX::XM_PI / 2.0f);
+
+	//障害物の回転方向の計算
+	DirectX::SimpleMath::Vector3 rotDir = DirectX::SimpleMath::Vector3(cos(rot.y + (NINETY_ANGLE)), 0, -sin(rot.y + (NINETY_ANGLE)));
+
+	//障害物カプセルからプレイヤーカプセルのベクトル正規化する
+	m_hitvel.Normalize();
+
+	//障害物カプセルからプレイヤーカプセルのベクトルと障害物の回転方向で内積を取る
+	float dot = m_hitvel.Dot(rotDir);
+
+	//内積が０以上であればプレイヤーを吹き飛ばす
+	if (dot > 0.0f)
+	{
+
+		flyVel = FlyPlayer(obstacle->GetRotSpeed());
+
+	}
+
+	return flyVel;
+
+}
+
+/// <summary>
+/// 反対回転する棒に当たった時の処理
+/// </summary>
+/// <param name="obstacle">回転する棒の障害物</param>
+/// <param name="player">プレイヤー</param>	
+DirectX::SimpleMath::Vector3 ObstacleManager::ReverseRotaStickHit(Actor* obstacle, Actor* player)
+{
+
+	//当たったカプセル同士の座標を足す
+	m_hitvel = m_capsuleHitC2 + m_capsuleHitC1;
+
+	//正規化
+	m_hitvel.Normalize();
+	//障害物のカプセルの半径を足しプレイヤーと障害物の接触した場所を計算
+	m_hitvel *= obstacle->GetCapsule()->r;
+
+	//プレイヤーと障害物の接触座標にプレイヤーの足元の座標を足す
+	DirectX::SimpleMath::Vector3 targetVector = targetVector = m_hitvel + player->GetCapsule()->a;
+	//プレイヤーの足元の座標のプレイヤーの頭座標を足す
+	DirectX::SimpleMath::Vector3 playerVector = player->GetCapsule()->b + player->GetCapsule()->a;
+
+	DirectX::SimpleMath::Vector3 flyVel = DirectX::SimpleMath::Vector3::Zero;
+
+
+	//正規化
+	targetVector.Normalize();
+	playerVector.Normalize();
+
+	//角度を割り出す
+	float dot = targetVector.Dot(playerVector);
+	float sita = acos(std::abs(dot));
+
+	//頭打ち角度
+	float headAngle = 0.0877f;
+
+	//角度が頭打ち角度より大きかったら頭を打ったことにし、プレイヤーを即時落下させる
+	if (sita >= headAngle)
+	{
+		DirectX::SimpleMath::Vector3 playerVec = player->GetVelocity();
+		player->SetVelocity(DirectX::SimpleMath::Vector3(playerVec.x, 0.0f, playerVec.z));
+	}
+	else
+	{
+		//角度が頭打ち角度より小さかったらプレイヤーを吹き飛ばす					
+		m_hitvel = m_capsuleHitC2 - m_capsuleHitC1;
+
+		//プレイヤーカプセルの半径
+		float playerR = player->GetCapsule()->r;
+		//障害物カプセルの半径
+		float obstacleR = obstacle->GetCapsule()->r;
+
+		//めり込み処理
+		PlayerCapuslePenetration(player, -m_hitvel, playerR, obstacleR);
+
+		//正規化
+		m_hitvel.Normalize();
+
+		//障害物の回転速度取得
+		float rotSpeed = obstacle->GetRotSpeed();
+
+		//プレイヤーを吹き飛ばす
+		flyVel = FlyPlayer(rotSpeed);
+	}
+
+	return  flyVel;
+
 }

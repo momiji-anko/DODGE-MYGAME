@@ -29,16 +29,12 @@ bool RotateStickObstacleSpawner::Create(std::vector< std::unique_ptr<Actor>>& ac
 		if (actor->IsActive())
 			continue;
 
-		//障害物型にダイナミックキャストする
-		Obstacle* obstale = dynamic_cast<Obstacle*>(actor.get());
-		//キャスト出来たか
-		if (obstale != nullptr)
-		{
-			//障害物にのタイプ設定
-			obstale->SetType(Obstacle::ObstacleType::ROTATESTICK);
-			//回転する速度の設定
-			obstale->SetRotSpeed(0.01f);
-		}
+		//回転する速度の設定
+		actor->SetRotSpeed(0.01f);
+
+		//障害物にのタイプ設定
+		actor->SetTypeInt(static_cast<int>(Obstacle::ObstacleType::ROTATESTICK));
+
 		//スケール
 		DirectX::SimpleMath::Vector3 scale = DirectX::SimpleMath::Vector3(0.005f, 0.005f, 0.005f);
 

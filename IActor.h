@@ -13,6 +13,11 @@
 #include"Game/PlayScene/AABBFor3D/AABBFor3D.h"
 #include"Game/PlayScene/Objects.h"
 
+
+class StageManager;
+class ObstacleManager;
+class ItemManager;
+
 class IActor
 {
 public:
@@ -54,6 +59,11 @@ public:
 	/// <param name="rotate">角度</param>
 	virtual void SetRotation(DirectX::SimpleMath::Quaternion rotate) = 0;
 	/// <summary>
+	/// 角度の設定
+	/// </summary>
+	/// <param name="rotation">角度</param>
+	virtual void SetRotation(DirectX::SimpleMath::Vector3 rotation) = 0;
+	/// <summary>
 	/// 角度の取得
 	/// </summary>
 	/// <returns>角度</returns>
@@ -76,7 +86,6 @@ public:
 	/// </summary>
 	/// <returns>アングル</returns>
 	virtual float GetAngle()const = 0;
-
 
 	/// <summary>
 	/// ワールド行列の設定
@@ -106,8 +115,6 @@ public:
 	/// </summary>
 	/// <param name="scale">スケール</param>
 	virtual void SetScale(DirectX::SimpleMath::Vector3 scale) = 0;
-
-
 	/// <summary>
 	/// スケール取得
 	/// </summary>
@@ -148,17 +155,12 @@ public:
 	/// <returns>コモンステート</returns>
 	virtual DirectX::CommonStates* GetCommonState() = 0;
 
-public:
-	/// <summary>
-	/// ワールド行列の計算
-	/// </summary>
-	/// <returns>ワールド行列</returns>
-	virtual DirectX::SimpleMath::Matrix CalculationWorld() = 0;
 
-	/// <summary>
-/// コンストラクタ
-/// </summary>
-	IActor();
+
+
+
+public:
+
 	/// <summary>
 	/// デストラクタ
 	/// </summary>
@@ -179,7 +181,7 @@ public:
 		const DirectX::SimpleMath::Vector3& velocity,
 		const DirectX::SimpleMath::Vector3& position,
 		const DirectX::SimpleMath::Vector3& scale,
-		DirectX::SimpleMath::Vector3& rotation,
+		const DirectX::SimpleMath::Vector3& rotataion,
 		bool active,
 		IBehavior* behavia,
 		DirectX::Model* model,
@@ -203,6 +205,16 @@ public:
 	/// </summary>
 	virtual void Finalize() = 0;
 
+	/// <summary>
+	/// ワールド行列の計算
+	/// </summary>
+	/// <returns>ワールド行列</returns>
+	virtual DirectX::SimpleMath::Matrix CalculationWorld() = 0;
+
+	/// <summary>
+	/// リセット
+	/// </summary>
+	virtual void Reset() = 0;
 
 
 };

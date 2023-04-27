@@ -1,3 +1,9 @@
+/*
+* 2023/04/23
+* Player.cpp
+* プレイヤー
+* 麻生　楓
+*/
 #include"pch.h"
 #include"Player.h"
 #include"DeviceResources.h"
@@ -7,36 +13,69 @@
 #include"Libraries/MyLibraries/ModelManager.h"
 #include"Libraries/MyLibraries/TextureManager.h"
 
+//	1秒間に進むマスの数
 const float Player::MOVE_SPEED = 9.0f;
+//	1秒間に落ちるマスの数
 const float Player::GRAVITY_FORCE = -1.4f;
+//	ジャンプ力
 const float Player::JUMP_FORCE = 0.50f;
-const float Player::INVINCIBLE_TIME_SECONDS = 8.0f;
+//無敵時間
+const float Player::INVINCIBLE_TIME_SECONDS = 3.0f;
 
-//コンストラクタ
-Player::Player() 
+//上のAABB
+const DirectX::SimpleMath::Vector3 Player::AABB_AREA_UP = DirectX::SimpleMath::Vector3(0.5f, 2.0f, 0.5f);
+//下のAABB
+const DirectX::SimpleMath::Vector3 Player::AABB_AREA_DOWN = DirectX::SimpleMath::Vector3(-0.5f, -0.0f, -0.5f);
+
+//上のカプセルの長さ
+const float Player::CAPSULE_AREA_UP = 1.5f;
+//下のカプセルの長さ
+const float Player::CAPSULE_AREA_DOWN = 0.5f;
+
+//落ちた際の死亡する高さ
+const float Player::FALL_DEAD_AREA = -50.0f;
+//モデルタイムの最大数
+const float Player::MAX_MODEL_TIME_S = 4.0f;
+//モデルタイムの速度
+const float Player::MODEL_TIME_SPEED = 10.0f;
+
+//プレイヤーのシールド画面表示位置
+const DirectX::SimpleMath::Vector2 Player::PLAYERS_SHIELD_TEXTURE_POSITION[2] = {
+	DirectX::SimpleMath::Vector2(20.0f,10.0f),
+	DirectX::SimpleMath::Vector2(1260.0f,10.0f)
+};
+
+/// <summary>
+/// コンストラクタ
+/// </summary>
+Player::Player()
 	:
 	Actor(),
 	m_invincbleTime(0.0f),
-	m_playerState(PlayerState::NORMAL),
-	m_playerModelNum{0,1,0,2,3},
-	m_flyVelocity{}, 
-	m_shieldCount(0),
-	m_isShield(true),
-	m_blink(nullptr),
 	m_playerModel{},
+	m_playerModelNum{0,1,0,2,3},
+	m_modelTime_s(0),
 	m_pAdx2(nullptr),
 	m_jumpMusicID(0),
-	m_stageManager(nullptr),
-	m_itemManager(nullptr),
+	m_flyVelocity{}, 
+	m_shieldCount(0),
 	m_invincibleCountCoolDownTime_s(0),
-	m_modelTime_s(0),
+	m_shieldTexture{},
+	m_itemManager(nullptr),
+	m_stageManager(nullptr),
 	m_playerID(0),
-	m_keys{}
+	m_blink(nullptr),
+	m_keys{},
+	m_modelFiles{},
+	m_obstacleManager{}
 {
 
 }
-//デストラクタ	
-Player::~Player() 
+
+/// <summary>
+/// デストラクタ
+/// </summary>
+Player::~Player()
 {
 	
 }
@@ -46,19 +85,14 @@ Player::~Player()
 /// </summary>
 /// <param name="velocity">移動量</param>
 /// <param name="position">初期座標</param>
+/// <param name="rotation">角度</param>
 /// <param name="active">存在しているか</param>
-/// <param name="angle">角度</param>
 /// <param name="behavia">ビヘイビアー（Playrでは使わないのでNULLでOK）</param>
 /// <param name="model">プレイヤーのモデルだがNULLでOK</param>
 /// <param name="commonState">コモンステート</param>
 void Player::Initialize(const DirectX::SimpleMath::Vector3& velocity, const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Vector3& scale, const DirectX::SimpleMath::Vector3& rotation, bool active, IBehavior* behavia, DirectX::Model* model, DirectX::CommonStates* commonState)
 {
-	//デバイスリソースの取得
-	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
-	//デバイスコンテキストの取得
-	ID3D11DeviceContext1* context = pDR->GetD3DDeviceContext();
-	//デバイスの取得
-	ID3D11Device1* device = pDR->GetD3DDevice();
+
 
 	//パラメータの設定
 	//移動速度
@@ -71,7 +105,6 @@ void Player::Initialize(const DirectX::SimpleMath::Vector3& velocity, const Dire
 	SetScale(scale);
 
 	//アクティブ
-
 	SetActive(active);
 
 
@@ -83,27 +116,33 @@ void Player::Initialize(const DirectX::SimpleMath::Vector3& velocity, const Dire
 	//コモンステート
 	SetCommonState(commonState);
 
+	//角度設定
+	SetRotation(rotation);
+
 	//モデルの生成
 	CreatePlayerModel();
 
 	
-	//当たり判定の領域の設定
-	GetAABB()->SetData(DirectX::SimpleMath::Vector3(position.x - 0.5f, position.y - 0.9f, position.z - 0.5f), DirectX::SimpleMath::Vector3(position.x + 0.5f, position.y + 0.5f, position.z + 0.5f));
-
+	//当たり判定の領域更新
+	HitAreaUpdate();
 
 	//ADX2のインスタンス取得
 	m_pAdx2 = &ADX2::GetInstance();
 
-	//当たり判定の領域の設定
-	GetCapsule()->a = DirectX::SimpleMath::Vector3(position.x, position.y + 0.5f, position.z);
-	GetCapsule()->b = DirectX::SimpleMath::Vector3(position.x, position.y + 1.5f, position.z);
 
 	//盾のテクスチャ読み込み
 	m_shieldTexture = TextureManager::GetInstance().LoadTexture(L"Resources/Textures/haet.png");
-
+	
+	//点滅速度
+	float blinkTime_s = 0.25f;
+	//点滅回数
+	int blinkCount = 12;
+	//だんだん早くする点滅速度
+	float blinkFastTime_s = 0.01f;
 	//ブリンクする
 	m_blink = std::make_unique<Blink>();
-	m_blink->Initialize(0.15f, 12, 0.01f, true);
+	//初期化
+	m_blink->Initialize(blinkTime_s, blinkCount, blinkFastTime_s, true);
 
 }
 
@@ -113,62 +152,56 @@ void Player::Initialize(const DirectX::SimpleMath::Vector3& velocity, const Dire
 /// <param name="timer">タイマー</param>
 void Player::Update(const DX::StepTimer& timer)
 {
-
-	Item::ItemType itemType = m_itemManager->PlayerHitItemType(GetAABB());
-
-	//アクティブでなければ処理を終わる
+	//アクティブでなければ処理をしない
 	if (!IsActive())
 		return;
 
+	//アイテムと当たり判定を取る
+	Item::ItemType itemType = m_itemManager->PlayerHitItemType(GetAABB());
+
+	//当たったアイテムがシールドであった場合、シールドカウントを増やす
 	if (itemType == Item::ItemType::SHIELD_ITEM)
 	{
 		ShieldCountUp();
 	}
-	
-	
-	
 
+	//プレイヤーの移動
 	PlayerMove(timer);
 
 
+	DirectX::SimpleMath::Vector3 flyVelocity = DirectX::SimpleMath::Vector3::Zero;
+
+	//回転する棒と当たり判定取る,当たっていた場合プレイヤーを吹き飛ばす
+	if (m_obstacleManager->PlayerCapsuleHitCheck(this, &flyVelocity))
+	{
+		m_flyVelocity = flyVelocity;
+	}
+
+	//障害物と当たっていた場合シールドを減らす
+	if (m_obstacleManager->PlayerHitCheck(GetAABB()))
+	{
+		ShieldCountDown();
+	}
+
+	//吹き飛ばされている状態であればだんだん減速する
 	if (m_flyVelocity.Length() != 0.0f)
 	{
 		SetPosition(GetPosition() + m_flyVelocity);
-
+		//減速
 		m_flyVelocity *= DirectX::SimpleMath::Vector3(0.91f, 0.91f, 0.91f);
 	}
 
 
-	if (m_playerState == PlayerState::INVINCIBLE)
-	{
-		m_invincbleTime += timer.GetElapsedSeconds();
+	//当たり判定の領域の更新
+	HitAreaUpdate();
 
-		if (m_invincbleTime > INVINCIBLE_TIME_SECONDS)
-		{
-			m_playerState = PlayerState::NORMAL;
-		}
-	}
-	else
-	{
-		m_invincbleTime = 0;
-	}
-
-
-	DirectX::SimpleMath::Vector3 pos = GetPosition();
-
-	GetAABB()->SetData(DirectX::SimpleMath::Vector3(pos.x - 0.5f, pos.y - 0, pos.z - 0.5f), DirectX::SimpleMath::Vector3(pos.x + 0.5f, pos.y + 2.0f, pos.z + 0.5f));
-
-	GetCapsule()->a = DirectX::SimpleMath::Vector3(pos.x, pos.y + 0.5f, pos.z);
-	GetCapsule()->b = DirectX::SimpleMath::Vector3(pos.x, pos.y + 1.5f, pos.z);
-
-
-
-	if (GetPosition().y < -50.0f)
+	//落下してY座標が-50になったら死亡する
+	if (GetPosition().y < FALL_DEAD_AREA)
 	{
 		SetActive(false);
-
 	}
 
+	//ブリンクの更新
 	m_blink->Update(timer);
 
 }
@@ -179,18 +212,22 @@ void Player::Update(const DX::StepTimer& timer)
 /// <param name="camera">カメラのポインター</param>
 void Player::Draw(Camera* camera)
 {
-
+	//デバイスリソースの取得
 	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
+	//デバイスコンテキストの取得
 	ID3D11DeviceContext1* context = pDR->GetD3DDeviceContext();
-	
+
+	//アクティブでなければ処理をしない
 	if (!IsActive())
 		return;
 
-	
+	//ワールド行列計算
 	CalculationWorld();
 
+	//ブリンクしていなければモデル表示
 	if (m_blink->IsBlink())
 	{
+		//現在のモデルの状態
 		int modelTime = static_cast<int>(m_modelTime_s);
 
 		m_playerModel[m_playerModelNum[modelTime]]->Draw(context, *GetCommonState(), GetWorld(), camera->GetViewMatrix(), camera->GetProjectionMatrix());
@@ -198,50 +235,120 @@ void Player::Draw(Camera* camera)
 
 }
 
+/// <summary>
+/// 盾UIの描画
+/// </summary>
+/// <param name="spriteBatch">スプライトバッチ</param>
 void Player::TextureDraw(DirectX::SpriteBatch* spriteBatch)
 {
+	//盾があれば盾描画
 	for (int i = 0; i < m_shieldCount; i++)
 	{
-		spriteBatch->Draw(m_shieldTexture.Get(), DirectX::SimpleMath::Vector2(20.0f, 10.0f + (i * 64.0f)), nullptr);
+		//盾同士の離れている距離
+		DirectX::SimpleMath::Vector2 shieldTexDistance = DirectX::SimpleMath::Vector2(0.0f, 64.0f * i);
+
+		spriteBatch->Draw(m_shieldTexture.Get(), PLAYERS_SHIELD_TEXTURE_POSITION[m_playerID] + shieldTexDistance, nullptr);
 	}
 
 }
 
-// 終了処理
+/// <summary>
+/// 終了処理
+/// </summary>
 void Player::Finalize()
 {
-
+	Reset();
 }
 
-
+/// <summary>
+/// 持っている盾の数を１増やす
+/// </summary>
 void Player::ShieldCountUp()
 {
+	//シールドを取ったら音を鳴らす
 	m_pAdx2->Play(CRI_CUESHEET_0_COIN04_);
+	//シールドの数を１増やす
 	m_shieldCount++;
 }
 
+
+/// <summary>
+/// 持っている盾の数を１減らす　盾を一個も持っていない場合死亡させる
+/// </summary>
 void Player::ShieldCountDown()
 {
+	//無敵時間ではない場合シールドを１減らす
 	if (m_invincibleCountCoolDownTime_s <= 0.0f)
 	{
+		//シールドを１減らす
 		m_shieldCount--;
+		//ダメージ音を出す
 		m_pAdx2->Play(CRI_CUESHEET_0_DAMAGE1);
-		m_invincibleCountCoolDownTime_s = 3.0f;
+		
+		//無敵時間
+		m_invincibleCountCoolDownTime_s = INVINCIBLE_TIME_SECONDS;
+		
+		//点滅する
 		m_blink->Start();
+
+		//シールドがマイナスになったら死亡する
 		if (m_shieldCount <= -1)
 		{
 			SetActive(false);
 		}
+
 	}
 
 }
 
 
+/// <summary>
+/// 影生成
+/// </summary>
+/// <param name="shadow">シャドウマップの生ポインタ</param>
+/// <param name="view">ビュー行列</param>
+/// <param name="projection">プロジェクション行列</param>
+void Player::CreateShadow(ShadowMap* shadow, const DirectX::SimpleMath::Matrix& view, const DirectX::SimpleMath::Matrix& projection)
+{
+	//デバイスリソース取得
+	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
+	//デバイスコンテキスト取得
+	ID3D11DeviceContext1* context = pDR->GetD3DDeviceContext();
 
+	//モデルがあれば影を生成する
+	if (m_playerModel[m_playerModelNum[m_modelTime_s]] != nullptr)
+	{
+		//ワールド行列を計算する
+		CalculationWorld();
+
+		//影生成
+		m_playerModel[m_playerModelNum[m_modelTime_s]]->Draw(context, *GetCommonState(), GetWorld(), view, projection, false, [&]()
+			{
+				shadow->DrawShadowMap(context);
+			}
+		);
+	}
+
+
+}
+
+/// <summary>
+/// リセット
+/// </summary>
+void Player::Reset()
+{
+	SetActive(false);
+}
+
+/// <summary>
+/// プレイヤーのモデル作成
+/// </summary>
 void Player::CreatePlayerModel()
 {
+	//モデルファイルパスの数分、モデル配列確保
 	m_playerModel.resize(m_modelFiles.size());
 
+	//モデルの読み込み
 	for (int i = 0; i < m_modelFiles.size();i++)
 	{
 		m_playerModel[i] = ModelManager::GetInstance().LoadModel(m_modelFiles[i].c_str());
@@ -249,115 +356,180 @@ void Player::CreatePlayerModel()
 
 }
 
+/// <summary>
+/// 当たり判定の領域の更新
+/// </summary>
+void Player::HitAreaUpdate()
+{
+	DirectX::SimpleMath::Vector3 position = GetPosition();
+	//AABB当たり判定の領域の設定
+	GetAABB()->SetData(position + AABB_AREA_DOWN, position + AABB_AREA_UP);
 
+	//カプセル当たり判定の領域の設定
+	GetCapsule()->a = DirectX::SimpleMath::Vector3(position.x, position.y + CAPSULE_AREA_DOWN, position.z);
+	GetCapsule()->b = DirectX::SimpleMath::Vector3(position.x, position.y + CAPSULE_AREA_UP, position.z);
 
+}
+
+/// <summary>
+/// プレイヤーの動き
+/// </summary>
+/// <param name="timer">タイマー</param>
 void Player::PlayerMove(const DX::StepTimer& timer)
 {
-
+	//キー配列からそれぞれの割り当てられたキーを取得
+	//右キー
 	const DirectX::Keyboard::Keys& right =    m_keys[0];
+	//左キー
 	const DirectX::Keyboard::Keys& left =     m_keys[1];
+	//前キー
 	const DirectX::Keyboard::Keys& forward =  m_keys[2];
-	const DirectX::Keyboard::Keys& backward = m_keys[3];
+	//後ろキー
+	const DirectX::Keyboard::Keys& back = m_keys[3];
+	//ジャンプキー
 	const DirectX::Keyboard::Keys& jump =     m_keys[4];
 
-	float elapsedTime = timer.GetElapsedSeconds();
+	//経過時間
+	float elapsedTime = static_cast<float>(timer.GetElapsedSeconds());
 
 	// キー入力情報を取得する
 	DirectX::Keyboard::State keyState = DirectX::Keyboard::Get().GetState();
 
+	//ベロシティ取得
 	DirectX::SimpleMath::Vector3 velocity = GetVelocity();
+	//座標取得
 	DirectX::SimpleMath::Vector3 position = GetPosition();
+	//角度取得
 	DirectX::SimpleMath::Vector3 rotation = GetRotation().ToEuler();
 
+	//ベロシティのＸとＺを０にする
 	velocity.x = 0.0f;
 	velocity.z = 0.0f;
 
+	//移動しているか
+	bool IsMove = false;
 
+	//90度
+	static const float NINETY_ANGLE = DirectX::XM_PI / 2.0f;
+
+	//右キーを押していた場合右に移動＆右を向く
 	if (keyState.IsKeyDown(right))
 	{
 		velocity.x += MOVE_SPEED * elapsedTime;
 
-		rotation.y = -90;
+		rotation.y = -NINETY_ANGLE;
+
+		IsMove = true;
 
 	}
-
-	if (keyState.IsKeyDown(left))
+	//左キーを押していた場合右に移動＆左を向く
+	else if (keyState.IsKeyDown(left))
 	{
 		velocity.x -= MOVE_SPEED * elapsedTime;
 
-		rotation.y = 90;
+		rotation.y = NINETY_ANGLE;
+
+		IsMove = true;
 	}
 
-	if (keyState.IsKeyDown(backward))
+	//後ろキーを押していた場合右に移動＆後ろを向く
+	 if (keyState.IsKeyDown(back))
 	{
 		velocity.z += MOVE_SPEED * elapsedTime;
 
-		rotation.y = 180;
-	}
+		rotation.y = NINETY_ANGLE * 2.0f;
 
-	if (keyState.IsKeyDown(forward))
+		IsMove = true;
+	}
+	//前キーを押していた場合右に移動＆前を向く
+	else if (keyState.IsKeyDown(forward))
 	{
 		velocity.z -= MOVE_SPEED * elapsedTime;
 
 		rotation.y = 0;
+
+		IsMove = true;
 	}
 
+	 //左キーと前キーを押していた場合左前を向く
+	 if ((keyState.IsKeyDown(left)) && (keyState.IsKeyDown(forward)))
+	 {
+		 //45
+		 rotation.y = NINETY_ANGLE / 2.0f;
+	 }
 
+	 //左キーと後ろキーを押していた場合左後ろを向く
+	 if ((keyState.IsKeyDown(left)) && (keyState.IsKeyDown(back)))
+	 {
+		 //90+45
+		 rotation.y = NINETY_ANGLE + NINETY_ANGLE / 2.0f;
+	 }
 
-
-	if ((keyState.IsKeyDown(right)) && (keyState.IsKeyDown(backward)))
-		rotation.y = DirectX::XMConvertToRadians(-(90 + 45));
-
+	//右キーと前キーを押していた場合右前を向く
 	if ((keyState.IsKeyDown(right)) && (keyState.IsKeyDown(forward)))
-		rotation.y = DirectX::XMConvertToRadians(-(45));
-
-	if ((keyState.IsKeyDown(left)) && (keyState.IsKeyDown(backward)))
-		rotation.y = DirectX::XMConvertToRadians((90 + 45));
-
-	if ((keyState.IsKeyDown(left)) && (keyState.IsKeyDown(forward)))
-		rotation.y = DirectX::XMConvertToRadians((45));
-
-
-	if (keyState.IsKeyDown(right) || keyState.IsKeyDown(left) || keyState.IsKeyDown(forward) || keyState.IsKeyDown(backward))
 	{
-		m_modelTime_s += elapsedTime * 10;
+		//-45
+		rotation.y = -NINETY_ANGLE / 2.0f;
+	}
 
-		if (m_modelTime_s >= 4.0f)
+	//右キーと後ろキーを押していた場合右後ろを向く
+	if ((keyState.IsKeyDown(right)) && (keyState.IsKeyDown(back)))
+	{
+		//-(90+45)
+		rotation.y = -(NINETY_ANGLE + NINETY_ANGLE / 2.0f);
+	}
+		
+
+	//移動している場合モデルタイムを増やす
+	if (IsMove)
+	{
+		m_modelTime_s += MODEL_TIME_SPEED * elapsedTime;;
+
+		//モデルタイムが４を超えたら０にリセット
+		if (m_modelTime_s >= MAX_MODEL_TIME_S)
 		{
-			m_modelTime_s = 0;
+			m_modelTime_s = 0.0f;
 		}
 	}
+	//移動していない場合モデルタイムは０にする
 	else
 	{
-		m_modelTime_s = 0;
+		m_modelTime_s = 0.0f;
 	}
 
 
-	if (m_stageManager->PlayerStageAABBHitCheck(this))
+	//ステージに当たっている場合落下しない
+	if (m_stageManager->StageToActorHitCheck(this))
 	{
-
+		//ベロシティＹを０にする
 		velocity.y = 0;
 
-
+		//ジャンプキーを押したらジャンプする
 		if (keyState.IsKeyDown(jump))
 		{
-
+			
 			velocity.y += JUMP_FORCE;
 
+			//ジャンプしたら音を出す
 			m_pAdx2->Play(CRI_CUESHEET_0_JUMP08);
 
 		}
 
 	}
+	//ステージに当たっていない場合落下する
 	else
 	{
-		m_modelTime_s = 4;
-		velocity.y += GRAVITY_FORCE * timer.GetElapsedSeconds();
+		//モデルタイムをMAXにする
+		m_modelTime_s = MAX_MODEL_TIME_S;
+		//落下する
+		velocity.y += GRAVITY_FORCE * static_cast<float>(timer.GetElapsedSeconds());
 
 	}
 
+	//ベロシティの設定
 	SetVelocity(velocity);
+	//移動する
 	SetPosition(GetPosition() + velocity);
-
-	SetRotation(DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(rotation));
+	//角度設定
+	SetRotation(rotation);
 }

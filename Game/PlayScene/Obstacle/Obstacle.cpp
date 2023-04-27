@@ -23,7 +23,7 @@ Obstacle::Obstacle()
 	m_maxForce{ 4.0f },
 	m_force{ DirectX::SimpleMath::Vector3::Zero },
 	m_playerPosition{ DirectX::SimpleMath::Vector3::Zero },
-	m_seekTime_s(0.0f)
+	m_meandelingTime_s(0.0f)
 {
 	
 }
@@ -49,8 +49,6 @@ Obstacle::~Obstacle()
 /// <param name="commonState">コモンステートの生ポインタ</param>
 void Obstacle::Initialize(const DirectX::SimpleMath::Vector3& velocity, const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Vector3& scale, const DirectX::SimpleMath::Vector3& rotation, bool active, IBehavior* behavia, DirectX::Model* model, DirectX::CommonStates* commonState)
 {
-	//デバイスリソース取得
-	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
 
 	//パラメータの設定
 	//移動速度
@@ -122,6 +120,8 @@ void Obstacle::Draw(Camera* camera)
 	
 	//ワールド行列を計算する
 	CalculationWorld();
+
+
 
 	//炎でなければモデル表示する
 	if (m_type != ObstacleType::NORMAL && m_type != ObstacleType::MEANDERING)

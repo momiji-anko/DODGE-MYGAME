@@ -39,61 +39,26 @@ class Player;
 /// <summary>
 /// 障害物管理クラス
 /// </summary>
-class ObstacleManeger
+class ObstacleManager
 {
 public:
-	//障害物最大数
-	static const int OBSTACLE_MAX_NUM;
-	//スポーンクールタイム
-	static const float SPAWN_COOL_TIME_S;
-	//炎エフェクトの最大数
-	static const int EFFECT_MAX_NUM;
-private:
-	//障害物
-	std::vector< std::unique_ptr<Actor>>                         m_obstacles;
-	//障害物のスポナー
-	std::map< Obstacle::ObstacleType, std::unique_ptr<ISpawner>> m_spawners;
-	//障害物のモデル
-	std::map< Obstacle::ObstacleType, DirectX::Model*>           m_models;
-	//障害物のビヘイビアー
-	std::map< Obstacle::ObstacleType, std::unique_ptr<IBehavior>>m_behavior;
-	//コモンステート
-	DirectX::CommonStates*                                       m_commonState;
-	//炎の障害物の出現位置
-	std::vector<DirectX::SimpleMath::Vector3>                    m_normalSpawnePosition;
-	//棒の障害物の出現位置
-	std::vector<DirectX::SimpleMath::Vector3>                    m_stickSpawnePosition;
-	//鳥の障害物の出現位置
-	std::vector<DirectX::SimpleMath::Vector3>                    m_birdSpawnPosition;
-	//プレイヤーのポジション
-	DirectX::SimpleMath::Vector3                                 m_playerPosition;
+	/// <summary>
+	/// プレイヤーの座標設定
+	/// </summary>
+	/// <param name="position">プレイヤーの座標</param>
+	void SetPlayerPosition(DirectX::SimpleMath::Vector3 position);
 
-	//炎エフェクトの配列
-	std::vector<std::unique_ptr<FireEffectManager>>              m_effectlist;
-	
-	//プレイヤーを回転する棒に当たった時のプレイヤーから回転する棒の距離
-	DirectX::SimpleMath::Vector3                                 m_hitvel;
-	//当たったカプセルの場所（障害物）
-	DirectX::SimpleMath::Vector3                                 m_capsuleHitC1;
-	//当たったカプセルの場所（プレイヤー）
-	DirectX::SimpleMath::Vector3                                 m_capsuleHitC2;
-	
-	//タイマー
-	float                                                        m_time_s;
-	//障害物のスポーンタイマー
-	float                                                        m_spawneTime_s;
-	//障害物のスポーンクールタイム
-	float                                                        m_spawneCoolTime_s;
+
 
 public:
 	/// <summary>
 	/// コンストラクタ
 	/// </summary>
-	ObstacleManeger();
+	ObstacleManager();
 	/// <summary>
 	/// デストラクタ
 	/// </summary>
-	~ObstacleManeger();
+	~ObstacleManager();
 
 	/// <summary>
 	/// 初期化
@@ -130,12 +95,6 @@ public:
 	void CreateBehavior();
 	
 	/// <summary>
-	/// プレイヤーの座標設定
-	/// </summary>
-	/// <param name="position">プレイヤーの座標</param>
-	void SetPlayerPosition(DirectX::SimpleMath::Vector3 position);
-
-	/// <summary>
 	/// プレイヤーと障害物のAABBの当たり判定
 	/// </summary>
 	/// <param name="playerAABB">プレイヤーのAABB</param>
@@ -150,12 +109,16 @@ public:
 	/// <param name="projection">プロジェクション行列</param>
 	void ObstacleShadow( ShadowMap* shadowMap, DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix projection);
 
+	
+	
+	
 	/// <summary>
 	/// プレイヤーと障害物のカプセルの当たり判定
 	/// </summary>
 	/// <param name="player">プレイヤー</param>
+	/// <param name="flyVelocity">プレイヤーを吹き飛ばすベロシティ</param>
 	/// <returns>true = 当たった , false = 当っていない</returns>
-	bool PlayerCapsuleHitCheck(Player* player);
+	bool PlayerCapsuleHitCheck(Actor* player,DirectX::SimpleMath::Vector3* flyVelocity);
 
 private:
 	/// <summary>
@@ -207,5 +170,80 @@ private:
 	/// <returns>true= 当たった、false=当たってない</returns>
 	bool HitCheck_Capsule2Capsule(Capsule capsule1, Capsule capsule2);
 
+	/// <summary>
+	/// プレイヤーを吹き飛ばす	
+	/// </summary>
+	/// <param name="rotSpeed">障害物の回転速度</param>
+	/// <param name="player">プレイヤー</param>
+	DirectX::SimpleMath::Vector3 FlyPlayer(float rotSpeed);
+	
+	/// <summary>
+	/// プレイヤーのめり込み処理
+	/// </summary>
+	/// <param name="player">プレイヤー</param>
+	/// <param name="cupseleToCupseVector">当たったカプセルとカプセルのベクトル（プレイヤーカプセルから障害物カプセルのベクトル）</param>
+	/// <param name="playerCapsleRadius">プレイヤーのカプセルの半径</param>
+	/// <param name="obstacleCupsleRadius">障害物のカプセルの半径</param>
+	void PlayerCapuslePenetration(Actor* player, DirectX::SimpleMath::Vector3 cupseleToCupseVector, float playerCapsleRadius, float obstacleCupsleRadius);
 
+	/// <summary>
+	/// 回転する棒に当たった時の処理
+	/// </summary>
+	/// <param name="obstacle">回転する棒の障害物</param>
+	/// <param name="player">プレイヤー</param>
+	DirectX::SimpleMath::Vector3 RotaStickHit(Actor* obstacle, Actor* player);
+
+	/// <summary>
+	/// 反対回転する棒に当たった時の処理
+	/// </summary>
+	/// <param name="obstacle">回転する棒の障害物</param>
+	/// <param name="player">プレイヤー</param>	
+	DirectX::SimpleMath::Vector3 ReverseRotaStickHit(Actor* obstacle, Actor* player);
+
+public:
+	//障害物最大数
+	static const int OBSTACLE_MAX_NUM;
+	//スポーンクールタイム
+	static const float SPAWN_COOL_TIME_S;
+	//炎エフェクトの最大数
+	static const int EFFECT_MAX_NUM;
+	//スポーンクールタイムの減る数
+	static const float SPAWNE_COOL_TIME_DECREASE_AMOUNT;
+
+private:
+	//障害物
+	std::vector< std::unique_ptr<Actor>>                         m_obstacles;
+	//障害物のスポナー
+	std::map< Obstacle::ObstacleType, std::unique_ptr<ISpawner>> m_spawners;
+	//障害物のモデル
+	std::map< Obstacle::ObstacleType, DirectX::Model*>           m_models;
+	//障害物のビヘイビアー
+	std::map< Obstacle::ObstacleType, std::unique_ptr<IBehavior>>m_behavior;
+	//コモンステート
+	DirectX::CommonStates* m_commonState;
+	//炎の障害物の出現位置
+	std::vector<DirectX::SimpleMath::Vector3>                    m_normalSpawnePosition;
+	//棒の障害物の出現位置
+	std::vector<DirectX::SimpleMath::Vector3>                    m_stickSpawnePosition;
+	//鳥の障害物の出現位置
+	std::vector<DirectX::SimpleMath::Vector3>                    m_birdSpawnPosition;
+	//プレイヤーのポジション
+	DirectX::SimpleMath::Vector3                                 m_playerPosition;
+
+	//炎エフェクトの配列
+	std::vector<std::unique_ptr<FireEffectManager>>              m_effectlist;
+
+	//プレイヤーを回転する棒に当たった時のプレイヤーから回転する棒の距離
+	DirectX::SimpleMath::Vector3                                 m_hitvel;
+	//当たったカプセルの場所（障害物）
+	DirectX::SimpleMath::Vector3                                 m_capsuleHitC1;
+	//当たったカプセルの場所（プレイヤー）
+	DirectX::SimpleMath::Vector3                                 m_capsuleHitC2;
+
+	//タイマー
+	float                                                        m_time_s;
+	//障害物のスポーンタイマー
+	float                                                        m_spawneTime_s;
+	//障害物のスポーンクールタイム
+	float                                                        m_spawneCoolTime_s;
 };

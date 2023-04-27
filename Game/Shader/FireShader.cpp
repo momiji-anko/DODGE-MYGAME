@@ -10,15 +10,14 @@
 #include <CommonStates.h>
 #include <vector>
 #include"Game/PlayScene/MyRandom.h"
-using namespace DX;
-using namespace DirectX;
-using namespace DirectX::SimpleMath;
+
+
 
 const std::vector<D3D11_INPUT_ELEMENT_DESC> FireShader::INPUT_LAYOUT =
 {
 	{ "POSITION",	0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-	{ "COLOR",		0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, sizeof(Vector3), D3D11_INPUT_PER_VERTEX_DATA, 0 },
-	{ "TEXCOORD",	0, DXGI_FORMAT_R32G32_FLOAT, 0, sizeof(Vector3) + sizeof(Vector4), D3D11_INPUT_PER_VERTEX_DATA, 0 },
+	{ "COLOR",		0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, sizeof(DirectX::SimpleMath::Vector3), D3D11_INPUT_PER_VERTEX_DATA, 0 },
+	{ "TEXCOORD",	0, DXGI_FORMAT_R32G32_FLOAT, 0, sizeof(DirectX::SimpleMath::Vector3) + sizeof(DirectX::SimpleMath::Vector4), D3D11_INPUT_PER_VERTEX_DATA, 0 },
 };
 
 FireShader::FireShader()
@@ -50,7 +49,7 @@ void FireShader::Create()
 	BinaryFile GSData = BinaryFile::LoadFile(L"Resources/Shaders/ParticleGS.cso");
 
 	device->CreateInputLayout(&INPUT_LAYOUT[0],
-		INPUT_LAYOUT.size(),
+		static_cast<UINT>(INPUT_LAYOUT.size()),
 		VSData.GetData(), VSData.GetSize(),
 		m_inputLayout.GetAddressOf());
 
@@ -82,9 +81,9 @@ void FireShader::Create()
 	DirectX::CreateWICTextureFromFile(pDR->GetD3DDevice(), name2, nullptr, m_texture2.GetAddressOf());
 
 	// プリミティブバッチの作成
-	m_batch = std::make_unique<PrimitiveBatch<VertexPositionColorTexture>>(pDR->GetD3DDeviceContext());
+	m_batch = std::make_unique<DirectX::PrimitiveBatch<DirectX::VertexPositionColorTexture>>(pDR->GetD3DDeviceContext());
 
-	m_states = std::make_unique<CommonStates>(device);
+	m_states = std::make_unique<DirectX::CommonStates>(device);
 
 	D3D11_BUFFER_DESC bd;
 	ZeroMemory(&bd, sizeof(bd));
@@ -94,7 +93,7 @@ void FireShader::Create()
 	bd.CPUAccessFlags = 0;
 	device->CreateBuffer(&bd, nullptr, &m_CBuffer);
 
-	m_world = Matrix::Identity;
+	m_world = DirectX::SimpleMath::Matrix::Identity;
 
 
 	m_angle = 0.0f;
@@ -122,7 +121,7 @@ void FireShader::SetRenderState(DirectX::SimpleMath::Vector3 camera, DirectX::Si
 	m_proj = proj;
 }
 
-void FireShader::Initialize(float life, Vector3 pos, Vector3 velocity)
+void FireShader::Initialize(float life, DirectX::SimpleMath::Vector3 pos, DirectX::SimpleMath::Vector3 velocity)
 {
 	m_startPosition = pos;
 	m_startVelocity = velocity;
@@ -148,12 +147,12 @@ void FireShader::Initialize(float life, Vector3 pos, Vector3 velocity)
 	if (m_velocity.x > 0)
 	{
 
-		m_gravity = Vector3(0, -0.001f, 0);
+		m_gravity = DirectX::SimpleMath::Vector3(0, -0.001f, 0);
 	}
 	else if (m_velocity.x < 0)
 	{
 
-		m_gravity = Vector3(0, 0.001f, 0);
+		m_gravity = DirectX::SimpleMath::Vector3(0, 0.001f, 0);
 	}
 
 
@@ -176,7 +175,7 @@ void FireShader::Reset()
 //	IN	:	タイマー		DX::StepTimer timer
 //	RE	:	void
 //-----------------------------------------------------------------------------------
-void FireShader::Update(StepTimer timer)
+void FireShader::Update(DX::StepTimer timer)
 {
 	//処理に使う秒速計(1秒で1.0f)を取得する。
 	float time = timer.GetElapsedSeconds();
@@ -188,7 +187,7 @@ void FireShader::Update(StepTimer timer)
 		return;
 	}
 
-	Vector3 vel = Vector3(0.002f, 0, 0);
+	DirectX::SimpleMath::Vector3 vel = DirectX::SimpleMath::Vector3(0.002f, 0, 0);
 
 	//m_velocity += g;
 
@@ -311,18 +310,18 @@ void FireShader::Render()
 	//
 	////m_world = rotmat * m_world;
 	//m_world = scaleMat  * rotmat * m_world;
-	m_world = Matrix::Identity;
+	m_world = DirectX::SimpleMath::Matrix::Identity;
 
-	Matrix wrold = Matrix::Identity;
-	wrold = Matrix::CreateBillboard(m_position + m_offsetPos, m_camera, Vector3::UnitY);
+	DirectX::SimpleMath::Matrix wrold = DirectX::SimpleMath::Matrix::Identity;
+	wrold = DirectX::SimpleMath::Matrix::CreateBillboard(m_position + m_offsetPos, m_camera, DirectX::SimpleMath::Vector3::UnitY);
 
-	Matrix revMat = Matrix::Identity;
+	DirectX::SimpleMath::Matrix revMat = DirectX::SimpleMath::Matrix::Identity;
 	revMat._11 = -1.0f;
 	revMat._33 = -1.0f;
 
-	Matrix scaleMat, rotMat;
-	scaleMat = Matrix::CreateScale(m_scale);
-	rotMat = Matrix::CreateRotationZ(m_angle);
+	DirectX::SimpleMath::Matrix scaleMat, rotMat;
+	scaleMat = DirectX::SimpleMath::Matrix::CreateScale(m_scale);
+	rotMat = DirectX::SimpleMath::Matrix::CreateRotationZ(m_angle);
 
 	m_world = scaleMat * rotMat * revMat * wrold;
 
@@ -341,10 +340,10 @@ void FireShader::ShaderDraw()
 	auto context = pDR->GetD3DDeviceContext();
 
 	// 頂点情報(板ポリゴンの４頂点の座標情報）
-	VertexPositionColorTexture vertex[] =
+	DirectX::VertexPositionColorTexture vertex[] =
 	{
-		VertexPositionColorTexture(Vector3::Zero,Vector4::One, Vector2(0.0f, 0.0f)),
-		VertexPositionColorTexture(Vector3(0.0f,0.3f,0.0f),Vector4::One, Vector2(0.0f, 0.0f))
+		DirectX::VertexPositionColorTexture(DirectX::SimpleMath::Vector3::Zero,DirectX::SimpleMath::Vector4::One, DirectX::SimpleMath::Vector2(0.0f, 0.0f)),
+		DirectX::VertexPositionColorTexture(DirectX::SimpleMath::Vector3(0.0f,0.3f,0.0f),DirectX::SimpleMath::Vector4::One, DirectX::SimpleMath::Vector2(0.0f, 0.0f))
 	};
 
 
@@ -353,7 +352,7 @@ void FireShader::ShaderDraw()
 	cbuff.matView = m_view.Transpose();
 	cbuff.matProj = m_proj.Transpose();
 	cbuff.matWorld = m_world.Transpose();
-	cbuff.Diffuse = Vector4(1.0, 0.3, 0.1, 1);
+	cbuff.Diffuse = DirectX::SimpleMath::Vector4(1.0, 0.3, 0.1, 1);
 	/*Vector3 pos = vx[0].position;
 	cbuff.Diffuse = Vector4(pos.x, pos.y, pos.z, 1);*/
 

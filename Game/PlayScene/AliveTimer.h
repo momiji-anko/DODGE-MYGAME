@@ -1,3 +1,8 @@
+/*
+* 2023/04/26
+* AliveTimer.h
+* 
+*/
 #pragma once
 
 #include <SpriteBatch.h>
@@ -10,23 +15,6 @@
 
 class AliveTimer : public Singleton< AliveTimer>
 {
-
-public:
-	enum class TimeType
-	{
-		COUNTDOWN,
-		NORMAL,
-	};
-private:
-	float m_timer_s;
-
-	// スプライトバッチ
-	std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
-
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_numTexture;
-
-	DirectX::CommonStates* m_commonState;
-
 public:
 	AliveTimer();
 	~AliveTimer();
@@ -44,6 +32,16 @@ public:
 	void Finalize();
 
 	float GetTimer() { return m_timer_s; }
+
+private:
+	float m_timer_s;
+
+	// スプライトバッチ
+	std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
+
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_numTexture;
+
+	DirectX::CommonStates* m_commonState;
 
 
 };

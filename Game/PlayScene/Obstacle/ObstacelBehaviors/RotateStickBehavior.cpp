@@ -16,6 +16,13 @@
 /// <param name="actor">障害物のポインター（this）</param>
 void RotateStickBehavior::Execute(const DX::StepTimer& timer, Actor* actor)
 {
+	UNREFERENCED_PARAMETER(timer);
+
+	//回転速度をだんだん上げる
+	static const float ROT_UP_SPEED = 0.000001f;
+	//カプセルの長さ
+	static const float CAPSULE_LENGTH = 15.0f;
+
 	//座標の取得
 	DirectX::SimpleMath::Vector3 position = actor->GetPosition();
 
@@ -34,7 +41,7 @@ void RotateStickBehavior::Execute(const DX::StepTimer& timer, Actor* actor)
 	//回転速度の取得
 	float speed = obstacle->GetRotSpeed();
 	//回転速度の上げる
-	speed += 0.000001f;
+	speed += ROT_UP_SPEED;
 
 	//角度に回転速度を足す
 	rot.y += speed;
@@ -47,9 +54,8 @@ void RotateStickBehavior::Execute(const DX::StepTimer& timer, Actor* actor)
 	//判定の領域の設定
 	cap->a = DirectX::SimpleMath::Vector3(0.0f, position.y, 0.0f);
 	//現在の角度で計算する
-	cap->b = DirectX::SimpleMath::Vector3(cos(rot.y) * 15, position.y, -sin(rot.y) * 15);
-	//半径
-	cap->r = 1.0f;
+	cap->b = DirectX::SimpleMath::Vector3(cos(rot.y) * CAPSULE_LENGTH, position.y, -sin(rot.y) * CAPSULE_LENGTH);
+
 	actor->SetRotation(rot);
 
 }

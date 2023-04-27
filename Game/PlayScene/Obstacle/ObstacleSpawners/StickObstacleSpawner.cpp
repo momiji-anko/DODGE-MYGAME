@@ -30,15 +30,9 @@ bool StickObstacleSpawner::Create(std::vector< std::unique_ptr<Actor>>& actors, 
 		if (actor->IsActive())
 			continue;
 
-		//障害物型にダイナミックキャストする
-		Obstacle* obstale = dynamic_cast<Obstacle*>(actor.get());
-		//キャスト出来たか
-		if (obstale != nullptr)
-		{
-			//障害物にのタイプ設定
-			obstale->SetType(Obstacle::ObstacleType::STICK);
 
-		}
+		//障害物にのタイプ設定
+		actor->SetTypeInt(static_cast<int>(Obstacle::ObstacleType::STICK));
 
 		//真ん中から出現位置のベクトル作成
 		DirectX::SimpleMath::Vector3 vel = (DirectX::SimpleMath::Vector3::Zero - position);

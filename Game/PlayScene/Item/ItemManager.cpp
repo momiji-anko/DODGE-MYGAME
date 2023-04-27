@@ -13,8 +13,16 @@
 
 //アイテムの最大数
 const int ItemManager::ITEM_MAX_NUM = 30;
+
 //アイテムのスポーンクールタイム
 const float ItemManager::ITEM_SPAWNE_COOL_TIME_S = 15.0f;
+
+//アイテムのスポーン範囲
+const float ItemManager::ITEM_SPAWNE_EREA = 6.0f;
+//アイテムのスポーンする高さ
+const float ItemManager::ITEM_SPAWNE_HEIGHT = 15.0f;
+
+
 
 /// <summary>
 /// コンストラクタ
@@ -44,10 +52,6 @@ ItemManager::~ItemManager()
 /// <param name="commonState">コモンステートの生ポインタ</param>
 void ItemManager::Initialize(DirectX::CommonStates* commonState)
 {
-	//デバイスリソース取得
-	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
-	//デバイスリソースからデバイスコンテキスト取得
-	ID3D11DeviceContext1* context = pDR->GetD3DDeviceContext();
 
 	//コモンステート
 	m_commonState = commonState;
@@ -79,7 +83,7 @@ void ItemManager::Initialize(DirectX::CommonStates* commonState)
 void ItemManager::Update(const DX::StepTimer& timer)
 {
 	//経過時間
-	float elapsedTime = timer.GetElapsedSeconds();
+	float elapsedTime = static_cast<float>(timer.GetElapsedSeconds());
 	//スポーンタイムを経過時間で引く
 	m_spawneTime_s -= elapsedTime;
 
@@ -88,13 +92,16 @@ void ItemManager::Update(const DX::StepTimer& timer)
 	{
 		//スポーンタイムを初期化する
 		m_spawneTime_s = ITEM_SPAWNE_COOL_TIME_S;
+
+		DirectX::SimpleMath::Vector3 createPosition = DirectX::SimpleMath::Vector3(MyRandom::GetFloatRange(-ITEM_SPAWNE_EREA, ITEM_SPAWNE_EREA), ITEM_SPAWNE_HEIGHT, MyRandom::GetFloatRange(-ITEM_SPAWNE_EREA, ITEM_SPAWNE_EREA));
+
 		//アイテムを生成する
-		CreateItem(DirectX::SimpleMath::Vector3(MyRandom::GetFloatRange(-7.0f, 6.0f), 15.0f, MyRandom::GetFloatRange(-7.0f, 7.0f)), Item::ItemType::SHIELD_ITEM, DirectX::SimpleMath::Vector3::Zero);
+		CreateItem(createPosition, Item::ItemType::SHIELD_ITEM, DirectX::SimpleMath::Vector3(0.0f, DirectX::XM_PI, 0.0f));
 	
 	}
 
 	//アイテムの更新
-	for (std::unique_ptr<Actor>& item : m_items)
+	for (std::unique_ptr<Actor>&item : m_items)
 	{
 		//アクティブ状態でなければ更新しない
 		if (item->IsActive() == false) 
@@ -118,7 +125,7 @@ void ItemManager::Update(const DX::StepTimer& timer)
 void ItemManager::Draw(Camera* camera)
 {
 	//アイテムの描画
-	for (std::unique_ptr<Actor>& item : m_items)
+	for (std::unique_ptr<Actor>&item : m_items)
 	{
 		//アクティブ状態でなければ描画しない
 		if (item->IsActive() == false)
@@ -149,7 +156,7 @@ void ItemManager::Finalize()
 Item::ItemType ItemManager::PlayerHitItemType(AABBFor3D* player)
 {
 	//プレイヤーとアイテム当たり判定
-	for (std::unique_ptr<Actor>& item : m_items)
+	for (std::unique_ptr<Actor>&item : m_items)
 	{
 		//アイテムがアクティブ状態でなければ判定しない
 		if (item->IsActive() == false)
@@ -160,19 +167,14 @@ Item::ItemType ItemManager::PlayerHitItemType(AABBFor3D* player)
 		//プレイヤーとアイテムが当たっていれば当たっているアイテムタイプを返す
 		if (item->GetAABB()->HitCheck(player))
 		{
-			//ActorからItemにダイナミックキャスト
-			Item* i = dynamic_cast<Item*>(item.get());
-			//NULLチェック
-			if (i != nullptr)
-			{
-				//当たったアイテムタイプの取得
-				Item::ItemType hitItemType = i->GetItemType();
-				//アイテムのリセットをし、アイテムを消す
-				i->Reset();
-				//当たっているアイテムタイプを返す
-				return hitItemType;
+			//当たったアイテムタイプの取得
+			Item::ItemType hitItemType = static_cast<Item::ItemType>(item->GetTypeInt());
+			//アイテムのリセットをし、アイテムを消す
+			item->Reset();
+			//当たっているアイテムタイプを返す
+			return hitItemType;
 
-			}
+			
 		}	
 	}
 
@@ -190,7 +192,7 @@ Item::ItemType ItemManager::PlayerHitItemType(AABBFor3D* player)
 void ItemManager::Shadow(ShadowMap* shadowMap, DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix projection)
 {
 	//影の生成する
-	for (std::unique_ptr<Actor>& item : m_items)
+	for (std::unique_ptr<Actor>&item : m_items)
 	{
 		//アクティブ状態でなければ生成しない
 		if (item->IsActive() == false)
@@ -213,6 +215,7 @@ void ItemManager::Shadow(ShadowMap* shadowMap, DirectX::SimpleMath::Matrix view,
 /// <returns>true = 生成成功、false = 生成失敗</returns>
 bool ItemManager::CreateItem(const DirectX::SimpleMath::Vector3& position, Item::ItemType type, DirectX::SimpleMath::Vector3 rot)
 {
+
 	//アイテムの生成
 	return m_spawners[type]->Create(m_items, position, rot, nullptr, m_pModel[type], m_commonState);
 }
@@ -223,7 +226,7 @@ bool ItemManager::CreateItem(const DirectX::SimpleMath::Vector3& position, Item:
 void ItemManager::ItemToStageCheckHit()
 {
 	//ステージとアイテムが当たっているか判定を行う
-	for (std::unique_ptr<Actor>& item : m_items)
+	for (std::unique_ptr<Actor>&item : m_items)
 	{
 		//アクティブ状態でなければ判定しない
 		if (item->IsActive() == false)
@@ -231,15 +234,16 @@ void ItemManager::ItemToStageCheckHit()
 			continue;
 		}
 
-		//ActorからItemにダイナミックキャスト
+		//Itemにキャスト
 		Item* i = dynamic_cast<Item*>(item.get());
 		//NULLチェック
 		if (i != nullptr)
 		{
 			//アイテムとステージが当たっているか判定
-			bool isHit = m_stageManeger->ItemHitCheck(item.get());
+			bool isHit = m_stageManeger->StageToActorHitCheck(item.get());
 			//結果をアイテムに設定する
 			i->SetStageHit(isHit);
+
 		}
 
 	}

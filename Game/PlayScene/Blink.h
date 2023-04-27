@@ -11,37 +11,13 @@
 /// </summary>
 class Blink
 {
-private:
-	//ブリンクタイム
-	float m_blinkTime_s;
-	//点滅する速さ
-	float m_blinkSpeed;
-
-	//点滅速度をだんだん早くするか
-	bool m_isGettingFaster;
-
-	//点滅するかどうか
-	bool m_isBlink;
-
-	//初期ブリンクタイム
-	float m_startBlinkTime_s;
-	//初期ブリンクスピード
-	float m_startBlinkSpeed;
-
-	int m_blinkCount;
-
-	int m_startBlinkCount;
-
-	int m_blinkedCount;
-	float m_blinkTimeFast;
-	bool m_isDraw;
 public:
 	/// <summary>
 	/// 点滅するか設定
 	/// </summary>
 	/// <param name="flag">true = 点滅する　false = 点滅しない</param>
 	void SetBlinkFlag(bool flag) { m_isBlink = flag; }
-	
+
 	/// <summary>
 	/// 点滅状態取得
 	/// </summary>
@@ -56,7 +32,10 @@ public:
 	/// <summary>
 	/// 点滅を止める
 	/// </summary>
-	void End() { m_isBlink = false; }
+	void Stop() { m_isBlink = false; }
+
+
+public:
 
 	/// <summary>
 	/// コンストラクタ
@@ -99,4 +78,30 @@ private:
 	/// 点滅のついた瞬間の処理
 	/// </summary>
 	void BlinkedCheck();
+
+private:
+	//ブリンクタイム
+	float m_blinkTime_s;
+	//点滅する速さ
+	float m_blinkSpeed;
+
+	//点滅速度をだんだん早くするか
+	bool m_isGettingFaster;
+
+	//点滅するかどうか
+	bool m_isBlink;
+
+	//初期ブリンクタイム
+	float m_startBlinkTime_s;
+	//初期ブリンクスピード
+	float m_startBlinkSpeed;
+
+	int m_blinkCount;
+
+	int m_startBlinkCount;
+
+	int m_blinkedCount;
+	float m_blinkTimeFast;
+	bool m_isDraw;
+
 };

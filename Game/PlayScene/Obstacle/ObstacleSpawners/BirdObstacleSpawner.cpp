@@ -25,6 +25,10 @@ bool BirdObstacleSpawner::Create(std::vector<std::unique_ptr<Actor>>& actors, co
 {
 	//スポーンカウント
 	int spawnCount = 0;
+
+	//鳥同士の距離
+	static const float BIRD_TO_BIRD_DISTANCE = 4.0f;
+
 	//６体生成する
 	for (int i = 0; i < 6; i++)
 	{
@@ -34,15 +38,10 @@ bool BirdObstacleSpawner::Create(std::vector<std::unique_ptr<Actor>>& actors, co
 			if (actor->IsActive())
 				continue;
 
-			//障害物型にダイナミックキャストする
-			Obstacle* obstale = dynamic_cast<Obstacle*>(actor.get());
-			//キャスト出来たか
-			if (obstale != nullptr)
-			{
-				//障害物にのタイプ設定
-				obstale->SetType(Obstacle::ObstacleType::BIRD);
-
-			}
+		
+			//障害物にのタイプ設定
+			actor->SetTypeInt(static_cast<int>(Obstacle::ObstacleType::BIRD));
+			
 			//移動ベクトル
 			DirectX::SimpleMath::Vector3 velocity = DirectX::SimpleMath::Vector3(-10.0f, 0.0f, 0.0f);
 
@@ -56,30 +55,26 @@ bool BirdObstacleSpawner::Create(std::vector<std::unique_ptr<Actor>>& actors, co
 			//1体づつのポジションの計算
 			DirectX::SimpleMath::Vector3 pos;
 			pos = position;
+
+			//一列になる用の補正
+			int correction = 2;
+
 			//xが０であれば横一列になるようにする
 			if (pos.x == 0.0f)
 			{
-				pos.x = (i - 2) * 4.0f;
+				pos.x = (i - correction) * BIRD_TO_BIRD_DISTANCE;
 			}
 			//ｚが０であれば縦一列になるようにする
 			if (pos.z == 0.0f)
 			{
-				pos.z = (i - 2) * 4.0f;
+				pos.z = (i - correction) * BIRD_TO_BIRD_DISTANCE;
 			}
 			//スケール
-			DirectX::SimpleMath::Vector3 scale = DirectX::SimpleMath::Vector3(0.005f, 0.005f, 0.005f);
+			DirectX::SimpleMath::Vector3 scale = DirectX::SimpleMath::Vector3::One;
 
 
 			//障害物の初期化
 			actor->Initialize(velocity, pos, scale, rotation, true, behavior, model, commonState);
-
-			DirectX::SimpleMath::Quaternion rotation;
-
-			rotation = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitY, rotation.y + DirectX::XM_PI);
-			
-			//角度の設定
-			actor->SetRotation(rotation);
-
 
 			//障害物の生成に成功
 			spawnCount++;

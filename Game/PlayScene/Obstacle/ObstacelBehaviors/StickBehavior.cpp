@@ -28,19 +28,28 @@ void StickBehavior::Execute(const DX::StepTimer& timer, Actor* actor)
 	
 	float rot = std::floor(angle);
 
+	DirectX::SimpleMath::Vector3 AABBArea;
+
 	//Šp“x‚É‚æ‚Á‚Ä“–‚½‚è”»’è‚Ì—Ìˆæ‚ÌÝ’è
  	//0 OR 180‚Å‚ ‚ê‚Î
 	if (rot == 0.0f || rot == std::floor(DirectX::XM_PI))
 	{
-		aabb->SetData(DirectX::SimpleMath::Vector3(position.x - 0.5f, position.y - 0.0f, position.z - 12.0f), DirectX::SimpleMath::Vector3(position.x + 0.5f, position.y + 1.5f, position.z + 12.0f));	
+		AABBArea = DirectX::SimpleMath::Vector3(0.5f, 0.3f, 12.0f);
+
+		aabb->SetData(position - AABBArea, position + AABBArea);
 	}
 	//90 OR 270‚Å‚ ‚ê‚Î
 	else if (rot == std::floor((DirectX::XM_PI / 2.0f)) || rot == std::floor((DirectX::XM_PI + (DirectX::XM_PI / 2.0f))))
 	{
-		aabb->SetData(DirectX::SimpleMath::Vector3(position.x - 12.0f, position.y - 0.0f, position.z - 0.4f), DirectX::SimpleMath::Vector3(position.x + 12.0f, position.y + 1.0f, position.z + 0.4f));
+		AABBArea = DirectX::SimpleMath::Vector3(12.0f, 0.3f, 0.5f);
+
+		aabb->SetData(position - AABBArea, position + AABBArea);
 	}
 
+	//Œo‰ßŽžŠÔ
+	float elapsedTime_s = static_cast<float>(timer.GetElapsedSeconds());
+
 	//ˆÚ“®‚·‚é
-	actor->SetPosition(position + (velocity * timer.GetElapsedSeconds()));
+	actor->SetPosition(position + (velocity * elapsedTime_s));
 
 }

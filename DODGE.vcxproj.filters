@@ -267,8 +267,8 @@
     <ClInclude Include="Game\PlayScene\Stage\StageBehaviors\RotationCubeBehavior.h">
       <Filter>Game\PlayScene\Stage\StageBehaviors</Filter>
     </ClInclude>
-    <ClInclude Include="IActor.h">
-      <Filter>Game\PlayScene\Actor</Filter>
+    <ClInclude Include="Game\PlayScene\Stage\StageBehaviors\NormalFloorBehavior.h">
+      <Filter>Game\PlayScene\Stage\StageBehaviors</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -428,8 +428,8 @@
     <ClCompile Include="Game\PlayScene\Stage\StageBehaviors\RotationCubeBehavior.cpp">
       <Filter>Game\PlayScene\Stage\StageBehaviors</Filter>
     </ClCompile>
-    <ClCompile Include="IActor.cpp">
-      <Filter>Game\PlayScene\Actor</Filter>
+    <ClCompile Include="Game\PlayScene\Stage\StageBehaviors\NormalFloorBehavior.cpp">
+      <Filter>Game\PlayScene\Stage\StageBehaviors</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

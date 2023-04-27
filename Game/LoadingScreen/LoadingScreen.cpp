@@ -10,8 +10,7 @@
 #include "../IScene.h"
 
 #include <WICTextureLoader.h>
-
-using namespace DirectX;
+#include"Libraries/MyLibraries/TextureManager.h"
 
 
 /*--------------------------------------------------
@@ -55,25 +54,18 @@ void LoadingScreen::Initialize(IScene* targetScene)
 	// スプライトバッチ::デバッグ情報の表示に必要
 	m_spriteBatch = std::make_unique<DirectX::SpriteBatch>(context);
 	m_spriteFont = std::make_unique<DirectX::SpriteFont>(device, L"Resources/Fonts/SegoeUI_18.spritefont");
-	// テクスチャの読み込み
-	DirectX::CreateWICTextureFromFile(
-		device,
-		L"Resources/Textures/nowLoading.png",
-		nullptr,
-		m_texture.ReleaseAndGetAddressOf()
-	);
+	
+	TextureManager& textureManager = TextureManager::GetInstance();
 
 	// テクスチャの読み込み
-	CreateWICTextureFromFile(
-		device,
-		L"Resources/Textures/black.png",
-		nullptr,
-		m_blackTexture.ReleaseAndGetAddressOf()
-	);
+	m_texture = textureManager.LoadTexture(L"Resources/Textures/nowLoading.png");
+
+	// テクスチャの読み込み
+	m_blackTexture = textureManager.LoadTexture(L"Resources/Textures/black.png");
 
 	RECT rect = pDR->GetOutputSize();
 
-	m_texPosition = DirectX::SimpleMath::Vector2(rect.right, rect.bottom - 120);
+	m_texPosition = DirectX::SimpleMath::Vector2(static_cast<float>(rect.right), static_cast<float>(rect.bottom) - 120.0f);
 
 	m_texturePositions.resize(10);
 
@@ -107,13 +99,13 @@ void LoadingScreen::Update(const DX::StepTimer& timer)
 --------------------------------------------------*/
 void LoadingScreen::Draw()
 {
-	m_spriteBatch->Begin(SpriteSortMode_Deferred, m_commonState->NonPremultiplied());
+	m_spriteBatch->Begin(DirectX::SpriteSortMode_Deferred, m_commonState->NonPremultiplied());
 
 	m_spriteFont->DrawString(m_spriteBatch.get(), L"Load Screen", DirectX::XMFLOAT2(10, 10));
-	SimpleMath::Vector2 blackTexture(0, 0);
+	DirectX::SimpleMath::Vector2 blackTexture(0, 0);
 	m_spriteBatch->Draw(m_blackTexture.Get(), blackTexture, nullptr, DirectX::SimpleMath::Vector4::One, 0.0f, DirectX::SimpleMath::Vector2::Zero);
-	SimpleMath::Vector2 pos(640 - 128, 360 - 128);
-	//m_spriteBatch->Draw(m_texture.Get(), m_texPosition);
+	DirectX::SimpleMath::Vector2 pos(640 - 128, 360 - 128);
+	
 
 	for (DirectX::SimpleMath::Vector2& texPos : m_texturePositions)
 	{

@@ -4,7 +4,6 @@
 
 #pragma comment(lib, "d3dcompiler.lib")
 
-using namespace DirectX;
 
 ShadowMap::ShadowMap()
 	: m_Path{}
@@ -36,7 +35,7 @@ void ShadowMap::Initialize(ID3D11Device* device, const wchar_t* path)
 	// 入力レイアウトの作成
 	DX::ThrowIfFailed(
 		device->CreateInputLayout(
-			VertexPositionNormalTangentColorTexture::InputElements, VertexPositionNormalTangentColorTexture::InputElementCount,
+			DirectX::VertexPositionNormalTangentColorTexture::InputElements, DirectX::VertexPositionNormalTangentColorTexture::InputElementCount,
 			m_vsBlob->GetBufferPointer(), m_vsBlob->GetBufferSize(),
 			m_inputLayout.GetAddressOf()
 		)

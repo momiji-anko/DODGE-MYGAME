@@ -12,15 +12,13 @@
 #include<Keyboard.h>
 #include"DeviceResources.h"
 
-using namespace DX;
-using namespace DirectX;
-using namespace DirectX::SimpleMath;
+
 
 const std::vector<D3D11_INPUT_ELEMENT_DESC> Fade::INPUT_LAYOUT =
 {
 	{ "POSITION",	0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-	{ "COLOR",		0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, sizeof(Vector3), D3D11_INPUT_PER_VERTEX_DATA, 0 },
-	{ "TEXCOORD",	0, DXGI_FORMAT_R32G32_FLOAT, 0, sizeof(Vector3) + sizeof(Vector4), D3D11_INPUT_PER_VERTEX_DATA, 0 },
+	{ "COLOR",		0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, sizeof(DirectX::SimpleMath::Vector3), D3D11_INPUT_PER_VERTEX_DATA, 0 },
+	{ "TEXCOORD",	0, DXGI_FORMAT_R32G32_FLOAT, 0, sizeof(DirectX::SimpleMath::Vector3) + sizeof(DirectX::SimpleMath::Vector4), D3D11_INPUT_PER_VERTEX_DATA, 0 },
 };
 
 Fade::Fade()
@@ -51,7 +49,7 @@ void Fade::Create()
 	BinaryFile GSData = BinaryFile::LoadFile(L"Resources/Shaders/FadeGS.cso");
 
 	device->CreateInputLayout(&INPUT_LAYOUT[0],
-		INPUT_LAYOUT.size(),
+		static_cast<UINT>(INPUT_LAYOUT.size()),
 		VSData.GetData(), VSData.GetSize(),
 		m_inputLayout.GetAddressOf()
 	);
@@ -88,9 +86,9 @@ void Fade::Create()
 	DirectX::CreateWICTextureFromFile(pDR->GetD3DDevice(), name3, nullptr, m_texture3.GetAddressOf());
 
 	// プリミティブバッチの作成
-	m_batch = std::make_unique<PrimitiveBatch<VertexPositionColorTexture>>(pDR->GetD3DDeviceContext());
+	m_batch = std::make_unique<DirectX::PrimitiveBatch<DirectX::VertexPositionColorTexture>>(pDR->GetD3DDeviceContext());
 
-	m_states = std::make_unique<CommonStates>(device);
+	m_states = std::make_unique<DirectX::CommonStates>(device);
 
 	D3D11_BUFFER_DESC bd;
 	ZeroMemory(&bd, sizeof(bd));
@@ -120,11 +118,11 @@ void Fade::SetRenderState(DirectX::SimpleMath::Vector3 camera, DirectX::SimpleMa
 	m_view = view;
 	m_proj = proj;
 
-	m_billboardTranslation = Matrix::CreateBillboard(m_centerPosition, camera, Vector3::UnitY);
+	m_billboardTranslation = DirectX::SimpleMath::Matrix::CreateBillboard(m_centerPosition, camera, DirectX::SimpleMath::Vector3::UnitY);
 
 	//ビルボードの計算で裏返るので補正
 	//Y軸で180度回転する行列
-	Matrix rev = Matrix::Identity;
+	DirectX::SimpleMath::Matrix rev = DirectX::SimpleMath::Matrix::Identity;
 	rev._11 = -1;
 	rev._33 = -1;
 
@@ -132,7 +130,7 @@ void Fade::SetRenderState(DirectX::SimpleMath::Vector3 camera, DirectX::SimpleMa
 	m_billboardTranslation = rev * m_billboardTranslation;
 }
 
-void Fade::Initialize(Vector3 pos, float fade)
+void Fade::Initialize(DirectX::SimpleMath::Vector3 pos, float fade)
 {
 	m_centerPosition = pos;
 	m_fadeTime_s = fade;
@@ -145,7 +143,7 @@ void Fade::Initialize(Vector3 pos, float fade)
 //	IN	:	タイマー		DX::StepTimer timer
 //	RE	:	void
 //-----------------------------------------------------------------------------------
-void Fade::Update(StepTimer timer)
+void Fade::Update(DX::StepTimer timer)
 {
 	m_timer = timer;
 	float elapsedTime = timer.GetElapsedSeconds();
@@ -190,7 +188,7 @@ void Fade::Render()
 	//m_model->Draw(pDR->GetD3DDeviceContext(),*m_states, Matrix::CreateRotationZ(rot), m_view, m_proj);
 
 	//全画面エフェクト
-	Matrix  mat = Matrix::Identity;
+	DirectX::SimpleMath::Matrix  mat = DirectX::SimpleMath::Matrix::Identity;
 	Draw(mat, mat, mat);
 
 	//板ポリゴンエフェクト
@@ -209,9 +207,9 @@ void Fade::Draw(DirectX::SimpleMath::Matrix world, DirectX::SimpleMath::Matrix v
 	ID3D11DeviceContext1* context = pDR->GetD3DDeviceContext();
 
 	// 頂点情報(板ポリゴンの頂点の座標情報）
-	VertexPositionColorTexture vertex[1] =
+	DirectX::VertexPositionColorTexture vertex[1] =
 	{
-		VertexPositionColorTexture(Vector3(0.0f, 0.0f, 0.0f),Vector4::One, Vector2(0.0f, 0.0f)),
+		DirectX::VertexPositionColorTexture(DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f),DirectX::SimpleMath::Vector4::One, DirectX::SimpleMath::Vector2(0.0f, 0.0f)),
 	};
 
 	//シェーダーに渡す追加のバッファを作成する。(ConstBuffer）
@@ -223,7 +221,7 @@ void Fade::Draw(DirectX::SimpleMath::Matrix world, DirectX::SimpleMath::Matrix v
 	
 	//cbuff.Time = Vector4((float)m_timer.GetTotalSeconds(), (float)m_timer.GetElapsedSeconds(), Mouse::Get().GetState().x / 800.0f, Mouse::Get().GetState().y / 600.0f);
 	
-	cbuff.Time = Vector4((float)m_timer.GetTotalSeconds(), m_fadeTime_s, Mouse::Get().GetState().x / 800.0f, Mouse::Get().GetState().y / 600.0f);
+	cbuff.Time = DirectX::SimpleMath::Vector4((float)m_timer.GetTotalSeconds(), m_fadeTime_s, DirectX::Mouse::Get().GetState().x / 800.0f, DirectX::Mouse::Get().GetState().y / 600.0f);
 	
 	
 	//受け渡し用バッファの内容更新(ConstBufferからID3D11Bufferへの変換）
@@ -334,7 +332,7 @@ void Fade::RenderModel()
 	rot += 0.1f;
 
 	//モデルを描画
-	m_model->Draw(pDR->GetD3DDeviceContext(), *m_states, Matrix::CreateRotationZ(rot), m_view, m_proj);
+	m_model->Draw(pDR->GetD3DDeviceContext(), *m_states, DirectX::SimpleMath::Matrix::CreateRotationZ(rot), m_view, m_proj);
 
 	//描画した画面をm_srvに保存
 	HRESULT hr = pDR->GetD3DDevice()->CreateShaderResourceView(

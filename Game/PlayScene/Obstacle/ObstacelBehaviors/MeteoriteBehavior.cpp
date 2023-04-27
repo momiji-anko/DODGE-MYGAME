@@ -27,11 +27,16 @@ void MeteoriteBehavior::Execute(const DX::StepTimer& timer, Actor* actor)
 		actor->SetActive(false);
 	}
 
-	//“–‚½‚è”»’èAABBŽæ“¾
-	AABBFor3D* aabb = actor->GetAABB();
+	//“–‚½‚è”»’è‚Ì—Ìˆæ
+	DirectX::SimpleMath::Vector3 AABBArea{ 0.3f,0.5f,0.3f };
+
+
 	//“–‚½‚è”»’è‚Ì—ÌˆæÝ’è
-	actor->GetAABB()->SetData(DirectX::SimpleMath::Vector3(position.x - 0.3f, position.y - 0.5f, position.z - 0.3f), DirectX::SimpleMath::Vector3(position.x + 0.3f, position.y + 0.5f, position.z + 0.3f));
+	actor->GetAABB()->SetData(position - AABBArea, position + AABBArea);
 	
+	//Œo‰ßŽžŠÔ
+	float elapsedTime_s = static_cast<float>(timer.GetElapsedSeconds());
+
 	//ˆÚ“®‚·‚é
-	actor->SetPosition(position + (velocity * timer.GetElapsedSeconds()));
+	actor->SetPosition(position + (velocity * elapsedTime_s));
 }

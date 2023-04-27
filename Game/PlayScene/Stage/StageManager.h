@@ -1,3 +1,9 @@
+/*
+* 2023/04/26
+* StageManager.h
+* ステージマネージャー
+* 麻生　楓
+*/
 #pragma once
 #include"Stage.h"
 #include"Game/GameMain.h"
@@ -12,103 +18,62 @@
 
 #include"Libraries/Json/json.hpp"
 
+
+/// <summary>
+/// ステージマネージャー
+/// </summary>
 class StageManager
 {
 public:
+	//前方宣言
+	enum class StageSelect;
 
-	enum class StageSelect
-	{
-		Stage1,
-		Stage2,
-		Stage3
-	};
-
-private:
-
-	DirectX::Model*                             m_stageModel;
-
-	std::vector<DirectX::SimpleMath::Vector3>   m_stagePositions;
-
-	std::vector<std::unique_ptr<Stage>>         m_stage;
-
-	DirectX::CommonStates*                      m_commonState;
-	
-	StageSelect                                 m_stageSelect;
-
-	std::vector<std::string>                    m_stageData;
-
-	std::vector<DirectX::SimpleMath::Vector3>   m_baseVertices;
-	std::vector<DirectX::SimpleMath::Vector3>   m_nowVertices;
-	std::vector<std::vector<int>>               m_indices;
-
-	std::vector<int>                            m_stageType;
-	
-	std::vector<std::unique_ptr<IBehavior>>     m_behavior;
-
+	/// <summary>
+	/// ステージにシャドウマップを渡す
+	/// </summary>
+	/// <param name="shadow">シャドウマップの生ポインタ</param>
+	void SetShadowMap(ShadowMap* shadow);
 public:
-
+	/// <summary>
+	/// コンストラクタ
+	/// </summary>
 	StageManager();
+	/// <summary>
+	/// デストラクタ
+	/// </summary>
 	~StageManager();
 
-	// 初期化
+	/// <summary>
+	/// 初期化
+	/// </summary>
+	/// <param name="commonState">コモンステートの生ポインタ</param>
+	/// <param name="stage">ステージ選択</param>
 	void Initialize(DirectX::CommonStates* commonState, StageSelect stage = StageSelect::Stage1);
 
-	// 更新
+	/// <summary>
+	/// 更新
+	/// </summary>
+	/// <param name="timer">タイマー</param>
 	void Update(const DX::StepTimer& timer);
 
-	// 描画
+	/// <summary>
+	/// 描画
+	/// </summary>
+	/// <param name="camera">カメラの生ポインタ</param>
 	void Draw(Camera* camera);
 
-	// 終了処理
+	/// <summary>
+	/// 終了処理
+	/// </summary>
 	void Finalize();
 
-	bool PlayerStageAABBHitCheck(Actor* player);
-	bool ItemHitCheck(Actor* item);
+	/// <summary>
+	/// ステージとアクターの当たり判定
+	/// </summary>
+	/// <param name="actor">アクター</param>
+	/// <returns>true=当たっている　false=当っていない</returns>
+	bool StageToActorHitCheck(Actor* actor);
 
-	void SetShadow(ShadowMap* shadow);
-
-
-
-
-	// 点 c と線分 ab の間の距離の平方（2 乗した値）を返す関数
-	// a: 線分の始点
-	// b: 線分の終点
-	// c: 点
-	// 返り値: 点 c と線分 ab の間の距離の平方
-	float SqDistPointSegment(DirectX::SimpleMath::Vector3 a, DirectX::SimpleMath::Vector3 b, DirectX::SimpleMath::Vector3 c)
-	{
-		DirectX::SimpleMath::Vector3 ab = b - a; // ベクトル ab を算出
-		DirectX::SimpleMath::Vector3 ac = c - a; // ベクトル ac を算出
-		DirectX::SimpleMath::Vector3 bc = c - b; // ベクトル bc を算出
-		// ベクトル ac とベクトル ab の内積を計算
-		float e = ac.Dot(ab);
-		if (e <= 0.0f)
-		{
-			// c を射影した点が a 側へ外れているので、a と c の距離を返す
-			return ac.Dot(ac);
-		}
-		// ab 同士の内積を計算する
-		float f = ab.Dot(ab);
-		if (e >= f)
-		{
-			// c を射影した点が b 側へ外れているので、b と c の距離を返す
-			return bc.Dot(bc);
-		}
-		// c と c を射影した ab 上の点との距離を返す
-		return ac.Dot(ac) - e * e / f;
-	}
-
-
-	// 球とカプセルの衝突判定関数
-	bool HitCheck_Sphere2Capsule(Sphere sphere, Capsule capsule)
-	{
-		// 球の中心とカプセルの中心の線分との距離の平方を計算
-		float dist2 = SqDistPointSegment(capsule.a, capsule.b, sphere.c);
-		// 球の半径とカプセルの半径の合計を算出
-		float radius = sphere.r + capsule.r;
-		// dist2 が radius の 2 乗の結果以下となっていれば、当たっている
-		return dist2 <= radius * radius;
-	}
 
 	/// <summary>
 	/// 線分と板ポリゴンの当たり判定
@@ -118,11 +83,13 @@ public:
 	/// <param name="normalVector">法線ベクトルのポインタ</param>
 	/// <returns>true=当たっている　false=当っていない</returns>
 	bool StageHitCheck(std::vector<DirectX::SimpleMath::Vector3> vertices, std::vector<DirectX::SimpleMath::Vector3> linePos, DirectX::SimpleMath::Vector3* normalVector);
-	private:
+private:
 
+	/// <summary>
+	/// ビヘイビアー作成
+	/// </summary>
 	void CreateBehavior();
 
-	void UpdateVertices();
 
 	/// <summary>
 	/// ステージjsonを読み込み
@@ -137,6 +104,48 @@ public:
 	/// <returns>ワイド文字列</returns>
 	std::wstring ConvertWString(const std::string& str);
 
+
+	/// <summary>
+	/// ステージが行動を終了しているか確認
+	/// </summary>
 	void CheckStageMoveEnd();
+
+	/// <summary>
+	/// ステージのポリゴンとアクターのめり込み処理
+	/// </summary>
+	/// <param name="actor">アクター/param>
+	/// <param name="polygonVertexPos">ポリゴンの頂点座標</param>
+	/// <param name="normalVec">法線ベクトル</param>
+	void ActorPolygonPenetration(Actor* actor, std::vector<DirectX::SimpleMath::Vector3> polygonVertexPos, DirectX::SimpleMath::Vector3 normalVec);
+
+
+	/// <summary>
+	/// アクターのスライドベクトルを計算する
+	/// </summary>
+	/// <param name="normalVec">ポリゴンの法線ベクトル</param>
+	/// <param name="actorVel">アクターの移動量</param>
+	/// <returns>スライドベクトル</returns>
+	DirectX::SimpleMath::Vector3 SlideVecCalculation(DirectX::SimpleMath::Vector3 normalVec, DirectX::SimpleMath::Vector3 actorVel);
+
+public:
+	//ステージ選択
+	enum class StageSelect
+	{
+		//ステージ１
+		Stage1,
+		//ステージ２
+		Stage2,
+		//ステージ３
+		Stage3
+	};
+
+private:
+	//ステージ配列
+	std::vector<std::unique_ptr<Stage>>         m_stage;
+	//コモンステートの生ポインタ
+	DirectX::CommonStates*                      m_commonState;
+	//ステージビヘイビアー
+	std::vector<std::unique_ptr<IBehavior>>     m_behavior;
+
 
 };

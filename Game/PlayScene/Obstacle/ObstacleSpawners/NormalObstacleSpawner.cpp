@@ -22,6 +22,7 @@
 /// <returns>true=生成成功　false=生成失敗</returns>
 bool NormalObstacleSpawner::Create(std::vector< std::unique_ptr<Actor>>& actors, const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Vector3& rotation, IBehavior* behavior, DirectX::Model* model, DirectX::CommonStates* commonState)
 {
+
 	static const float SPEED = 4.0f;
 
 	for (std::unique_ptr<Actor>& actor : actors)
@@ -30,17 +31,18 @@ bool NormalObstacleSpawner::Create(std::vector< std::unique_ptr<Actor>>& actors,
 		if (actor->IsActive())
 			continue;
 
-
-		Obstacle* obstale = dynamic_cast<Obstacle*>(actor.get());
-		if (obstale != nullptr)
-		{
-			obstale->SetType(Obstacle::ObstacleType::NORMAL);
-
-		}
-		//角度から移動方向を決める
+		//移動ベロシティ
 		DirectX::SimpleMath::Vector3 velocity;
-		velocity.x = -sin(rotation.y) * SPEED;
-		velocity.z = cos(rotation.y) * SPEED;
+
+		velocity = actor->GetPlayerPosition() - position;
+
+		velocity.Normalize();
+		
+		//障害物にのタイプ設定
+		actor->SetTypeInt(static_cast<int>(Obstacle::ObstacleType::NORMAL));
+
+		velocity *= SPEED;
+		
 
 		//スケール
 		DirectX::SimpleMath::Vector3 scale = DirectX::SimpleMath::Vector3::One;

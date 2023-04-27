@@ -14,22 +14,38 @@
 #include<string>
 #include"Game/PlayScene/AliveTimer.h"
 #include"Libraries/MyLibraries/TextureManager.h"
-using namespace DirectX;
+
+//カメラの回転速度
+const float ResultScene::CAMERA_ROT_SPEED = 0.001f;
+//アルファの最大値
+const float ResultScene::ALPHA_MAX_NUM = 1.0f;
+//アルファの最小値
+const float ResultScene::ALPHA_MIN_NUM = 0.0f;
 
 /*--------------------------------------------------
 コンストラクタ
 --------------------------------------------------*/
-ResultScene::ResultScene():
-	m_fade(1.0f),
-	m_flag(false),
-	m_flagFadeIn(false),
+ResultScene::ResultScene()
+	:
+	m_pAdx2(nullptr),
+	m_musicID(0),
+	m_commonState(nullptr),
+	m_spriteBatch(nullptr),
+	m_spriteFont(nullptr),
+	m_fadeInOut(nullptr),
+	m_numTexture{},
+	m_pushTexture{},
+	m_rankTexture{},
+	m_aliveTimeTexture{},
+	m_resultTexture{},
+	m_rankStringTexture{},
 	m_alpha(1.0f),
-	m_alphaVel(0.01f),
+	m_alphaSpeed(-0.01f),
+	m_aliveTime(0.0f),
 	m_rank(RANK::NONE),
-	m_resultTime_s(0.0f),
-	m_rankPos{},
+	m_stageManeger(nullptr),
 	m_cameraRot(0.0f),
-	m_scene(ResultState::TIME)
+	m_stageNum(StageManager::StageSelect::Stage1)
 {
 }
 
@@ -38,6 +54,7 @@ ResultScene::ResultScene():
 --------------------------------------------------*/
 ResultScene::~ResultScene()
 {
+	//Adxの終了処理
 	m_pAdx2->Finalize();
 }
 
@@ -46,48 +63,33 @@ ResultScene::~ResultScene()
 --------------------------------------------------*/
 void ResultScene::Initialize()
 {
+	//Adx取得
 	m_pAdx2 = &ADX2::GetInstance();
-
+	//Adxの初期化
 	m_pAdx2->Initialize("Resources/Sounds/DODGESound.acf",
 		"Resources/Sounds/CueSheet_0.acb");
-
+	//BGMを流す
 	m_musicID = m_pAdx2->Play(CRI_CUESHEET_0_RESULT);
+
+	//アライブタイムの取得
 	AliveTimer* aliveTime = &AliveTimer::GetInstance();
-	m_time = aliveTime->GetTimer();
-	if (m_time <= 35)
-	{
+	//タイムの取得
+	m_aliveTime = aliveTime->GetTimer();
 
-		m_rank = RANK::D;
-	}
-	else if (m_time <= 60)
-	{
+	//タイムによってランクを決める
+	m_rank = RankDecide(m_aliveTime);
 
-		m_rank = RANK::C;
-	}
-	else if (m_time <= 90)
-	{
 
-		m_rank = RANK::B;
-	}
-	else if (m_time <= 150)
-	{
-
-		m_rank = RANK::A;
-	}
-	else 
-	{
-
-		m_rank = RANK::S;
-	}
-
-	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
-
+	//ステージマネージャーの作成
 	m_stageManeger = std::make_unique<StageManager>();
-	m_stageManeger->Initialize(m_commonState.get(), StageManager::StageSelect::Stage1);
-
+	//初期化
+	m_stageManeger->Initialize(m_commonState.get(), m_stageNum);
+	// フェードの作成
 	m_fadeInOut = std::make_unique<Fade>();
 	m_fadeInOut->Create();
-	m_fadeInOut->Initialize(DirectX::SimpleMath::Vector3::Zero, 1.0f);
+	// 初期化
+	m_fadeInOut->Initialize(DirectX::SimpleMath::Vector3::Zero);
+	// フェードイン開始
 	m_fadeInOut->FadeIn();
 
 }
@@ -101,45 +103,37 @@ GAME_SCENE ResultScene::Update(const DX::StepTimer& timer)
 	// キー入力情報を取得する
 	DirectX::Keyboard::State keyState = DirectX::Keyboard::Get().GetState();
 
-	// マウス入力情報を取得する
-	DirectX::Mouse::State mouseState = DirectX::Mouse::Get().GetState();
+	//カメラの回転
+	m_cameraRot += CAMERA_ROT_SPEED;
 
-	
+	//アルファをアルファスピードで足す
+	m_alpha += m_alphaSpeed;
 
-
-	if (!m_flagFadeIn)
+	//アルファが０か１になったらアルファスピードを反転させる
+	if (m_alpha < ALPHA_MIN_NUM || m_alpha > ALPHA_MAX_NUM)
 	{
-		m_fade -= 0.03f;
+		//アルファスピードを反転させる
+		m_alphaSpeed *= -1.0f;
 	}
 
-	if (m_fade <= 0)
-	{
-		m_flagFadeIn = true;
-	}
-	m_alpha -= m_alphaVel;
-	m_cameraRot += 0.001f;
 
-	if (m_alpha < 0 || m_alpha > 1)
-		m_alphaVel *= -1.0f;
-
-	if (m_flag)
-	{
-		m_fade += 0.03f;
-	}
-
+	//フェードインが終わった状態でスペースキーを押したらフェードアウトしタイトルに遷移
 	if (keyState.Space && m_fadeInOut->ISOpen())
 	{
-		m_flag = true;
+		//フェードアウト開始
 		m_fadeInOut->FadeOut();
 		m_pAdx2->Play(CRI_CUESHEET_0_BUTTON);
 	}
 
+	//フェード更新
 	m_fadeInOut->Update(timer);
 
-	if (m_fadeInOut->ISClose()&& m_flag == true)
+	//フェードアウトし終わったらタイトルに遷移
+	if (m_fadeInOut->ISClose())
 	{
 		return GAME_SCENE::TITLE;
 	}
+
 
 	return GAME_SCENE::NONE;
 }
@@ -150,7 +144,6 @@ GAME_SCENE ResultScene::Update(const DX::StepTimer& timer)
 void ResultScene::Draw()
 {
 	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
-	RECT rect = pDR->GetOutputSize();
 
 	//	ウィンドウサイズの取得
 	float width = static_cast<float>(pDR->GetOutputSize().right);
@@ -166,112 +159,79 @@ void ResultScene::Draw()
 	DirectX::SimpleMath::Vector3 target = DirectX::SimpleMath::Vector3::Zero;
 	// 上向きベクトル
 	DirectX::SimpleMath::Vector3 up = DirectX::SimpleMath::Vector3::UnitY;
-
+	//ビュー行列計算
 	view = DirectX::SimpleMath::Matrix::CreateLookAt(eye, target, up);
 	// ウィンドウサイズの取得
 	RECT size = pDR->GetOutputSize();
+	//アスペクト比
 	float aspectRatio = float(size.right) / float(size.bottom);
 
 	//カメラの見える範囲の設定
 	float nearPlane = 1.0f;
 	float farPlane = 100.0f;
 	float fov = 45.0f;
-
+	//視野角をラジアンで取得
 	float fieldOfView = DirectX::XMConvertToRadians(fov);
-
+	//プロジェクション行列計算
 	projection = DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(fieldOfView, aspectRatio, nearPlane, farPlane);
+	//カメラの作成
 	Camera camera;
+	//計算したプロジェクション行列を設定する
 	camera.SetProjectionMatrix(projection);
+	//計算したビュー行列を設定する
 	camera.SetViewMatrix(view);
+
+	//背景のステージ描画
 	RenderStage(&camera);
 
 
-	m_spriteBatch->Begin(SpriteSortMode_Deferred, m_commonState->NonPremultiplied());
-
-	SimpleMath::Vector2 pos(0.0f, 0.0f);
+	m_spriteBatch->Begin(DirectX::SpriteSortMode_Deferred, m_commonState->NonPremultiplied());
 
 
+	//リザルト文字の表示座標
 	DirectX::SimpleMath::Vector2 resultPos{ width / 2 , 100};
-	m_spriteBatch->Draw(m_resultTexture.Get(), resultPos, nullptr, Colors::White, 0.0f, { 129.0f,44.0f }, 2.0f, SpriteEffects_None, 0);
+	//リザルト文字の表示
+	m_spriteBatch->Draw(m_resultTexture.Get(), resultPos, nullptr, DirectX::Colors::White, 0.0f, { 129.0f,44.0f }, 2.0f, DirectX::SpriteEffects_None, 0);
 
+	//タイムの表示
+	DrawAliveTime();
 
-	SimpleMath::Vector2 onePos{ width / 2 +150 , height / 2 };
-	SimpleMath::Vector2 tenPos{ onePos.x - 85, onePos.y };
-	SimpleMath::Vector2 hundredPos{ onePos.x - 170, onePos.y };
-
-	RECT rectNum[10] = {
-	{0	,0,52	,64},//0
-	{52	,0,97	,64},//1
-	{96	,0,140	,64},//2
-	{140,0,190,64},//3
-	{190,0,243,64},//4
-	{243,0,293,64},//5
-	{293,0,341,64},//6
-	{341,0,388,64},//7
-	{388,0,436,64},//8
-	{436,0,483,64} //9
-	};
-	
-	DirectX::SimpleMath::Vector2 timePos{ width / 3 - 50,height / 2 +20};
-
-	m_spriteBatch->Draw(m_aliveTimeTexture.Get(), timePos + DirectX::SimpleMath::Vector2{ 83.0f, 38.0f }, nullptr, DirectX::Colors::White, 0.0f, DirectX::SimpleMath::Vector2{ 83.0f,38.0f }, 2.0f, SpriteEffects_None, 0);
-	m_spriteBatch->Draw(m_numTexture.Get(), onePos, &rectNum[static_cast<int>(m_time)%10], Colors::White, 0.0f, { 0.0f,0.0f }, 2.0f, SpriteEffects_None, 0);
-	m_spriteBatch->Draw(m_numTexture.Get(), tenPos, &rectNum[static_cast<int>(m_time / 10)%10], Colors::White, 0.0f, { 0.0f,0.0f }, 2.0f, SpriteEffects_None, 0);
-	m_spriteBatch->Draw(m_numTexture.Get(), hundredPos, &rectNum[static_cast<int>(m_time / 100)%10], Colors::White, 0.0f, { 0.0f,0.0f }, 2.0f, SpriteEffects_None, 0);
-	
-
-	int rank;
-
+	//ランクを切り取り位置
 	RECT rectRank[] = {
-	{450,0,600  ,150},//D	3
-	{300,0,450	,150},//C	2
-	{150,0,300	,150},//B	1
-	{0	,0,150	,150},//A	0
-	{600,0,750  ,150},//s	4
+	{450,0,600  ,150},//D
+	{300,0,450	,150},//C	
+	{150,0,300	,150},//B	
+	{0	,0,150	,150},//A	
+	{600,0,750  ,150},//S	
 	};
 
-	if (m_time <= 15)
-	{
-		
-		rank = 0;
-	}
-	else if (m_time <= 30)
-	{
-		
-		rank = 1;
-	}
-	else if (m_time <= 60)
-	{
-		
-		rank = 2;
-	}
-	else if (m_time <= 120)
-	{
-		
-		rank = 3;
-	}
-	else if (m_time >= 120)
-	{
-		
-		rank = 4;
-	}
 
-
-	pos = { 0, 0 };
+	//ランク文字の表示座標
 	DirectX::SimpleMath::Vector2 rankStrPos{ width / 3 -30, height / 4  + 37.0f};
-	m_spriteBatch->Draw(m_rankStringTexture.Get(), rankStrPos + DirectX::SimpleMath::Vector2(97.0f, 37.0f), nullptr, DirectX::Colors::White, 0.0f, DirectX::SimpleMath::Vector2(97.0f, 37.0f), 2.0f); 
-	m_spriteBatch->Draw(m_rankTexture.Get(), DirectX::SimpleMath::Vector2(width/2+60,height/4), &rectRank[static_cast<int>(m_rank)], DirectX::Colors::White, 0.0f, DirectX::SimpleMath::Vector2::Zero);
+	//ランク文字画像の中心座標
+	DirectX::SimpleMath::Vector2 rankStrCenterPos{ 97.0f, 37.0f };
+	//ランクの表示座標
+	DirectX::SimpleMath::Vector2 rankPos{ width / 2.0f + 60.0f,height / 4.0f };
 
+	//ランク文字のスケール
+	float rankStrTexScale = 2.0f;
+
+	//ランク文字の表示
+	m_spriteBatch->Draw(m_rankStringTexture.Get(), rankStrPos + rankStrCenterPos, nullptr, DirectX::Colors::White, 0.0f, rankStrCenterPos, rankStrTexScale);
+	//ランクの表示
+	m_spriteBatch->Draw(m_rankTexture.Get(), rankPos, &rectRank[static_cast<int>(m_rank)], DirectX::Colors::White, 0.0f, DirectX::SimpleMath::Vector2::Zero);
+
+	//PUSH_SPASE_KEYの表示座標
+	DirectX::SimpleMath::Vector2 pushSpeseKeyPos = DirectX::SimpleMath::Vector2::Zero;
+	//PUSH_SPASE_KEYの色
 	DirectX::SimpleMath::Vector4 pushColor{ 1.0f,1.0f,1.0f,m_alpha };
+	//PUSH_SPASE_KEYの表示
+	m_spriteBatch->Draw(m_pushTexture.Get(), pushSpeseKeyPos, nullptr, pushColor, 0.0f, DirectX::SimpleMath::Vector2::Zero);
 
-	m_spriteBatch->Draw(m_pushTexture.Get(), pos, nullptr, pushColor, 0.0f, DirectX::SimpleMath::Vector2::Zero);
-
-	
-
-	DirectX::SimpleMath::Vector4 fadeColor{ 1.0f,1.0f,1.0f,m_fade };
 
 	m_spriteBatch->End();
 
+	//フェードの描画
 	m_fadeInOut->Render();
 
 }
@@ -304,32 +264,128 @@ void ResultScene::LoadResources()
 	TextureManager& textureManager = TextureManager::GetInstance();
 	
 	// テクスチャの読み込み
+	// 数字
 	m_numTexture =textureManager.LoadTexture(L"Resources/Textures/num.png");
-	
-
-	// テクスチャの読み込み
-	
-	m_blackTexture = textureManager.LoadTexture(L"Resources/Textures/black.png");
-
-	// テクスチャの読み込み
+	// PUSH_SPASE_KEY
 	m_pushTexture = textureManager.LoadTexture(L"Resources/Textures/PushSpaceKey.png");
-
-	// テクスチャの読み込み
+	// ランク
 	m_rankTexture = textureManager.LoadTexture(L"Resources/Textures/rank.png");
-	
-	// テクスチャの読み込み
+	// アライブタイム
 	m_aliveTimeTexture = textureManager.LoadTexture(L"Resources/Textures/time.png");
-
-	// テクスチャの読み込み
+	// リザルト文字
 	m_resultTexture = textureManager.LoadTexture(L"Resources/Textures/result.png");
-
-	// テクスチャの読み込み
+	// ランク文字
 	m_rankStringTexture = textureManager.LoadTexture(L"Resources/Textures/rankString.png");
 
+}
+
+ResultScene::RANK ResultScene::RankDecide(float aliveTime_s)
+{
+	//ランクDのボーダーラインタイム
+	int rankDBorderLineTime_s = 35;
+	//ランクCのボーダーラインタイム
+	int rankCBorderLineTime_s = 60;
+	//ランクBのボーダーラインタイム
+	int rankBBorderLineTime_s = 90;
+	//ランクAのボーダーラインタイム
+	int rankABorderLineTime_s = 150;
+
+	//ランク
+	ResultScene::RANK rank = RANK::NONE;
+
+	//タイムによってランクを変える
+	//３５以下はD
+	if (aliveTime_s <= rankDBorderLineTime_s)
+	{
+		rank = RANK::D;
+	}
+	//３６以上６０以下はC
+	else if (aliveTime_s <= rankCBorderLineTime_s)
+	{
+		rank = RANK::C;
+	}
+	//６１以上９０以下はB
+	else if (aliveTime_s <= rankBBorderLineTime_s)
+	{
+		rank = RANK::B;
+	}
+	//９１以上１５０以下はA
+	else if (aliveTime_s <= rankABorderLineTime_s)
+	{
+		rank = RANK::A;
+	}
+	//１５１以上はB
+	else
+	{
+		rank = RANK::S;
+	}
+
+	//ランクを返す
+	return rank;
 }
 
 void ResultScene::RenderStage(Camera* camera)
 {
 	m_stageManeger->Draw(camera);
 	
+}
+
+/// <summary>
+/// アライブタイムの表示
+/// </summary>
+void ResultScene::DrawAliveTime()
+{
+	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
+
+	//	ウィンドウサイズの取得
+	float width = static_cast<float>(pDR->GetOutputSize().right);
+	float height = static_cast<float>(pDR->GetOutputSize().bottom);
+
+	//アライブタイム表示する
+	//一の位の座標
+	DirectX::SimpleMath::Vector2 onePos{ width / 2 +150 , height / 2 };
+	//十の位の座標
+	DirectX::SimpleMath::Vector2 tenPos{ onePos.x - 85, onePos.y };
+	//百の位の座標
+	DirectX::SimpleMath::Vector2 hundredPos{ onePos.x - 170, onePos.y };
+	//アライブタイムの座標
+	DirectX::SimpleMath::Vector2 timePos{ width / 3 - 50,height / 2 + 20 };
+
+	//数字の切り取り位置
+	RECT rectNum[10] = {
+	{0	,0,52 ,64},//0
+	{52	,0,97 ,64},//1
+	{96	,0,140,64},//2
+	{140,0,190,64},//3
+	{190,0,243,64},//4
+	{243,0,293,64},//5
+	{293,0,341,64},//6
+	{341,0,388,64},//7
+	{388,0,436,64},//8
+	{436,0,483,64} //9
+	};
+
+	//画像のスケール
+	float texScale = 2.0f;
+
+	//aliveTimeTextureの中心座標
+	DirectX::SimpleMath::Vector2 aliveTimeTextureCenterPos{ 83.0f, 38.0f };
+
+	//一の位の数字の計算
+	int oneNum = static_cast<int>(m_aliveTime) % 10;
+	//十の位の数字の計算
+	int tenNum = static_cast<int>(m_aliveTime / 10) % 10;
+	//百の位の数字の計算
+	int hundredNum = static_cast<int>(m_aliveTime / 100) % 10;
+
+	//アライブタイムの表示
+	m_spriteBatch->Draw(m_aliveTimeTexture.Get(), timePos + aliveTimeTextureCenterPos, nullptr, DirectX::Colors::White, 0.0f, aliveTimeTextureCenterPos, texScale, DirectX::SpriteEffects_None, 0);
+	//一の位の表示
+	m_spriteBatch->Draw(m_numTexture.Get(), onePos, &rectNum[oneNum], DirectX::Colors::White, 0.0f, { 0.0f,0.0f }, texScale, DirectX::SpriteEffects_None, 0);
+	//十の位の表示
+	m_spriteBatch->Draw(m_numTexture.Get(), tenPos, &rectNum[tenNum], DirectX::Colors::White, 0.0f, { 0.0f,0.0f }, texScale, DirectX::SpriteEffects_None, 0);
+	//百の位の表示
+	m_spriteBatch->Draw(m_numTexture.Get(), hundredPos, &rectNum[hundredNum], DirectX::Colors::White, 0.0f, { 0.0f,0.0f }, texScale, DirectX::SpriteEffects_None, 0);
+	
+
 }
