@@ -14,6 +14,7 @@
 #include<string>
 #include"Game/PlayScene/AliveTimer.h"
 #include"Libraries/MyLibraries/TextureManager.h"
+#include"Game/PlayScene/GameContext/GameContext.h"
 
 //カメラの回転速度
 const float ResultScene::CAMERA_ROT_SPEED = 0.001f;
@@ -83,7 +84,7 @@ void ResultScene::Initialize()
 	//ステージマネージャーの作成
 	m_stageManeger = std::make_unique<StageManager>();
 	//初期化
-	m_stageManeger->Initialize(m_commonState.get(), m_stageNum);
+	m_stageManeger->Initialize( m_stageNum);
 	// フェードの作成
 	m_fadeInOut = std::make_unique<Fade>();
 	m_fadeInOut->Create();
@@ -91,7 +92,7 @@ void ResultScene::Initialize()
 	m_fadeInOut->Initialize(DirectX::SimpleMath::Vector3::Zero);
 	// フェードイン開始
 	m_fadeInOut->FadeIn();
-
+	GameContext::GetInstance().SetCommonState(m_commonState.get());
 }
 
 /*--------------------------------------------------

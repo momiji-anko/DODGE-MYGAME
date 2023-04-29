@@ -46,9 +46,8 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	/// <param name="commonState">コモンステートの生ポインタ</param>
 	/// <param name="stage">ステージ選択</param>
-	void Initialize(DirectX::CommonStates* commonState, StageSelect stage = StageSelect::Stage1);
+	void Initialize( StageSelect stage = StageSelect::Stage1);
 
 	/// <summary>
 	/// 更新
@@ -142,8 +141,6 @@ public:
 private:
 	//ステージ配列
 	std::vector<std::unique_ptr<Stage>>         m_stage;
-	//コモンステートの生ポインタ
-	DirectX::CommonStates*                      m_commonState;
 	//ステージビヘイビアー
 	std::vector<std::unique_ptr<IBehavior>>     m_behavior;
 

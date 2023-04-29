@@ -7,7 +7,7 @@
 #include"pch.h"
 #include"Obstacle.h"
 #include"DeviceResources.h"
-
+#include"Game/PlayScene/GameContext/GameContext.h"
 
 /// <summary>
 /// コンストラクタ
@@ -46,8 +46,7 @@ Obstacle::~Obstacle()
 /// <param name="active">アクティブ</param>
 /// <param name="behavia">ビヘイビアーの生ポインタ</param>
 /// <param name="model">モデルの生ポインタ</param>
-/// <param name="commonState">コモンステートの生ポインタ</param>
-void Obstacle::Initialize(const DirectX::SimpleMath::Vector3& velocity, const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Vector3& scale, const DirectX::SimpleMath::Vector3& rotation, bool active, IBehavior* behavia, DirectX::Model* model, DirectX::CommonStates* commonState)
+void Obstacle::Initialize(const DirectX::SimpleMath::Vector3& velocity, const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Vector3& scale, const DirectX::SimpleMath::Vector3& rotation, bool active, IBehavior* behavia, DirectX::Model* model)
 {
 
 	//パラメータの設定
@@ -71,8 +70,6 @@ void Obstacle::Initialize(const DirectX::SimpleMath::Vector3& velocity, const Di
 	//モデル
 	SetModel(model);
 
-	//コモンステート
-	SetCommonState(commonState);
 
 
 }
@@ -121,13 +118,13 @@ void Obstacle::Draw(Camera* camera)
 	//ワールド行列を計算する
 	CalculationWorld();
 
-
+	GetAABB()->Draw(DirectX::SimpleMath::Matrix::Identity, camera->GetViewMatrix(), camera->GetProjectionMatrix(),DirectX::SimpleMath::Vector4(1,1,1,1));
 
 	//炎でなければモデル表示する
 	if (m_type != ObstacleType::NORMAL && m_type != ObstacleType::MEANDERING)
 	{
 		//モデル表示する
-		GetModel()->Draw(context, *GetCommonState(), GetWorld(), camera->GetViewMatrix(), camera->GetProjectionMatrix());
+		GetModel()->Draw(context, *GameContext::GetInstance().GetCommonState(), GetWorld(), camera->GetViewMatrix(), camera->GetProjectionMatrix());
 	}
 	//炎であればエフェクト表示する
 	else if(m_type == ObstacleType::NORMAL || m_type == ObstacleType::MEANDERING)

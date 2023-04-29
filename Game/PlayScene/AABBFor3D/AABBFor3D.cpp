@@ -88,7 +88,7 @@ void AABBFor3D::Draw(DirectX::SimpleMath::Matrix world, DirectX::SimpleMath::Mat
 {
 
 	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
-	ID3D11Device1* device = pDR->GetD3DDevice();
+
 	//デバイスコンテキストの取得
 	ID3D11DeviceContext1* context = pDR->GetD3DDeviceContext();
 

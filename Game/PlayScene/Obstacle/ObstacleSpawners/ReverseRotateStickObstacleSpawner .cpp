@@ -19,9 +19,8 @@
 /// <param name="rotation">角度（ラジアン）</param>
 /// <param name="behavior">回転する棒のビヘイビア</param>
 /// <param name="model">回転する棒のモデル</param>
-/// <param name="commonState">コモンステート</param>
 /// <returns>true=生成成功　false=生成失敗</returns>
-bool ReverseRotateStickObstacleSpawner::Create(std::vector<std::unique_ptr<Actor>>& actors, const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Vector3& rotation, IBehavior* behavior, DirectX::Model* model, DirectX::CommonStates* commonState)
+bool ReverseRotateStickObstacleSpawner::Create(std::vector<std::unique_ptr<Actor>>& actors, const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Vector3& rotation, IBehavior* behavior, DirectX::Model* model)
 {
 	for (std::unique_ptr<Actor>& actor : actors)
 	{
@@ -43,7 +42,7 @@ bool ReverseRotateStickObstacleSpawner::Create(std::vector<std::unique_ptr<Actor
 		DirectX::SimpleMath::Vector3 velocity = DirectX::SimpleMath::Vector3::Zero;
 
 		//障害物の初期化
-		actor->Initialize(velocity, position, scale, rotation, true, behavior, model, commonState);
+		actor->Initialize(velocity, position, scale, rotation, true, behavior, model);
 
 		//障害物の生成に成功
 		return true;

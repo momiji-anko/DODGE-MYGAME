@@ -30,7 +30,6 @@ public:
 		const DirectX::SimpleMath::Vector3& position,
 		const DirectX::SimpleMath::Vector3& rotation,
 		IBehavior* behavior,
-		DirectX::Model* model,
-		DirectX::CommonStates* commonState
+		DirectX::Model* model
 	) override;
 };

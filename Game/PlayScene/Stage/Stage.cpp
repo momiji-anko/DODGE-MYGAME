@@ -2,7 +2,8 @@
 #include"Stage.h"
 #include"../MyRandom.h"
 #include"DeviceResources.h"
- 
+#include"Game/PlayScene/GameContext/GameContext.h"
+
 const float Stage::ROTARION_TIME_S = 10.0f;
 
 
@@ -39,8 +40,7 @@ Stage::~Stage()
 /// <param name="active">アクティブ</param>
 /// <param name="behavia">ビヘイビアー</param>
 /// <param name="model">モデルの生ポインタ</param>
-/// <param name="commonState">コモンステートの生ポインタ</param>
-void Stage::Initialize(const DirectX::SimpleMath::Vector3& velocity, const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Vector3& scale, const DirectX::SimpleMath::Vector3& rotation, bool active, IBehavior* behavia, DirectX::Model* model, DirectX::CommonStates* commonState)
+void Stage::Initialize(const DirectX::SimpleMath::Vector3& velocity, const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Vector3& scale, const DirectX::SimpleMath::Vector3& rotation, bool active, IBehavior* behavia, DirectX::Model* model)
 {
 	//パラメータの設定
 	//移動速度
@@ -59,9 +59,6 @@ void Stage::Initialize(const DirectX::SimpleMath::Vector3& velocity, const Direc
 	SetBehavior(behavia);
 	//モデル
 	SetModel(model);
-
-	//コモンステート
-	SetCommonState(commonState);
 
 	//角度設定
 	SetRotation(rotation);
@@ -112,7 +109,7 @@ void Stage::Draw(Camera* camera)
 	if (m_shadowMap != nullptr)
 	{
 		//モデル＆影描画
-		GetModel()->Draw(context, *GetCommonState(), world, camera->GetViewMatrix(), camera->GetProjectionMatrix(), false, [&]()
+		GetModel()->Draw(context, *GameContext::GetInstance().GetCommonState(), world, camera->GetViewMatrix(), camera->GetProjectionMatrix(), false, [&]()
 			{
 				m_shadowMap->DrawShadow(context, false);
 			}
@@ -121,7 +118,7 @@ void Stage::Draw(Camera* camera)
 	else
 	{
 		//モデル描画
-		GetModel()->Draw(context, *GetCommonState(), world, camera->GetViewMatrix(), camera->GetProjectionMatrix());
+		GetModel()->Draw(context, *GameContext::GetInstance().GetCommonState(), world, camera->GetViewMatrix(), camera->GetProjectionMatrix());
 	}
 
 }

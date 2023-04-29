@@ -30,7 +30,7 @@ void SecondFloorToFallBehavior::Execute(const DX::StepTimer& timer, Actor* actor
 	static const float MOVE_TIME_S = 5.0f;
 
 	//経過時間
-	float elapsedTime_s = timer.GetElapsedSeconds();
+	float elapsedTime_s = static_cast<float>(timer.GetElapsedSeconds());
 
 	//ステージ型にキャスト
 	Stage* stage = dynamic_cast<Stage*>(actor);

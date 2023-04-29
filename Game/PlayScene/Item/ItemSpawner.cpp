@@ -11,9 +11,8 @@
 /// <param name="rotation">角度（ラジアン）</param>
 /// <param name="behavior">NULLでOK</param>
 /// <param name="model">アイテムのモデル</param>
-/// <param name="commonState">コモンステート</param>
 /// <returns>true＝生成成功　false＝生成失敗</returns>
-bool ItemSpawner::Create( std::vector< std::unique_ptr<Actor>>& actors, const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Vector3& rotation, IBehavior* behavior,DirectX::Model* model,DirectX::CommonStates* commonState)
+bool ItemSpawner::Create( std::vector< std::unique_ptr<Actor>>& actors, const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Vector3& rotation, IBehavior* behavior,DirectX::Model* model)
 {
 	UNREFERENCED_PARAMETER(behavior);
 
@@ -32,7 +31,7 @@ bool ItemSpawner::Create( std::vector< std::unique_ptr<Actor>>& actors, const Di
 
 
 		//アイテムの初期化
-		actor->Initialize(velocity, position, scale, rotation, true, behavior, model, commonState);
+		actor->Initialize(velocity, position, scale, rotation, true, behavior, model);
 
 		//アイテムの生成に成功
 		return true;

@@ -37,7 +37,6 @@ public:
 
 	void SetRenderState(DirectX::SimpleMath::Vector3 camera, DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix proj);
 
-	void SetGravity(bool gravity);
 
 	
 
@@ -60,6 +59,8 @@ private:
 	void ShaderDraw();
 	void Draw();
 
+private:
+
 	Microsoft::WRL::ComPtr<ID3D11Buffer>	m_CBuffer;
 
 	DX::StepTimer                           m_timer;
@@ -71,35 +72,34 @@ private:
 	std::unique_ptr<DirectX::PrimitiveBatch<DirectX::VertexPositionColorTexture>> m_batch;
 	//コモンステート
 	std::unique_ptr<DirectX::CommonStates> m_states;
+	
 	// テクスチャハンドル
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_texture;
-	// テクスチャハンドル
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_texture2;
+
 	// 頂点シェーダ
-	Microsoft::WRL::ComPtr<ID3D11VertexShader> m_vertexShader;
+	Microsoft::WRL::ComPtr<ID3D11VertexShader>   m_vertexShader;
 	// ピクセルシェーダ
-	Microsoft::WRL::ComPtr<ID3D11PixelShader> m_pixelShader;
+	Microsoft::WRL::ComPtr<ID3D11PixelShader>    m_pixelShader;
 	//ジオメトリシェーダ
 	Microsoft::WRL::ComPtr<ID3D11GeometryShader> m_geometryShader;
 
 
-	DirectX::SimpleMath::Matrix m_world;
-	DirectX::SimpleMath::Matrix m_view;
-	DirectX::SimpleMath::Matrix m_proj;
+	DirectX::SimpleMath::Matrix  m_world;
+	DirectX::SimpleMath::Matrix  m_view;
+	DirectX::SimpleMath::Matrix  m_proj;
 
-	DirectX::SimpleMath::Vector3		m_camera;
-	DirectX::SimpleMath::Vector3		m_gravity;
-	DirectX::SimpleMath::Vector3		m_position;
-	DirectX::SimpleMath::Vector3		m_velocity;
-	float								m_life;
-
-	DirectX::SimpleMath::Vector3		m_startPosition;
-	DirectX::SimpleMath::Vector3		m_startVelocity;
-	float								m_startLife;
-
-	float								m_wait;
-
-	bool								m_isGravity;
+	DirectX::SimpleMath::Vector3 m_camera;
+	DirectX::SimpleMath::Vector3 m_gravity;
+	DirectX::SimpleMath::Vector3 m_position;
+	DirectX::SimpleMath::Vector3 m_velocity;
+	float						 m_life;
+								 
+	DirectX::SimpleMath::Vector3 m_startPosition;
+	DirectX::SimpleMath::Vector3 m_startVelocity;
+	float						 m_startLife;
+								 
+	float						 m_wait;
+								 
 
 	std::vector < DirectX::SimpleMath::Vector3 > m_positionList;
 
@@ -109,7 +109,6 @@ private:
 
 	float m_scale;
 
-	DirectX::SimpleMath::Vector3 m_offSetPos;
 
 	DirectX::SimpleMath::Vector4 m_color;
 

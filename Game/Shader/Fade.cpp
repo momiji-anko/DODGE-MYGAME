@@ -21,10 +21,29 @@ const std::vector<D3D11_INPUT_ELEMENT_DESC> Fade::INPUT_LAYOUT =
 	{ "TEXCOORD",	0, DXGI_FORMAT_R32G32_FLOAT, 0, sizeof(DirectX::SimpleMath::Vector3) + sizeof(DirectX::SimpleMath::Vector4), D3D11_INPUT_PER_VERTEX_DATA, 0 },
 };
 
-Fade::Fade()
+Fade::Fade():
+	m_CBuffer{},
+	m_timer{},
+	m_inputLayout{},
+	m_batch{},
+	m_states{},
+	m_texture{},
+	m_vertexShader{},
+	m_pixelShader{},
+	m_geometryShader{},
+	m_centerPosition{},
+	m_billboardTranslation{},
+	m_view{},
+	m_proj{},
+	m_model{},
+	m_capture{},
+	m_rtv{},
+	m_srv{},
+	m_fadeTime_s{},
+	m_fadeState{}
 {
 	
-
+	
 }
 
 Fade::~Fade()
@@ -79,11 +98,7 @@ void Fade::Create()
 	const wchar_t* name = L"Resources\\Textures\\089.png";
 	DirectX::CreateWICTextureFromFile(pDR->GetD3DDevice(), name, nullptr, m_texture.GetAddressOf());
 
-	const wchar_t* name2 = L"Resources\\Textures\\floor.png";
-	DirectX::CreateWICTextureFromFile(pDR->GetD3DDevice(), name2, nullptr, m_texture2.GetAddressOf());
 
-	const wchar_t* name3 = L"Resources\\Textures\\shadow.png";
-	DirectX::CreateWICTextureFromFile(pDR->GetD3DDevice(), name3, nullptr, m_texture3.GetAddressOf());
 
 	// プリミティブバッチの作成
 	m_batch = std::make_unique<DirectX::PrimitiveBatch<DirectX::VertexPositionColorTexture>>(pDR->GetD3DDeviceContext());
@@ -113,7 +128,7 @@ void Fade::Create()
 //			射影行列	DirectX::SimpleMath::Matrix proj
 //	RE	:	void
 //-----------------------------------------------------------------------------------
-void Fade::SetRenderState(DirectX::SimpleMath::Vector3 camera, DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix proj)
+void Fade::SetRenderState(const DirectX::SimpleMath::Vector3& camera, const DirectX::SimpleMath::Matrix& view, const DirectX::SimpleMath::Matrix& proj)
 {
 	m_view = view;
 	m_proj = proj;
@@ -130,7 +145,7 @@ void Fade::SetRenderState(DirectX::SimpleMath::Vector3 camera, DirectX::SimpleMa
 	m_billboardTranslation = rev * m_billboardTranslation;
 }
 
-void Fade::Initialize(DirectX::SimpleMath::Vector3 pos, float fade)
+void Fade::Initialize(const DirectX::SimpleMath::Vector3& pos, float fade)
 {
 	m_centerPosition = pos;
 	m_fadeTime_s = fade;
@@ -146,7 +161,7 @@ void Fade::Initialize(DirectX::SimpleMath::Vector3 pos, float fade)
 void Fade::Update(DX::StepTimer timer)
 {
 	m_timer = timer;
-	float elapsedTime = timer.GetElapsedSeconds();
+	float elapsedTime = static_cast<float>(timer.GetElapsedSeconds());
 	switch (m_fadeState)
 	{
 	case Fade::State::FADE_IN:
@@ -181,7 +196,6 @@ void Fade::Update(DX::StepTimer timer)
 //-----------------------------------------------------------------------------------
 void Fade::Render()
 {
-	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
 	//回転するモデルを表示
 	static float rot = 0.0f;
 	rot += 0.1f;
@@ -200,7 +214,7 @@ void Fade::Render()
 //	IN	:	void
 //	RE	:	void
 //-----------------------------------------------------------------------------------
-void Fade::Draw(DirectX::SimpleMath::Matrix world, DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix proj)
+void Fade::Draw(const DirectX::SimpleMath::Matrix& world, const DirectX::SimpleMath::Matrix& view, const DirectX::SimpleMath::Matrix& proj)
 {
 	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
 
@@ -256,8 +270,7 @@ void Fade::Draw(DirectX::SimpleMath::Matrix world, DirectX::SimpleMath::Matrix v
 
 	//ピクセルシェーダにテクスチャを登録する。
 	context->PSSetShaderResources(0, 1, m_texture.GetAddressOf());
-	context->PSSetShaderResources(1, 1, m_texture2.GetAddressOf());
-	context->PSSetShaderResources(2, 1, m_texture3.GetAddressOf());
+
 
 	//インプットレイアウトの登録
 	context->IASetInputLayout(m_inputLayout.Get());
@@ -281,7 +294,6 @@ void Fade::Lost()
 	m_batch.reset();
 	m_states.reset();
 	m_texture.Reset();
-	m_texture2.Reset();
 	m_vertexShader.Reset();
 	m_pixelShader.Reset();
 }
@@ -334,9 +346,7 @@ void Fade::RenderModel()
 	//モデルを描画
 	m_model->Draw(pDR->GetD3DDeviceContext(), *m_states, DirectX::SimpleMath::Matrix::CreateRotationZ(rot), m_view, m_proj);
 
-	//描画した画面をm_srvに保存
-	HRESULT hr = pDR->GetD3DDevice()->CreateShaderResourceView(
-		m_capture.Get(), &srvDesc, m_srv.ReleaseAndGetAddressOf());
+	
 
 	//------------------------------------------------------------------
 	//設定をもとに戻す

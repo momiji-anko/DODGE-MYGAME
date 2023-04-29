@@ -27,7 +27,7 @@ public:
 	/// <param name="shadowMap">シャドウマップの生ポインタ</param>
 	/// <param name="view">ビュー行列</param>
 	/// <param name="projection">プロジェクション行列</param>
-	void Shadow(ShadowMap* shadowMap, DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix projection);
+	void Shadow(ShadowMap* shadowMap, const DirectX::SimpleMath::Matrix& view, const DirectX::SimpleMath::Matrix& projection);
 
 	/// <summary>
 	/// ステージマネージャーの設定
@@ -49,8 +49,7 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	/// <param name="commonState">コモンステートの生ポインタ</param>
-	void Initialize(DirectX::CommonStates* commonState);
+	void Initialize();
 
 	/// <summary>
 	/// 更新
@@ -86,7 +85,7 @@ private:
 	/// <param name="type">アイテムのタイプ</param>
 	/// <param name="rot">アングル</param>
 	/// <returns>true = 生成成功、false = 生成失敗</returns>
-	bool CreateItem(const DirectX::SimpleMath::Vector3& position ,Item::ItemType type, DirectX::SimpleMath::Vector3 rot);
+	bool CreateItem(const DirectX::SimpleMath::Vector3& position ,Item::ItemType type, const DirectX::SimpleMath::Vector3& rot);
 
 	/// <summary>
 	/// アイテムとステージが当たっているか判定
@@ -107,15 +106,15 @@ private:
 
 	//変数
 	//アイテムのオブジェクトプール
-	std::vector< std::unique_ptr<Actor>>                        m_items;
+	std::vector< std::unique_ptr<Actor>>                m_items;
 	//アイテムのスポナー
-	std::map<Item::ItemType, std::unique_ptr<ISpawner>>         m_spawners;
+	std::map<Item::ItemType, std::unique_ptr<ISpawner>> m_spawners;
 	//アイテムのモデル生成
-	std::map < Item::ItemType, DirectX::Model*> m_pModel;
-	//コモンステート
-	DirectX::CommonStates* m_commonState;
+	std::map < Item::ItemType, DirectX::Model*>         m_pModel;
+	
 	//アイテムスポーンタイム
-	float                                                       m_spawneTime_s;
+	float  m_spawneTime_s;
+	
 	//ステージマネージャー
 	StageManager* m_stageManeger;
 

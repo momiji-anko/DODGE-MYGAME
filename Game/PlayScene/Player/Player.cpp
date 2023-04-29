@@ -12,6 +12,7 @@
 #include<Effects.h>
 #include"Libraries/MyLibraries/ModelManager.h"
 #include"Libraries/MyLibraries/TextureManager.h"
+#include"Game/PlayScene/GameContext/GameContext.h"
 
 //	1秒間に進むマスの数
 const float Player::MOVE_SPEED = 9.0f;
@@ -89,8 +90,7 @@ Player::~Player()
 /// <param name="active">存在しているか</param>
 /// <param name="behavia">ビヘイビアー（Playrでは使わないのでNULLでOK）</param>
 /// <param name="model">プレイヤーのモデルだがNULLでOK</param>
-/// <param name="commonState">コモンステート</param>
-void Player::Initialize(const DirectX::SimpleMath::Vector3& velocity, const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Vector3& scale, const DirectX::SimpleMath::Vector3& rotation, bool active, IBehavior* behavia, DirectX::Model* model, DirectX::CommonStates* commonState)
+void Player::Initialize(const DirectX::SimpleMath::Vector3& velocity, const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Vector3& scale, const DirectX::SimpleMath::Vector3& rotation, bool active, IBehavior* behavia, DirectX::Model* model)
 {
 
 
@@ -112,9 +112,6 @@ void Player::Initialize(const DirectX::SimpleMath::Vector3& velocity, const Dire
 	SetBehavior(behavia);
 	//モデル
 	SetModel(model);
-
-	//コモンステート
-	SetCommonState(commonState);
 
 	//角度設定
 	SetRotation(rotation);
@@ -230,7 +227,7 @@ void Player::Draw(Camera* camera)
 		//現在のモデルの状態
 		int modelTime = static_cast<int>(m_modelTime_s);
 
-		m_playerModel[m_playerModelNum[modelTime]]->Draw(context, *GetCommonState(), GetWorld(), camera->GetViewMatrix(), camera->GetProjectionMatrix());
+		m_playerModel[m_playerModelNum[modelTime]]->Draw(context, *GameContext::GetInstance().GetCommonState(), GetWorld(), camera->GetViewMatrix(), camera->GetProjectionMatrix());
 	}
 
 }
@@ -322,7 +319,7 @@ void Player::CreateShadow(ShadowMap* shadow, const DirectX::SimpleMath::Matrix& 
 		CalculationWorld();
 
 		//影生成
-		m_playerModel[m_playerModelNum[m_modelTime_s]]->Draw(context, *GetCommonState(), GetWorld(), view, projection, false, [&]()
+		m_playerModel[m_playerModelNum[m_modelTime_s]]->Draw(context, *GameContext::GetInstance().GetCommonState(), GetWorld(), view, projection, false, [&]()
 			{
 				shadow->DrawShadowMap(context);
 			}
@@ -391,9 +388,10 @@ void Player::PlayerMove(const DX::StepTimer& timer)
 
 	//経過時間
 	float elapsedTime = static_cast<float>(timer.GetElapsedSeconds());
-
+	
 	// キー入力情報を取得する
 	DirectX::Keyboard::State keyState = DirectX::Keyboard::Get().GetState();
+	
 
 	//ベロシティ取得
 	DirectX::SimpleMath::Vector3 velocity = GetVelocity();

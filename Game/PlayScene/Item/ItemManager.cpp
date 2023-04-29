@@ -32,7 +32,6 @@ ItemManager::ItemManager()
 	m_items{},
 	m_spawners{},
 	m_pModel{},
-	m_commonState(nullptr),
 	m_stageManeger(nullptr),
 	m_spawneTime_s(0)
 {
@@ -49,12 +48,9 @@ ItemManager::~ItemManager()
 /// <summary>
 /// 初期化
 /// </summary>
-/// <param name="commonState">コモンステートの生ポインタ</param>
-void ItemManager::Initialize(DirectX::CommonStates* commonState)
+void ItemManager::Initialize()
 {
 
-	//コモンステート
-	m_commonState = commonState;
 	
 	//アイテムの配列をアイテムの最大数でリサイズする
 	m_items.resize(ITEM_MAX_NUM);
@@ -213,11 +209,11 @@ void ItemManager::Shadow(ShadowMap* shadowMap, DirectX::SimpleMath::Matrix view,
 /// <param name="type">アイテムのタイプ</param>
 /// <param name="rot">アングル</param>
 /// <returns>true = 生成成功、false = 生成失敗</returns>
-bool ItemManager::CreateItem(const DirectX::SimpleMath::Vector3& position, Item::ItemType type, DirectX::SimpleMath::Vector3 rot)
+bool ItemManager::CreateItem(const DirectX::SimpleMath::Vector3& position, Item::ItemType type, const DirectX::SimpleMath::Vector3& rot)
 {
 
 	//アイテムの生成
-	return m_spawners[type]->Create(m_items, position, rot, nullptr, m_pModel[type], m_commonState);
+	return m_spawners[type]->Create(m_items, position, rot, nullptr, m_pModel[type]);
 }
 
 /// <summary>

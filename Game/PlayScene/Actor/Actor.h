@@ -140,17 +140,6 @@ public:
 	DirectX::Model* GetModel()const { return m_pModel; }
 
 	/// <summary>
-	/// コモンステートの設定
-	/// </summary>
-	/// <param name="state">コモンステート</param>
-	void SetCommonState(DirectX::CommonStates* state) { m_commonState = state; }
-	/// <summary>
-	/// コモンステートの取得
-	/// </summary>
-	/// <returns>コモンステート</returns>
-	DirectX::CommonStates* GetCommonState() const { return m_commonState; }
-
-	/// <summary>
 	///　ステージマネージャーの設定
 	/// </summary>
 	/// <param name="stageManeger">ステージマネージャーの生ポインター</param>
@@ -241,8 +230,7 @@ public:
 		const DirectX::SimpleMath::Vector3& rotataion,
 		bool active,
 		IBehavior* behavia,
-		DirectX::Model* model,
-		DirectX::CommonStates* commonState
+		DirectX::Model* model
 	) = 0;
 
 	/// <summary>
@@ -283,6 +271,7 @@ public:
 	virtual void CreateShadow(ShadowMap* shadow, const DirectX::SimpleMath::Matrix& view, const DirectX::SimpleMath::Matrix& projection);
 
 
+
 private:
 	/// <summary>
 	/// AABBの作成
@@ -295,8 +284,6 @@ private:
 	void CreateCapsule();
 
 private:
-	//コモンステートのポインター
-	DirectX::CommonStates*          m_commonState;
 	//座標
 	DirectX::SimpleMath::Vector3    m_position;
 	//移動量

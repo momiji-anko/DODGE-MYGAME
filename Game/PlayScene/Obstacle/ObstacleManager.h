@@ -63,9 +63,8 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	/// <param name="commonState">コモンステートの生ポインタ</param>
 	/// <param name="stage">ステージの番号</param>
-	void Initialize(DirectX::CommonStates* commonState, StageManager::StageSelect stage );
+	void Initialize(StageManager::StageSelect stage );
 
 	/// <summary>
 	/// 更新
@@ -107,7 +106,7 @@ public:
 	/// <param name="shadowMap">シャドウマップの生ポインタ</param>
 	/// <param name="view">ビュー行列</param>
 	/// <param name="projection">プロジェクション行列</param>
-	void ObstacleShadow( ShadowMap* shadowMap, DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix projection);
+	void ObstacleShadow( ShadowMap* shadowMap, const DirectX::SimpleMath::Matrix& view,const DirectX::SimpleMath::Matrix& projection);
 
 	
 	
@@ -118,7 +117,7 @@ public:
 	/// <param name="player">プレイヤー</param>
 	/// <param name="flyVelocity">プレイヤーを吹き飛ばすベロシティ</param>
 	/// <returns>true = 当たった , false = 当っていない</returns>
-	bool PlayerCapsuleHitCheck(Actor* player,DirectX::SimpleMath::Vector3* flyVelocity);
+	bool PlayerCapsuleHitCheck(Actor* player, DirectX::SimpleMath::Vector3* flyVelocity);
 
 private:
 	/// <summary>
@@ -128,7 +127,7 @@ private:
 	/// <param name="type">障害のタイプ</param>
 	/// <param name="rot">角度</param>
 	/// <returns>true = 生成成功 , false = 生成失敗</returns>
-	bool CreateObstacle(const DirectX::SimpleMath::Vector3& position, Obstacle::ObstacleType type, DirectX::SimpleMath::Vector3 rot);
+	bool CreateObstacle(const DirectX::SimpleMath::Vector3& position, Obstacle::ObstacleType type, const DirectX::SimpleMath::Vector3& rot);
 
 	/// <summary>
 	/// 障害物のモデル作成
@@ -156,8 +155,8 @@ private:
 	/// <param name="c1">線分１上の最短距離の位置 </param>
 	/// <param name="c2">線分 2 上の最短距離の位置</param>
 	/// <returns>２つの線分の最短距離の平方</returns>
-	float ClosestPtSegmentSegment(DirectX::SimpleMath::Vector3 p1, DirectX::SimpleMath::Vector3 q1,
-		DirectX::SimpleMath::Vector3 p2, DirectX::SimpleMath::Vector3 q2, float& s, float& t,
+	float ClosestPtSegmentSegment(const DirectX::SimpleMath::Vector3& p1, const DirectX::SimpleMath::Vector3& q1,
+		const DirectX::SimpleMath::Vector3& p2, const DirectX::SimpleMath::Vector3& q2, float& s, float& t,
 		DirectX::SimpleMath::Vector3& c1, DirectX::SimpleMath::Vector3& c2);
 
 
@@ -219,8 +218,6 @@ private:
 	std::map< Obstacle::ObstacleType, DirectX::Model*>           m_models;
 	//障害物のビヘイビアー
 	std::map< Obstacle::ObstacleType, std::unique_ptr<IBehavior>>m_behavior;
-	//コモンステート
-	DirectX::CommonStates* m_commonState;
 	//炎の障害物の出現位置
 	std::vector<DirectX::SimpleMath::Vector3>                    m_normalSpawnePosition;
 	//棒の障害物の出現位置

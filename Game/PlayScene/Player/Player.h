@@ -31,13 +31,13 @@ public:
 	/// 移動キーの設定
 	/// </summary>
 	/// <param name="keys"></param>
-	void SetKeys(std::vector<DirectX::Keyboard::Keys>& keys) { m_keys = keys; }
+	void SetKeys(const std::vector<DirectX::Keyboard::Keys>& keys) { m_keys = keys; }
 
 	/// <summary>
 	/// 回転する棒の障害物に当たった時に吹き飛ばされる用のベロシティ
 	/// </summary>
 	/// <param name="velocity">飛ばされるベロシティ</param>
-	void SetFlyVelocity(DirectX::SimpleMath::Vector3 velocity) { m_flyVelocity = velocity; }
+	void SetFlyVelocity(const DirectX::SimpleMath::Vector3& velocity) { m_flyVelocity = velocity; }
 
 	/// <summary>
 	/// アイテムマネージャーを設定
@@ -102,7 +102,6 @@ public:
 	/// <param name="angle">角度</param>
 	/// <param name="behavia">ビヘイビアー（NULLでOK）</param>
 	/// <param name="model">プレイヤーのモデルだがNULLでOK</param>
-	/// <param name="commonState">コモンステート</param>
 	void Initialize(
 		const DirectX::SimpleMath::Vector3& velocity,
 		const DirectX::SimpleMath::Vector3& position,
@@ -110,8 +109,7 @@ public:
 		const DirectX::SimpleMath::Vector3& rotation,
 		bool active,
 		IBehavior* behavia,
-		DirectX::Model* model,
-		DirectX::CommonStates* commonState
+		DirectX::Model* model
 	)override;
 	/// <summary>
 	/// 更新

@@ -121,7 +121,6 @@ public :
 	 /// <param name="active">アクティブ</param>
 	 /// <param name="behavia">ビヘイビアーの生ポインタ</param>
 	 /// <param name="model">モデルの生ポインタ</param>
-	 /// <param name="commonState">コモンステートの生ポインタ</param>
 	void Initialize(
 		const DirectX::SimpleMath::Vector3& velocity,
 		const DirectX::SimpleMath::Vector3& position,
@@ -129,8 +128,8 @@ public :
 		const DirectX::SimpleMath::Vector3& rotation,
 		bool active,
 		IBehavior* behavia,
-		DirectX::Model* model,
-		DirectX::CommonStates* commonState)override;
+		DirectX::Model* model
+		)override;
 
 	 /// <summary>
 	 /// 更新

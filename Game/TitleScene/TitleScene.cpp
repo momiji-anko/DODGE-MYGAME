@@ -13,7 +13,7 @@
 #include "TitleScene.h"
 #include"Libraries/MyLibraries/Camera.h"
 #include"Libraries/MyLibraries/TextureManager.h"
-
+#include"Game/PlayScene/GameContext/GameContext.h"
 
 //タイトルの移動時間
 const float TitleScene::MOVE_TIME = 3.0f;
@@ -91,6 +91,9 @@ void TitleScene::Initialize()
 	
 	//キーボードステートトラッカー取得
 	m_keyboardStateTracker = std::make_unique < DirectX::Keyboard::KeyboardStateTracker >();
+
+	GameContext::GetInstance().SetCommonState(m_commonState.get());
+
 	
 }
 
@@ -455,11 +458,11 @@ void TitleScene::DrawModeSelect()
 	RECT size = pDR->GetOutputSize();
 
 	//windowサイズの4分の１の値
-	float windowHeightQuarter = size.right / 4.0f;
+	float windowHeightQuarter = static_cast<float>(size.right / 4.0f);
 	//windowサイズの半分の値
-	float windowHeightHelf = size.right / 2.0f;
+	float windowHeightHelf = static_cast<float>(size.right / 2.0f);
 	//モード画像のY座標
-	float modeSelectPosY = size.bottom / 2.0f + size.bottom / 4.0;
+	float modeSelectPosY = static_cast<float>(size.bottom / 2.0f + size.bottom / 4.0);
 
 	//モードの画像座標
 	DirectX::SimpleMath::Vector2 modeSelectPosition[2] =
@@ -540,7 +543,7 @@ void TitleScene::LoadResources()
 	//ステージマネージャー
 	m_stageManager = std::make_unique<StageManager>();
 	//初期化
-	m_stageManager->Initialize(m_commonState.get(), StageManager::StageSelect::Stage1);
+	m_stageManager->Initialize(StageManager::StageSelect::Stage1);
 
 	
 	m_modeSelectTextures.resize(static_cast<int>(GameMain::PlayerMode::Player2));
@@ -622,7 +625,7 @@ void TitleScene::StageSelectUpdate()
 	//押したらステージマネージャーのステージを変える
 	if (isKeyPush)
 	{
-		m_stageManager->Initialize(m_commonState.get(), static_cast<StageManager::StageSelect>(m_stageNum));
+		m_stageManager->Initialize( static_cast<StageManager::StageSelect>(m_stageNum));
 	}
 
 	//スペースキーを押すとモードセレクトに移動

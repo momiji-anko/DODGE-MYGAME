@@ -13,8 +13,7 @@ AliveTimer::AliveTimer()
 	:
 	m_timer_s(0.0f),
 	m_numTexture(nullptr),
-	m_spriteBatch(nullptr),
-	m_commonState(nullptr)
+	m_spriteBatch(nullptr)
 {
 }
 
@@ -22,16 +21,12 @@ AliveTimer::~AliveTimer()
 {
 }
 
-void AliveTimer::Initialize(DirectX::CommonStates* commonState)
+void AliveTimer::Initialize()
 {
 	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
-	ID3D11Device1* device = pDR->GetD3DDevice();
 	ID3D11DeviceContext1* context = pDR->GetD3DDeviceContext();
 
 	m_spriteBatch = std::make_unique<DirectX::SpriteBatch>(context);
-
-	
-	m_commonState = commonState;
 
 	 m_numTexture = TextureManager::GetInstance().LoadTexture(L"Resources/Textures/num.png");
 
@@ -40,7 +35,7 @@ void AliveTimer::Initialize(DirectX::CommonStates* commonState)
 
 void AliveTimer::Update(const DX::StepTimer& timer)
 {
-	float elapsedTime = timer.GetElapsedSeconds();
+	float elapsedTime = static_cast<float>(timer.GetElapsedSeconds());
 
 	m_timer_s += elapsedTime;
 }
@@ -48,11 +43,9 @@ void AliveTimer::Update(const DX::StepTimer& timer)
 void AliveTimer::Draw()
 {
 	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
-	ID3D11DeviceContext1* context = pDR->GetD3DDeviceContext();
 
 	//	ウィンドウサイズの取得
 	float width = static_cast<float>(pDR->GetOutputSize().right);
-	float height = static_cast<float>(pDR->GetOutputSize().bottom);
 
 	DirectX::SimpleMath::Vector2 oneNumPos{ width / 2 + 30, 30 };
 	DirectX::SimpleMath::Vector2 hundredNumPos{ oneNumPos.x - 120, oneNumPos.y };
@@ -72,7 +65,7 @@ void AliveTimer::Draw()
 	{436,0,483,64} //9
 	};
 
-	m_spriteBatch->Begin(DirectX::SpriteSortMode_Deferred, m_commonState->NonPremultiplied());
+	m_spriteBatch->Begin(DirectX::SpriteSortMode_Deferred);
 
 	m_spriteBatch->Draw(m_numTexture.Get(), oneNumPos, &rectNum[static_cast<int>(m_timer_s) % 10], DirectX::Colors::White, 0.0f, { 0.0f,0.0f }, 1, DirectX::SpriteEffects_None, 0);
 	m_spriteBatch->Draw(m_numTexture.Get(), tenNumPos, &rectNum[static_cast<int>(m_timer_s / 10) % 10], DirectX::Colors::White, 0.0f, { 0.0f,0.0f }, 1, DirectX::SpriteEffects_None, 0);

@@ -2,7 +2,7 @@
 プレイシーン
 */
 #pragma once
-
+#include<Keyboard.h>
 #include <CommonStates.h>
 #include <Model.h>
 #include <GeometricPrimitive.h>
@@ -131,14 +131,13 @@ private:
 
 	// スプライトバッチ
 	std::unique_ptr<DirectX::SpriteBatch>            m_spriteBatch;
-	// スプライトフォント
-	std::unique_ptr<DirectX::SpriteFont>             m_spriteFont;
 	//カウントダウンテクスチャ
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_countDownTexture;
 	//カウントダウン
 	float                                            m_countDownTime;
 
-
+	//キーボードステートトラッカー
+	std::unique_ptr<DirectX::Keyboard::KeyboardStateTracker> m_keyboardStateTracker;
 
 	//シャドウマップ
 	std::unique_ptr<ShadowMap>                       m_shadowMap;

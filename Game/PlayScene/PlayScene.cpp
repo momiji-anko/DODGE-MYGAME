@@ -11,7 +11,7 @@
 #include"Game/PlayScene/MyRandom.h"
 #include"Libraries/MyLibraries/ModelManager.h"
 #include"Libraries/MyLibraries/TextureManager.h"
-
+#include"Game/PlayScene/GameContext/GameContext.h"
 
 const float PlayScene::COUNT_DOWN_TIME_S = 4.0f;
 
@@ -30,7 +30,6 @@ PlayScene::PlayScene()
 	m_stageManeger{},
 	m_pCamera{},
 	m_spriteBatch{},
-	m_spriteFont{},
 	m_countDownTexture{},
 	m_shadowMap{},
 	m_fadeInOut{},
@@ -69,7 +68,7 @@ void PlayScene::Initialize()
 
 	//障害物マネージャー作成
 	m_obstacleManager = std::make_unique< ObstacleManager>();
-	m_obstacleManager->Initialize(m_commonState.get(), m_stageNum);
+	m_obstacleManager->Initialize( m_stageNum);
 
 	//シャドウマップ作成
 	m_shadowMap = std::make_unique<ShadowMap>();
@@ -77,12 +76,12 @@ void PlayScene::Initialize()
 
 	//ステージマネージャー作成
 	m_stageManeger = std::make_unique<StageManager>();
-	m_stageManeger->Initialize(m_commonState.get(), m_stageNum);
+	m_stageManeger->Initialize( m_stageNum);
 	m_stageManeger->SetShadowMap(m_shadowMap.get());
 
 	//アイテムマネージャー作成
 	m_itemManeger = std::make_unique< ItemManager>();
-	m_itemManeger->Initialize(m_commonState.get());
+	m_itemManeger->Initialize();
 	m_itemManeger->SetStageManeger(m_stageManeger.get());
 
 	//カウントダウン初期化	
@@ -103,7 +102,19 @@ void PlayScene::Initialize()
 	//アライブタイム取得
 	m_aliveTime = &AliveTimer::GetInstance();
 	//初期化	
-	m_aliveTime->Initialize(m_commonState.get());
+	m_aliveTime->Initialize();
+
+	//キーボードステートトラッカーの生成
+	m_keyboardStateTracker = std::make_unique<DirectX::Keyboard::KeyboardStateTracker>();
+
+	GameContext& gameContext = GameContext::GetInstance();
+	//コモンステートをゲームコンテキストにセット
+	gameContext.SetCommonState(m_commonState.get());
+	//スプライトバッチをゲームコンテキストにセット
+	gameContext.SetSpriteBatcth(m_spriteBatch.get());
+	//キーボードステートトラッカーをゲームコンテキストにセット
+	gameContext.SetKeyboardStateTracker(m_keyboardStateTracker.get());
+
 }
 
 /// <summary>
@@ -115,6 +126,10 @@ GAME_SCENE PlayScene::Update(const DX::StepTimer& timer)
 {
 	//経過時間
 	float elapsedTime = static_cast<float>(timer.GetElapsedSeconds());
+
+	//キーボードステートトラッカーの更新
+	DirectX::Keyboard::State keyState = DirectX::Keyboard::Get().GetState();
+	m_keyboardStateTracker->Update(keyState);
 
 	//フェード更新
 	m_fadeInOut->Update(timer);
@@ -249,7 +264,6 @@ void PlayScene::LoadResources()
 
 	// スプライトバッチ::デバッグ情報の表示に必要
 	m_spriteBatch = std::make_unique<DirectX::SpriteBatch>(context);
-	m_spriteFont = std::make_unique<DirectX::SpriteFont>(device, L"Resources/Fonts/SegoeUI_18.spritefont");
 
 
 	//	コモンステート::D3Dレンダリング状態オブジェクト
@@ -345,7 +359,7 @@ void PlayScene::CreatePlayer()
 		m_players[i]->SetTypeInt(i);
 		
 		//初期化
-		m_players[i]->Initialize(DirectX::SimpleMath::Vector3::Zero, playersStartPos[i], DirectX::SimpleMath::Vector3(2.0f, 2.0f, 2.0f), DirectX::SimpleMath::Vector3::Zero, true, nullptr, nullptr, m_commonState.get());
+		m_players[i]->Initialize(DirectX::SimpleMath::Vector3::Zero, playersStartPos[i], DirectX::SimpleMath::Vector3(2.0f, 2.0f, 2.0f), DirectX::SimpleMath::Vector3::Zero, true, nullptr, nullptr);
 	}
 
 
@@ -424,6 +438,9 @@ void PlayScene::DrawCountDown()
 
 }
 
+/// <summary>
+/// 影生成
+/// </summary>
 void PlayScene::CreateShadow()
 {
 

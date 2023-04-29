@@ -7,6 +7,7 @@
 #include"pch.h"
 #include"Item.h"
 #include"DeviceResources.h"
+#include"Game/PlayScene/GameContext/GameContext.h"
 
 const float Item::ITEM_DELETE_TIME_S = 20.0f;
 
@@ -38,12 +39,12 @@ Item:: ~Item()
 /// <param name="velocity">移動ベロシティ</param>
 /// <param name="position">座標</param>
 /// <param name="scale">スケール</param>
+/// <param name="rotation">角度</param>
 /// <param name="active">アクティブ</param>
-/// <param name="angle">アングル</param>
 /// <param name="behavia">ビヘイビアーの生ポインタ</param>
 /// <param name="model">モデルの生ポインタ</param>
 /// <param name="commonState">コモンステートの生ポインタ</param>
-void Item::Initialize(const DirectX::SimpleMath::Vector3& velocity,const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Vector3& scale, const DirectX::SimpleMath::Vector3& rotation, bool active,IBehavior* behavia,DirectX::Model* model,DirectX::CommonStates* commonState)
+void Item::Initialize(const DirectX::SimpleMath::Vector3& velocity,const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Vector3& scale, const DirectX::SimpleMath::Vector3& rotation, bool active,IBehavior* behavia,DirectX::Model* model)
  {
 
 	
@@ -66,10 +67,7 @@ void Item::Initialize(const DirectX::SimpleMath::Vector3& velocity,const DirectX
 	//モデル
 	SetModel(model);
 	
-	//コモンステート
-	SetCommonState(commonState);
 	
-
 	
 	//角度設定
 	SetRotation(rotation);
@@ -150,7 +148,7 @@ void Item::Draw(Camera* camera)
 	 if (m_blink->IsBlink())
 	 {
 		 //モデル表示
-		GetModel()->Draw(context, *GetCommonState(), GetWorld(), camera->GetViewMatrix(), camera->GetProjectionMatrix());
+		GetModel()->Draw(context, *GameContext::GetInstance().GetCommonState(), GetWorld(), camera->GetViewMatrix(), camera->GetProjectionMatrix());
 	 }
 
  }

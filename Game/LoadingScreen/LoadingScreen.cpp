@@ -81,7 +81,7 @@ void LoadingScreen::Initialize(IScene* targetScene)
 --------------------------------------------------*/
 void LoadingScreen::Update(const DX::StepTimer& timer)
 {
-
+	UNREFERENCED_PARAMETER(timer);
 
 	for (DirectX::SimpleMath::Vector2& texPos : m_texturePositions)
 	{

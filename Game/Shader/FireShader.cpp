@@ -23,7 +23,37 @@ const std::vector<D3D11_INPUT_ELEMENT_DESC> FireShader::INPUT_LAYOUT =
 FireShader::FireShader()
 	:
 	m_scale(1.0f),
-	m_offSetPos(0.f, 0.f, 0.f)
+	m_CBuffer{},
+	m_timer{},
+	m_inputLayout{},
+	m_batch{},
+	m_states{},
+	m_texture{},
+	m_vertexShader{},
+	m_pixelShader{},
+	m_geometryShader{},
+	m_world{},
+	m_view{},
+	m_proj{},
+	m_camera{},
+	m_gravity{},
+	m_position{},
+	m_velocity{},
+	m_life{},
+	m_startPosition{},
+	m_startVelocity{},
+	m_startLife{},
+	m_wait{},
+	m_positionList{},
+	m_rot{},
+	m_angle{},
+	m_color{},
+	m_rutin{},
+	m_colorTime{},
+	m_time{},
+	m_offsetPos{}
+
+
 {
 }
 
@@ -77,8 +107,6 @@ void FireShader::Create()
 	const wchar_t* name = L"Resources\\Textures\\6.bmp";
 	DirectX::CreateWICTextureFromFile(pDR->GetD3DDevice(), name, nullptr, m_texture.GetAddressOf());
 
-	const wchar_t* name2 = L"Resources\\Textures\\shadow.png";
-	DirectX::CreateWICTextureFromFile(pDR->GetD3DDevice(), name2, nullptr, m_texture2.GetAddressOf());
 
 	// プリミティブバッチの作成
 	m_batch = std::make_unique<DirectX::PrimitiveBatch<DirectX::VertexPositionColorTexture>>(pDR->GetD3DDeviceContext());
@@ -114,30 +142,20 @@ void FireShader::Create()
 //			射影行列	DirectX::SimpleMath::Matrix proj
 //	RE	:	void
 //-----------------------------------------------------------------------------------
-void FireShader::SetRenderState(DirectX::SimpleMath::Vector3 camera, DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix proj)
+void FireShader::SetRenderState(const DirectX::SimpleMath::Vector3& camera, const DirectX::SimpleMath::Matrix& view, const DirectX::SimpleMath::Matrix& proj)
 {
 	m_camera = camera;
 	m_view = view;
 	m_proj = proj;
 }
 
-void FireShader::Initialize(float life, DirectX::SimpleMath::Vector3 pos, DirectX::SimpleMath::Vector3 velocity)
+void FireShader::Initialize(float life, const DirectX::SimpleMath::Vector3& pos, const DirectX::SimpleMath::Vector3& velocity)
 {
 	m_startPosition = pos;
 	m_startVelocity = velocity;
 	m_startLife = life;
 
-	//int seed = MyRandom::GetIntRange(0, 1);
-	//
-	//if (seed == 0)
-	//{
-	//	m_wait = 0.5f;
 
-	//}
-	//else
-	//{
-	//	m_wait = 1.0f;
-	//}
 
 	int seed = 100;
 	m_wait = ((rand() % seed) / (float)seed) * m_startLife;
@@ -156,7 +174,6 @@ void FireShader::Initialize(float life, DirectX::SimpleMath::Vector3 pos, Direct
 	}
 
 
-	m_isGravity = false;
 
 }
 
@@ -178,7 +195,7 @@ void FireShader::Reset()
 void FireShader::Update(DX::StepTimer timer)
 {
 	//処理に使う秒速計(1秒で1.0f)を取得する。
-	float time = timer.GetElapsedSeconds();
+	float time = static_cast<float>(timer.GetElapsedSeconds());
 
 	m_wait -= time;
 
@@ -189,13 +206,7 @@ void FireShader::Update(DX::StepTimer timer)
 
 	DirectX::SimpleMath::Vector3 vel = DirectX::SimpleMath::Vector3(0.002f, 0, 0);
 
-	//m_velocity += g;
 
-
-	//for (auto& position : m_positionList)
-	//{
-	//	position += m_velocity;
-	//}
 
 	if (m_position.x > 0)
 	{
@@ -209,76 +220,10 @@ void FireShader::Update(DX::StepTimer timer)
 
 
 
-	const float MOVE_TIME = 0.5;
 	m_position += m_velocity;
 
 	m_scale = Lerp(1.0f, 0.0f, 1.0f - m_life / m_startLife);
 	m_angle += 0.1f;
-	//switch (m_rutin)
-	//{
-	//case 0:
-	//	m_time += time;
-	//	m_scale = Lerp(0.4f, 0.6f, m_time / MOVE_TIME);
-
-	//	if (m_time > MOVE_TIME)
-	//	{
-	//		m_time = MOVE_TIME;
-	//		m_rutin++;
-	//	}
-	//	break;
-
-	//case 1:
-	//	m_time = 0.0f;
-	//	m_rutin ++;
-	//case 2:
-	//	m_time += time;
-	//	
-	//	m_scale = Lerp(0.6f, 0.0f, m_time / MOVE_TIME);
-
-	//	if (m_time > MOVE_TIME)
-	//	{
-	//		m_time = MOVE_TIME;
-	//		m_rutin++;
-	//	}
-	//	break;
-
-	//case 3:
-	//	m_time = 0.0f;
-	//	m_rutin++;
-	//case 4:
-	//	m_time += time;
-
-	//	m_scale = Lerp(0, 0.0f, m_time / MOVE_TIME);
-
-	//	if (m_time > MOVE_TIME)
-	//	{
-	//		m_time = MOVE_TIME;
-	//		m_rutin++;
-	//	}
-	//	break;
-
-	//
-
-
-	//
-	//default:
-	//	break;
-	//}
-
-
-	
-
-	//if (m_life > m_startLife / 2)
-	//{
-	//	m_scale -= 0.1f;
-	//}
-	//else
-	//{
-	//	m_scale += 0.1f;
-	//}
-
-
-//	m_angle = Lerp(0.0f, 3.140f, 1.f - m_life / m_startLife);
 
 	m_life -= time;
 
@@ -299,17 +244,6 @@ void FireShader::Update(DX::StepTimer timer)
 void FireShader::Render()
 {
 	////ビルボード化
-	//m_world = Matrix::CreateBillboard(m_position, m_camera, Vector3::UnitY);
-	////m_world *= Matrix::CreateScale(m_scale);
-	////シェーダーを反転させる
-	//Matrix rotmat;
-	//rotmat._11 = -1;
-	//rotmat._33 = -1;
-	//Matrix scaleMat, rotMat;
-	//scaleMat = Matrix::CreateScale(m_scale);
-	//
-	////m_world = rotmat * m_world;
-	//m_world = scaleMat  * rotmat * m_world;
 	m_world = DirectX::SimpleMath::Matrix::Identity;
 
 	DirectX::SimpleMath::Matrix wrold = DirectX::SimpleMath::Matrix::Identity;
@@ -390,7 +324,6 @@ void FireShader::ShaderDraw()
 
 	//ピクセルシェーダにテクスチャを登録する。
 	context->PSSetShaderResources(0, 1, m_texture.GetAddressOf());
-	context->PSSetShaderResources(1, 1, m_texture2.GetAddressOf());
 
 
 	//インプットレイアウトの登録
@@ -422,15 +355,10 @@ void FireShader::Lost()
 	m_batch.reset();
 	m_states.reset();
 	m_texture.Reset();
-	m_texture2.Reset();
 	m_vertexShader.Reset();
 	m_pixelShader.Reset();
 }
-void FireShader::SetGravity(bool gravity)
-{
-	m_isGravity = gravity;
 
-}
 
 
 

@@ -62,10 +62,7 @@ private:
 
 	// テクスチャハンドル
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_texture;
-	// テクスチャハンドル
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_texture2;
-	// テクスチャハンドル
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_texture3;
+
 
 	// 頂点シェーダ
 	Microsoft::WRL::ComPtr<ID3D11VertexShader> m_vertexShader;

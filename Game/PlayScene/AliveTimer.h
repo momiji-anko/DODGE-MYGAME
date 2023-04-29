@@ -20,7 +20,7 @@ public:
 	~AliveTimer();
 
 	// ‰Šú‰»
-	void Initialize(DirectX::CommonStates* commonState);
+	void Initialize();
 
 	// XV
 	void Update(const DX::StepTimer& timer);
@@ -41,7 +41,6 @@ private:
 
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_numTexture;
 
-	DirectX::CommonStates* m_commonState;
 
 
 };

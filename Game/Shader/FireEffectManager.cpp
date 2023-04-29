@@ -96,7 +96,7 @@ void FireEffectManager::Render()
 	}
 }
 
-void FireEffectManager::SetRenderState(DirectX::SimpleMath::Vector3 camera, DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix proj)
+void FireEffectManager::SetRenderState(const DirectX::SimpleMath::Vector3& camera, const DirectX::SimpleMath::Matrix& view, const DirectX::SimpleMath::Matrix& proj)
 {
 	//camera,view,proj,‚Ì’l‚ðm_effect‚É“n‚·
 	for (std::list<std::unique_ptr<FireShader>>::iterator ite = m_effectList.begin();
@@ -106,17 +106,9 @@ void FireEffectManager::SetRenderState(DirectX::SimpleMath::Vector3 camera, Dire
 	}
 }
 
-void FireEffectManager::SetGravity(bool gravity)
-{
-	
-	for (std::list<std::unique_ptr<FireShader>>::iterator ite = m_effectList.begin();
-		ite != m_effectList.end(); ite++)
-	{
-		(*ite)->SetGravity(gravity);
-	}
-}
 
-void FireEffectManager::SetStartPosition(DirectX::SimpleMath::Vector3& pos)
+
+void FireEffectManager::SetStartPosition(const DirectX::SimpleMath::Vector3& pos)
 {
 	for (std::list<std::unique_ptr<FireShader>>::iterator ite = m_effectList.begin();
 		ite != m_effectList.end(); ite++)
@@ -127,7 +119,7 @@ void FireEffectManager::SetStartPosition(DirectX::SimpleMath::Vector3& pos)
 
 }
 
-void FireEffectManager::SetOffsetPosition(DirectX::SimpleMath::Vector3& pos)
+void FireEffectManager::SetOffsetPosition(const DirectX::SimpleMath::Vector3& pos)
 {
 	for (std::list<std::unique_ptr<FireShader>>::iterator ite = m_effectList.begin();
 		ite != m_effectList.end(); ite++)

@@ -8,6 +8,7 @@
 #include"Game/PlayScene/Item/Item.h"
 #include"DeviceResources.h"
 #include"Actor.h"
+#include"Game/PlayScene/GameContext/GameContext.h"
 
 /// <summary>
 /// コンストラクタ
@@ -20,7 +21,6 @@ Actor::Actor():
 	m_angle(0.0f),
 	m_behavia(nullptr),
 	m_pModel(nullptr),
-	m_commonState(nullptr),
 	m_AABBObject(nullptr)
 {
 	CreateAABB();
@@ -59,7 +59,7 @@ void Actor::CreateShadow(ShadowMap* shadow, const DirectX::SimpleMath::Matrix& v
 		CalculationWorld();
 
 		//影生成
-		GetModel()->Draw(context, *GetCommonState(), GetWorld(), view, projection, false, [&]()
+		GetModel()->Draw(context, *GameContext::GetInstance().GetCommonState(), GetWorld(), view, projection, false, [&]()
 			{
 				shadow->DrawShadowMap(context);
 			}

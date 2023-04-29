@@ -19,9 +19,8 @@
 /// <param name="rotation">角度（ラジアン）</param>
 /// <param name="behavior">回転する棒のビヘイビア</param>
 /// <param name="model">回転する棒のモデル</param>
-/// <param name="commonState">コモンステート</param>
 /// <returns>true=生成成功　false=生成失敗</returns>
-bool RotateStickObstacleSpawner::Create(std::vector< std::unique_ptr<Actor>>& actors, const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Vector3& rotation, IBehavior* behavior, DirectX::Model* model, DirectX::CommonStates* commonState)
+bool RotateStickObstacleSpawner::Create(std::vector< std::unique_ptr<Actor>>& actors, const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Vector3& rotation, IBehavior* behavior, DirectX::Model* model)
 {
 	for (std::unique_ptr<Actor>& actor : actors)
 	{
@@ -39,7 +38,7 @@ bool RotateStickObstacleSpawner::Create(std::vector< std::unique_ptr<Actor>>& ac
 		DirectX::SimpleMath::Vector3 scale = DirectX::SimpleMath::Vector3(0.005f, 0.005f, 0.005f);
 
 		//障害物初期化
-		actor->Initialize(DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f), position, scale, rotation, true, behavior, model, commonState);
+		actor->Initialize(DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f), position, scale, rotation, true, behavior, model);
 
 
 

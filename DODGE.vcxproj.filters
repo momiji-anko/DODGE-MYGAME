@@ -86,6 +86,9 @@
     <Filter Include="Game\PlayScene\Stage\StageBehaviors">
       <UniqueIdentifier>{907c0335-bab6-4d60-8614-f670d729de7a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game\PlayScene\GameContext">
+      <UniqueIdentifier>{69c333c8-e5f9-4618-90c8-8a8ca5d7150f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -270,6 +273,9 @@
     <ClInclude Include="Game\PlayScene\Stage\StageBehaviors\NormalFloorBehavior.h">
       <Filter>Game\PlayScene\Stage\StageBehaviors</Filter>
     </ClInclude>
+    <ClInclude Include="Game\PlayScene\GameContext\GameContext.h">
+      <Filter>Game\PlayScene\GameContext</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -430,6 +436,9 @@
     </ClCompile>
     <ClCompile Include="Game\PlayScene\Stage\StageBehaviors\NormalFloorBehavior.cpp">
       <Filter>Game\PlayScene\Stage\StageBehaviors</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\PlayScene\GameContext\GameContext.cpp">
+      <Filter>Game\PlayScene\GameContext</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

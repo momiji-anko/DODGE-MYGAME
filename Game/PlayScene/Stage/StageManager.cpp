@@ -41,7 +41,6 @@ void StageManager::SetShadowMap(ShadowMap* shadow)
 /// </summary>
 StageManager::StageManager()
 	:
-	m_commonState(nullptr),
 	m_stage{},
 	m_behavior{}
 {
@@ -59,13 +58,10 @@ StageManager::~StageManager()
 /// <summary>
 /// 初期化
 /// </summary>
-/// <param name="commonState">コモンステートの生ポインタ</param>
 /// <param name="stage">ステージ選択</param>
-void StageManager::Initialize(DirectX::CommonStates* commonState, StageSelect stage)
+void StageManager::Initialize( StageSelect stage)
 {
 
-	//コモンステート
-	m_commonState = commonState;
 
 	//ステージjsonファイルパス
 	std::wstring stageFileName;
@@ -263,7 +259,7 @@ void StageManager::LoadStageJson(const std::wstring& fileName)
 		m_stage[i]->SetIndices(indices);
 
 		//読み込んだステージ情報でステージを初期化する
-		m_stage[i]->Initialize(DirectX::SimpleMath::Vector3::Zero, stagePositions[i], scale, DirectX::SimpleMath::Vector3::Zero, true, m_behavior[stageType[i]].get(), stageModel, m_commonState);
+		m_stage[i]->Initialize(DirectX::SimpleMath::Vector3::Zero, stagePositions[i], scale, DirectX::SimpleMath::Vector3::Zero, true, m_behavior[stageType[i]].get(), stageModel);
 		
 		
 	}
@@ -445,7 +441,7 @@ bool StageManager::StageToActorHitCheck(Actor* actor)
 /// <param name="linePos">線分の両端座標</param>
 /// <param name="normalVector">法線ベクトルのポインタ</param>
 /// <returns>true=当たっている　false=当っていない</returns>
-bool StageManager::StageHitCheck(std::vector<DirectX::SimpleMath::Vector3> vertices, std::vector<DirectX::SimpleMath::Vector3> linePos, DirectX::SimpleMath::Vector3* normalVector)
+bool StageManager::StageHitCheck(const std::vector<DirectX::SimpleMath::Vector3>& vertices, const std::vector<DirectX::SimpleMath::Vector3>& linePos, DirectX::SimpleMath::Vector3* normalVector)
 {
 	//各頂点座標
 	DirectX::SimpleMath::Vector3 vertex0 = vertices[0];
