@@ -118,7 +118,6 @@ void ObstacleManager::Initialize(StageManager::StageSelect stage)
 		CreateObstacle(DirectX::SimpleMath::Vector3(0.0f, 3.0f, 0.0f), Obstacle::ObstacleType::REVERSE_ROTATESTICK, DirectX::SimpleMath::Vector3::Zero);
 	}
 
-	m_time_s = 50;
 }
 
 /// <summary>
@@ -184,7 +183,7 @@ void ObstacleManager::Update(const DX::StepTimer& timer)
 			//乱数で出現させる障害物のボーダーライン
 			static const int NOERMAL_FIRE_SPAWNE_NUM = 30;
 			static const int STICK_SPAWNE_NUM = 45;
-			static const int BIRD_SPAWNE_NUM = 99;
+			static const int BIRD_SPAWNE_NUM = 60;
 			static const int MEANDERING_FIRE_SPAWNE_NUM = 100;
 
 			//乱数が３０以下であれば普通の炎を生成する
@@ -634,7 +633,7 @@ void ObstacleManager::PlayerCapuslePenetration(Actor* player, const DirectX::Sim
 		//当たったカプセルとカプセルのベクトルを正規化
 		capToCapVector.Normalize();
 		//当たったカプセルとカプセルのベクトルにめり込んだ量をかける		
-		DirectX::SimpleMath::Vector3 playerPenetrationVelocity = cupseleToCupseVector * capToCapLengthToRasiusDifference;
+		DirectX::SimpleMath::Vector3 playerPenetrationVelocity = capToCapVector * capToCapLengthToRasiusDifference;
 		//プレイヤーのめり込んだ量を押し出す
 		player->SetPosition(player->GetPosition() + playerPenetrationVelocity);
 	}
