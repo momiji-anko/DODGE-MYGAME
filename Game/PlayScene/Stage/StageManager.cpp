@@ -355,6 +355,12 @@ void StageManager::ActorPolygonPenetration(Actor* actor, std::vector<DirectX::Si
 }
 
 
+/// <summary>
+/// アクターのスライドベクトルを計算する
+/// </summary>
+/// <param name="normalVec">ポリゴンの法線ベクトル</param>
+/// <param name="actorVel">アクターの移動量</param>
+/// <returns>スライドベクトル</returns>
 DirectX::SimpleMath::Vector3 StageManager::SlideVecCalculation(DirectX::SimpleMath::Vector3 normalVec, DirectX::SimpleMath::Vector3 actorVel)
 {
 	//法線ベクトルの正規化
