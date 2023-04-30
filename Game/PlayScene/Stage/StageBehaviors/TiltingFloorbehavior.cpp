@@ -21,7 +21,7 @@ void TiltingFloorbehavior::Execute(const DX::StepTimer& timer, Actor* actor)
 	//回転量
 	static const float ROTATION_ANGLE = DirectX::XMConvertToRadians(3.5f);
 	//移動秒数
-	static const float MOVE_TIME_S = 1.0f;
+	static const float MOVE_TIME_S = 0.5f;
 	//回転時間のクールタイム
 	static const float ROTATION_COOL_TIME_S = 5.0f;
 

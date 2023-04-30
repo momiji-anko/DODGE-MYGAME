@@ -34,7 +34,9 @@ bool NormalObstacleSpawner::Create(std::vector< std::unique_ptr<Actor>>& actors,
 		DirectX::SimpleMath::Vector3 velocity;
 
 		velocity = actor->GetPlayerPosition() - position;
-
+		//‚™‚ğ‚O‚É‚·‚é
+		velocity.y = 0.0f;
+		
 		velocity.Normalize();
 		
 		//áŠQ•¨‚É‚Ìƒ^ƒCƒvİ’è
