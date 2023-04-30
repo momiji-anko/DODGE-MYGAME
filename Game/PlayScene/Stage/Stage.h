@@ -47,7 +47,7 @@ public:
 	/// オフセット座標設定
 	/// </summary>
 	/// <param name="position">オフセット座標</param>
-	void SetOffsetPosition(DirectX::SimpleMath::Vector3& position) { m_offsetPosition = position; }
+	void SetOffsetPosition(const DirectX::SimpleMath::Vector3& position) { m_offsetPosition = position; }
 	/// <summary>
 	/// オフセット座標取得
 	/// </summary>

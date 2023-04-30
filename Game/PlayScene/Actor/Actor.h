@@ -42,7 +42,7 @@ public:
 	/// À•W‚Ìİ’è
 	/// </summary>
 	/// <param name="position">À•W</param>
-	void SetPosition(DirectX::SimpleMath::Vector3 position) { m_position = position; }
+	void SetPosition(const DirectX::SimpleMath::Vector3& position) { m_position = position; }
 	/// <summary>
 	/// À•W‚Ìæ“¾
 	/// </summary>
@@ -53,7 +53,7 @@ public:
 	/// ˆÚ“®—Ê‚Ìİ’è
 	/// </summary>
 	/// <param name="velocity">ˆÚ“®—Ê</param>
-	void SetVelocity(DirectX::SimpleMath::Vector3 velocity) { m_velocity = velocity; }
+	void SetVelocity(const DirectX::SimpleMath::Vector3& velocity) { m_velocity = velocity; }
 	/// <summary>
 	/// ˆÚ“®—Ê‚Ìæ“¾
 	/// </summary>

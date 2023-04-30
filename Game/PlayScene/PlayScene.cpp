@@ -309,26 +309,13 @@ void PlayScene::CreatePlayer()
 {
 
 
-	//二人用プレイヤースタート座標
-	DirectX::SimpleMath::Vector3 playersStartPos[2] =
-	{
-		DirectX::SimpleMath::Vector3{3.0f,0.0f,6.0f} ,
-		DirectX::SimpleMath::Vector3{-3.0f,0.0f,6.0f}
-	};
-
-	//プレイヤーモードが1人モードなら一人用のスタート座標にする
-	if (m_playerMode == GameMain::PlayerMode::Player1)
-	{
-		playersStartPos[0] = DirectX::SimpleMath::Vector3(0.0f, 7.0f, 6.0f);
-	}
-
 	//プレイヤーのキーデータ
 	std::vector<std::vector<DirectX::Keyboard::Keys>> playerKeyData =
 	{
 		//プレイヤー１のキーデータ(右、左、前、後ろ、ジャンプ)
-		{DirectX::Keyboard::Keys::Right,DirectX::Keyboard::Keys::Left,DirectX::Keyboard::Keys::Up,DirectX::Keyboard::Keys::Down,DirectX::Keyboard::Keys::Space},
+		{DirectX::Keyboard::Keys::Right,DirectX::Keyboard::Keys::Left,DirectX::Keyboard::Keys::Up,DirectX::Keyboard::Keys::Down,DirectX::Keyboard::Keys::RightShift},
 		//プレイヤー２のキーデータ(右、左、前、後ろ、ジャンプ)
-		{DirectX::Keyboard::Keys::D,DirectX::Keyboard::Keys::A,DirectX::Keyboard::Keys::W,DirectX::Keyboard::Keys::S,DirectX::Keyboard::Keys::Z}
+		{DirectX::Keyboard::Keys::D,DirectX::Keyboard::Keys::A,DirectX::Keyboard::Keys::W,DirectX::Keyboard::Keys::S,DirectX::Keyboard::Keys::Space}
 	};
 
 	//プレイヤーのモデルファイルパス
@@ -339,6 +326,19 @@ void PlayScene::CreatePlayer()
 		{L"Resources/Models/Player2idoru.cmo",L"Resources/Models/Player2hidari.cmo",L"Resources/Models/Player2Migi.cmo",L"Resources/Models/Player2Janp.cmo"}
 	};
 
+	//二人用プレイヤースタート座標
+	DirectX::SimpleMath::Vector3 playersStartPos[2] =
+	{
+		DirectX::SimpleMath::Vector3{3.0f,0.0f,6.0f} ,
+		DirectX::SimpleMath::Vector3{-3.0f,0.0f,6.0f}
+	};
+
+	//プレイヤーモードが1人モードなら一人用のスタート座標、キーデータにする
+	if (m_playerMode == GameMain::PlayerMode::Player1)
+	{
+		playersStartPos[0] = DirectX::SimpleMath::Vector3(0.0f, 7.0f, 6.0f);
+		playerKeyData[0] = { DirectX::Keyboard::Keys::Right,DirectX::Keyboard::Keys::Left,DirectX::Keyboard::Keys::Up,DirectX::Keyboard::Keys::Down,DirectX::Keyboard::Keys::Space };
+	}
 	//プレイヤーモードの数プレイヤーを作成
 	for (int i = 0; i < static_cast<int>(m_playerMode); i++)
 	{

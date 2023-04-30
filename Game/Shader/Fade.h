@@ -30,13 +30,13 @@ public:
 	static const std::vector<D3D11_INPUT_ELEMENT_DESC> INPUT_LAYOUT;
 
 	void Create();
-	void Initialize(DirectX::SimpleMath::Vector3 pos,float fade = 1.0f);
+	void Initialize(const DirectX::SimpleMath::Vector3& pos,float fade = 1.0f);
 	void Update(DX::StepTimer timer);
 	void Render();
 	void Lost();
 
-	void SetRenderState(DirectX::SimpleMath::Vector3 camera, DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix proj);
-	void Draw(DirectX::SimpleMath::Matrix world, DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix proj);
+	void SetRenderState(const DirectX::SimpleMath::Vector3& camera, const DirectX::SimpleMath::Matrix& view, const DirectX::SimpleMath::Matrix& proj);
+	void Draw(const DirectX::SimpleMath::Matrix& world, const DirectX::SimpleMath::Matrix& view, const DirectX::SimpleMath::Matrix& proj);
 
 	void RenderModel();
 

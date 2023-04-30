@@ -16,12 +16,11 @@ class FireEffectManager
 {
 public:
 
-	void SetRenderState(DirectX::SimpleMath::Vector3 camera, DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix proj);
+	void SetRenderState(const DirectX::SimpleMath::Vector3& camera, const DirectX::SimpleMath::Matrix& view, const DirectX::SimpleMath::Matrix& proj);
 
-	void SetGravity(bool gravity);
 
-	void SetStartPosition(DirectX::SimpleMath::Vector3& pos);
-	void SetOffsetPosition(DirectX::SimpleMath::Vector3& pos);
+	void SetStartPosition(const DirectX::SimpleMath::Vector3& pos);
+	void SetOffsetPosition(const DirectX::SimpleMath::Vector3& pos);
 
 
 

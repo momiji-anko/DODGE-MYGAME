@@ -185,7 +185,7 @@ Item::ItemType ItemManager::PlayerHitItemType(AABBFor3D* player)
 /// <param name="shadowMap">シャドウマップの生ポインタ</param>
 /// <param name="view">ビュー行列</param>
 /// <param name="projection">プロジェクション行列</param>
-void ItemManager::Shadow(ShadowMap* shadowMap, DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix projection)
+void ItemManager::Shadow(ShadowMap* shadowMap, const DirectX::SimpleMath::Matrix& view, const DirectX::SimpleMath::Matrix& projection)
 {
 	//影の生成する
 	for (std::unique_ptr<Actor>&item : m_items)

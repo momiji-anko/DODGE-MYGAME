@@ -81,7 +81,7 @@ public:
 	/// <param name="linePos">線分の両端座標</param>
 	/// <param name="normalVector">法線ベクトルのポインタ</param>
 	/// <returns>true=当たっている　false=当っていない</returns>
-	bool StageHitCheck(std::vector<DirectX::SimpleMath::Vector3> vertices, std::vector<DirectX::SimpleMath::Vector3> linePos, DirectX::SimpleMath::Vector3* normalVector);
+	bool StageHitCheck(const std::vector<DirectX::SimpleMath::Vector3>& vertices, const std::vector<DirectX::SimpleMath::Vector3>& linePos, DirectX::SimpleMath::Vector3* normalVector);
 private:
 
 	/// <summary>

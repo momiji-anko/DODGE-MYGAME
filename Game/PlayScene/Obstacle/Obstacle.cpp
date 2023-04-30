@@ -118,7 +118,6 @@ void Obstacle::Draw(Camera* camera)
 	//ワールド行列を計算する
 	CalculationWorld();
 
-	GetAABB()->Draw(DirectX::SimpleMath::Matrix::Identity, camera->GetViewMatrix(), camera->GetProjectionMatrix(),DirectX::SimpleMath::Vector4(1,1,1,1));
 
 	//炎でなければモデル表示する
 	if (m_type != ObstacleType::NORMAL && m_type != ObstacleType::MEANDERING)

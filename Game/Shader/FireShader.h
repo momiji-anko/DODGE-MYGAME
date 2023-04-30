@@ -29,13 +29,13 @@ public:
 	//static const std::vector<D3D11_INPUT_ELEMENT_DESC> INPUT_SHADER_LAYOUT;
 
 	void Create();
-	void Initialize(float life, DirectX::SimpleMath::Vector3 pos, DirectX::SimpleMath::Vector3 velocity);
+	void Initialize(float life, const DirectX::SimpleMath::Vector3& pos,const DirectX::SimpleMath::Vector3& velocity);
 	void Update(DX::StepTimer timer);
 	void Render();
 	void Reset();
 	void Lost();
 
-	void SetRenderState(DirectX::SimpleMath::Vector3 camera, DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix proj);
+	void SetRenderState(const DirectX::SimpleMath::Vector3& camera, const DirectX::SimpleMath::Matrix& view, const DirectX::SimpleMath::Matrix& proj);
 
 
 	
@@ -50,9 +50,9 @@ public:
 		return start + (end - start) * t;
 	}
 
-	void SetStartPos(DirectX::SimpleMath::Vector3& pos) { m_startPosition = pos; }
+	void SetStartPos(const DirectX::SimpleMath::Vector3& pos) { m_startPosition = pos; }
 
-	void SetOffsetPosition(DirectX::SimpleMath::Vector3 pos) { m_offsetPos = pos; }
+	void SetOffsetPosition(const DirectX::SimpleMath::Vector3& pos) { m_offsetPos = pos; }
 
 private:
 

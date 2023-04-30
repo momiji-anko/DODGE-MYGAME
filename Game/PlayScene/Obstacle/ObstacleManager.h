@@ -183,7 +183,7 @@ private:
 	/// <param name="cupseleToCupseVector">当たったカプセルとカプセルのベクトル（プレイヤーカプセルから障害物カプセルのベクトル）</param>
 	/// <param name="playerCapsleRadius">プレイヤーのカプセルの半径</param>
 	/// <param name="obstacleCupsleRadius">障害物のカプセルの半径</param>
-	void PlayerCapuslePenetration(Actor* player, DirectX::SimpleMath::Vector3 cupseleToCupseVector, float playerCapsleRadius, float obstacleCupsleRadius);
+	void PlayerCapuslePenetration(Actor* player,const DirectX::SimpleMath::Vector3& cupseleToCupseVector, float playerCapsleRadius, float obstacleCupsleRadius);
 
 	/// <summary>
 	/// 回転する棒に当たった時の処理
