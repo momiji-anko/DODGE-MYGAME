@@ -29,7 +29,7 @@ const DirectX::SimpleMath::Vector3 Player::AABB_AREA_UP = DirectX::SimpleMath::V
 const DirectX::SimpleMath::Vector3 Player::AABB_AREA_DOWN = DirectX::SimpleMath::Vector3(-0.5f, -0.0f, -0.5f);
 
 //上のカプセルの長さ
-const float Player::CAPSULE_AREA_UP = 1.5f;
+const float Player::CAPSULE_AREA_UP = 1.3f;
 //下のカプセルの長さ
 const float Player::CAPSULE_AREA_DOWN = 0.5f;
 

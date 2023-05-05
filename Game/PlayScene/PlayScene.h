@@ -161,4 +161,8 @@ private:
 	//ステージ
 	StageManager::StageSelect m_stageNum;
 
+	//プレイヤーの操作方法画像
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_playerMoveKey;
+	bool m_isTabKey;
+
 };

@@ -131,6 +131,13 @@ GAME_SCENE PlayScene::Update(const DX::StepTimer& timer)
 	DirectX::Keyboard::State keyState = DirectX::Keyboard::Get().GetState();
 	m_keyboardStateTracker->Update(keyState);
 
+	m_isTabKey = keyState.IsKeyDown(DirectX::Keyboard::Keys::Tab);
+
+	if (m_isTabKey)
+	{
+		return GAME_SCENE::NONE;
+	}
+
 	//フェード更新
 	m_fadeInOut->Update(timer);
 	
@@ -235,6 +242,11 @@ void PlayScene::Draw()
 		(*player)->TextureDraw(m_spriteBatch.get());
 	}
 	
+	if (m_isTabKey)
+	{
+		m_spriteBatch->Draw(m_playerMoveKey.Get(), DirectX::SimpleMath::Vector2::Zero, nullptr, DirectX::Colors::White, 0.0f, DirectX::SimpleMath::Vector2::Zero, 1.0f);
+	}
+
 	//画像描画終了
 	m_spriteBatch->End();
 	
@@ -300,6 +312,13 @@ void PlayScene::LoadResources()
 	//カウントダウンの画像
 	m_countDownTexture = textureManager.LoadTexture(L"Resources/Textures/num.png");
 
+	std::wstring playerMoveKeyTex[2] = { 
+		{L"Resources/Textures/1playerMoveKey.png"},
+		{L"Resources/Textures/2playerMoveKey.png"}
+	};
+
+	m_playerMoveKey = textureManager.LoadTexture(playerMoveKeyTex[static_cast<int>(m_playerMode) - 1]);
+
 }
 
 /// <summary>
@@ -313,7 +332,7 @@ void PlayScene::CreatePlayer()
 	std::vector<std::vector<DirectX::Keyboard::Keys>> playerKeyData =
 	{
 		//プレイヤー１のキーデータ(右、左、前、後ろ、ジャンプ)
-		{DirectX::Keyboard::Keys::Right,DirectX::Keyboard::Keys::Left,DirectX::Keyboard::Keys::Up,DirectX::Keyboard::Keys::Down,DirectX::Keyboard::Keys::RightShift},
+		{DirectX::Keyboard::Keys::Right,DirectX::Keyboard::Keys::Left,DirectX::Keyboard::Keys::Up,DirectX::Keyboard::Keys::Down,DirectX::Keyboard::Keys::RightShift},	
 		//プレイヤー２のキーデータ(右、左、前、後ろ、ジャンプ)
 		{DirectX::Keyboard::Keys::D,DirectX::Keyboard::Keys::A,DirectX::Keyboard::Keys::W,DirectX::Keyboard::Keys::S,DirectX::Keyboard::Keys::Space}
 	};
