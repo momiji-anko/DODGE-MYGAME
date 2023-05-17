@@ -27,7 +27,7 @@ public:
 	/// <summary>
 	/// 点滅開始
 	/// </summary>
-	void Start() { m_isBlink = true; }
+	void Start() { m_isBlink = true;  }
 
 	/// <summary>
 	/// 点滅を止める
@@ -75,7 +75,7 @@ public:
 
 private:
 	/// <summary>
-	/// 点滅のついた瞬間の処理
+	/// 点滅の瞬間の処理
 	/// </summary>
 	void BlinkedCheck();
 

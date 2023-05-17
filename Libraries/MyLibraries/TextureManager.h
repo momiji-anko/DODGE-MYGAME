@@ -14,9 +14,7 @@
 /// </summary>
 class TextureManager :public Singleton<TextureManager>
 {
-private:
-	//テクスチャ
-	std::unordered_map<std::wstring, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>> m_textures;
+
 public:
 	/// <summary>
 	/// テクスチャを読み込む
@@ -24,4 +22,7 @@ public:
 	/// <param name="fileName">テクスチャのファイルパス</param>
 	/// <returns>テクスチャ</returns>
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> LoadTexture(std::wstring fileName);
+private:
+	//テクスチャ
+	std::unordered_map<std::wstring, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>> m_textures;
 };

@@ -81,7 +81,7 @@ void Item::Initialize(const DirectX::SimpleMath::Vector3& velocity,const DirectX
 	//ì_ñ≈ÇÃê›íË
 	m_blink = std::make_unique<Blink>();
 	//èâä˙âª
-	m_blink->Initialize(0.3, 30, true, 0.003f);
+	m_blink->Initialize(0.1, 30);
 
  }
 

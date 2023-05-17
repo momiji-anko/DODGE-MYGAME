@@ -126,8 +126,7 @@ public:
 	/// <summary>
 	/// 盾UIの描画
 	/// </summary>
-	/// <param name="spriteBatch">スプライトバッチ</param>
-	void TextureDraw(DirectX::SpriteBatch* spriteBatch);
+	void TextureDraw();
 
 	/// <summary>
 	/// 終了処理

@@ -42,8 +42,8 @@ const float Player::MODEL_TIME_SPEED = 10.0f;
 
 //プレイヤーのシールド画面表示位置
 const DirectX::SimpleMath::Vector2 Player::PLAYERS_SHIELD_TEXTURE_POSITION[2] = {
-	DirectX::SimpleMath::Vector2(20.0f,10.0f),
-	DirectX::SimpleMath::Vector2(1260.0f,10.0f)
+	DirectX::SimpleMath::Vector2(1200.0f,10.0f),
+	DirectX::SimpleMath::Vector2(20.0f,10.0f)
 };
 
 /// <summary>
@@ -139,7 +139,7 @@ void Player::Initialize(const DirectX::SimpleMath::Vector3& velocity, const Dire
 	//ブリンクする
 	m_blink = std::make_unique<Blink>();
 	//初期化
-	m_blink->Initialize(blinkTime_s, blinkCount, blinkFastTime_s, true);
+	m_blink->Initialize(blinkTime_s, blinkCount);
 
 }
 
@@ -178,6 +178,20 @@ void Player::Update(const DX::StepTimer& timer)
 	if (m_obstacleManager->PlayerHitCheck(GetAABB()))
 	{
 		ShieldCountDown();
+	}
+
+	//無敵時間が０より多ければ無敵時間を減らす
+	if (m_invincibleCountCoolDownTime_s > 0.0f)
+	{
+		//経過時間
+		float elapsedTime= static_cast<float>(timer.GetElapsedSeconds());
+		//無敵時間を経過時間で引く
+		m_invincibleCountCoolDownTime_s -= elapsedTime;
+	}
+	else
+	{
+		//無敵時間が０以下であれば点滅を止める
+		m_blink->Stop();
 	}
 
 	//吹き飛ばされている状態であればだんだん減速する
@@ -221,6 +235,7 @@ void Player::Draw(Camera* camera)
 	//ワールド行列計算
 	CalculationWorld();
 
+
 	//ブリンクしていなければモデル表示
 	if (m_blink->IsBlink())
 	{
@@ -230,23 +245,30 @@ void Player::Draw(Camera* camera)
 		m_playerModel[m_playerModelNum[modelTime]]->Draw(context, *GameContext::GetInstance().GetCommonState(), GetWorld(), camera->GetViewMatrix(), camera->GetProjectionMatrix());
 	}
 
+	//盾UIの描画
+	TextureDraw();
 }
 
 /// <summary>
 /// 盾UIの描画
 /// </summary>
-/// <param name="spriteBatch">スプライトバッチ</param>
-void Player::TextureDraw(DirectX::SpriteBatch* spriteBatch)
+void Player::TextureDraw()
 {
+
+	DirectX::SpriteBatch* spriteBatch = GameContext::GetInstance().GetSpriteBatcth();
+
+	spriteBatch->Begin();
+
 	//盾があれば盾描画
 	for (int i = 0; i < m_shieldCount; i++)
 	{
 		//盾同士の離れている距離
 		DirectX::SimpleMath::Vector2 shieldTexDistance = DirectX::SimpleMath::Vector2(0.0f, 64.0f * i);
 
+
 		spriteBatch->Draw(m_shieldTexture.Get(), PLAYERS_SHIELD_TEXTURE_POSITION[m_playerID] + shieldTexDistance, nullptr);
 	}
-
+	spriteBatch->End();
 }
 
 /// <summary>
@@ -376,15 +398,15 @@ void Player::PlayerMove(const DX::StepTimer& timer)
 {
 	//キー配列からそれぞれの割り当てられたキーを取得
 	//右キー
-	const DirectX::Keyboard::Keys& right =    m_keys[0];
+	const DirectX::Keyboard::Keys& right =   m_keys[0];
 	//左キー
-	const DirectX::Keyboard::Keys& left =     m_keys[1];
+	const DirectX::Keyboard::Keys& left =    m_keys[1];
 	//前キー
-	const DirectX::Keyboard::Keys& forward =  m_keys[2];
+	const DirectX::Keyboard::Keys& forward = m_keys[2];
 	//後ろキー
-	const DirectX::Keyboard::Keys& back = m_keys[3];
+	const DirectX::Keyboard::Keys& back =    m_keys[3];
 	//ジャンプキー
-	const DirectX::Keyboard::Keys& jump =     m_keys[4];
+	const DirectX::Keyboard::Keys& jump =    m_keys[4];
 
 	//経過時間
 	float elapsedTime = static_cast<float>(timer.GetElapsedSeconds());

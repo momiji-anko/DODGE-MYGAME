@@ -11,26 +11,6 @@
 class Camera
 {
 public:
-	static const float DEFAULT_CAMERA_DISTANCE;	// カメラの距離
-
-private:
-
-	// ビュー行列
-	DirectX::SimpleMath::Matrix m_view;
-
-	// プロジェクション行列
-	DirectX::SimpleMath::Matrix m_projection;
-
-	// カメラ座標
-	DirectX::SimpleMath::Vector3 m_eye;
-
-	// 注視点
-	DirectX::SimpleMath::Vector3 m_target;
-
-	// 上向きベクトル
-	DirectX::SimpleMath::Vector3 m_up;
-
-public:
 	// コンストラクタ
 	Camera();
 
@@ -64,4 +44,23 @@ protected:
 
 	// プロジェクション行列の算出
 	virtual void CalculateProjectionMatrix();
+public:
+	static const float DEFAULT_CAMERA_DISTANCE;	// カメラの距離
+
+private:
+
+	// ビュー行列
+	DirectX::SimpleMath::Matrix m_view;
+
+	// プロジェクション行列
+	DirectX::SimpleMath::Matrix m_projection;
+
+	// カメラ座標
+	DirectX::SimpleMath::Vector3 m_eye;
+
+	// 注視点
+	DirectX::SimpleMath::Vector3 m_target;
+
+	// 上向きベクトル
+	DirectX::SimpleMath::Vector3 m_up;
 };

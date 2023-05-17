@@ -12,14 +12,6 @@
 /// </summary>
 class DebugCamera : public Camera
 {
-public:
-	static const float DEFAULT_CAMERA_DISTANCE;	// カメラの距離
-
-private:
-	float m_angleX;								// 縦回転角
-	float m_angleY;								// 横回転角
-	int m_prevX, m_prevY;						// 前回のマウス座標(X,Y)
-	int m_scrollWheelValue;						// マウスホイールのスクロール値
 
 public:
 	// コンストラクタ
@@ -36,4 +28,13 @@ private:
 
 	// ビュー行列の算出
 	void CalculateViewMatrix() override;
+public:
+	static const float DEFAULT_CAMERA_DISTANCE;	// カメラの距離
+
+private:
+	float m_angleX;								// 縦回転角
+	float m_angleY;								// 横回転角
+	int m_prevX, m_prevY;						// 前回のマウス座標(X,Y)
+	int m_scrollWheelValue;						// マウスホイールのスクロール値
+
 };

@@ -14,20 +14,7 @@
 /// </summary>
 class GridFloor
 {
-	// エフェクト
-	std::unique_ptr<DirectX::BasicEffect> m_basicEffect;
 
-	// プリミティブバッチ
-	std::unique_ptr<DirectX::PrimitiveBatch<DirectX::VertexPositionColor>> m_primitiveBatch;
-
-	// インプットレイアウト
-	Microsoft::WRL::ComPtr<ID3D11InputLayout> m_inputLayout;
-
-	// 床の一辺のサイズ
-	float m_sizeX, m_sizeY;
-
-	// 分割数
-	int m_divsX, mDivsY;
 
 public:
 	// コンストラクタ
@@ -49,4 +36,19 @@ public:
 		const DirectX::SimpleMath::Matrix proj,	// 射影行列
 		const DirectX::GXMVECTOR color = DirectX::Colors::Gray
 	);
+private:
+	// エフェクト
+	std::unique_ptr<DirectX::BasicEffect> m_basicEffect;
+
+	// プリミティブバッチ
+	std::unique_ptr<DirectX::PrimitiveBatch<DirectX::VertexPositionColor>> m_primitiveBatch;
+
+	// インプットレイアウト
+	Microsoft::WRL::ComPtr<ID3D11InputLayout> m_inputLayout;
+
+	// 床の一辺のサイズ
+	float m_sizeX, m_sizeY;
+
+	// 分割数
+	int m_divsX, mDivsY;
 };

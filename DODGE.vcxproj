@@ -232,6 +232,7 @@
     <ClInclude Include="Game\PlayScene\Obstacle\ObstacleSpawners\RotateStickObstacleSpawner.h" />
     <ClInclude Include="Game\PlayScene\Obstacle\ObstacleSpawners\StickObstacleSpawner.h" />
     <ClInclude Include="Game\PlayScene\Player\Player.h" />
+    <ClInclude Include="Game\PlayScene\Player\PlayerManager.h" />
     <ClInclude Include="Game\PlayScene\PlayScene.h" />
     <ClInclude Include="Game\PlayScene\ShadowMap.h" />
     <ClInclude Include="Game\PlayScene\Stage\Stage.h" />
@@ -295,6 +296,7 @@
     <ClCompile Include="Game\PlayScene\Obstacle\ObstacleSpawners\RotateStickObstacleSpawner.cpp" />
     <ClCompile Include="Game\PlayScene\Obstacle\ObstacleSpawners\StickObstacleSpawner.cpp" />
     <ClCompile Include="Game\PlayScene\Player\Player.cpp" />
+    <ClCompile Include="Game\PlayScene\Player\PlayerManager.cpp" />
     <ClCompile Include="Game\PlayScene\PlayScene.cpp" />
     <ClCompile Include="Game\PlayScene\ShadowMap.cpp" />
     <ClCompile Include="Game\PlayScene\Stage\Stage.cpp" />

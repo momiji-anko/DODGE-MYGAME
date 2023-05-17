@@ -139,7 +139,7 @@ void Blink::Finalize()
 }
 
 /// <summary>
-/// 点滅のついた瞬間の処理
+/// 点滅の瞬間の処理
 /// </summary>
 void Blink::BlinkedCheck()
 {
@@ -151,20 +151,23 @@ void Blink::BlinkedCheck()
 		//点滅した回数を増やす
 		m_blinkedCount++;
 
-		//だんだん早くするか
-		if (m_isGettingFaster)
-		{
-			//タイムを減らす
-			m_blinkTimeFast -= m_blinkSpeed;
-
-			//ブリンクタイムをだんだん早くする
-			m_blinkTime_s = m_blinkTimeFast;
-
-		}
-		else
-		{
-			//ブリンクタイムを初期化
-			m_blinkTime_s = m_startBlinkTime_s;
-		}
+		
 	}
+
+	//だんだん早くするか
+	if (m_isGettingFaster)
+	{
+		//タイムを減らす
+		m_blinkTimeFast -= m_blinkSpeed;
+
+		//ブリンクタイムをだんだん早くする
+		m_blinkTime_s = m_blinkTimeFast;
+
+	}
+	else
+	{
+		//ブリンクタイムを初期化
+		m_blinkTime_s = m_startBlinkTime_s;
+	}
+
 }

@@ -134,40 +134,7 @@ private:
 	/// </summary>
 	void CreateModel();
 	
-	/// <summary>
-	/// クランプ関数
-	/// </summary>
-	/// <param name="n">丸め処理を行いたい数値</param>
-	/// <param name="min">丸め処理を行う最小値</param>
-	/// <param name="max">丸め処理を行う最大値</param>
-	/// <returns>丸め処理を行った結果となる数値</returns>
-	float Clamp(float n, float min, float max);
 
-	/// <summary>
-	/// ２つの線分の最短距離の平方を返す関数
-	/// </summary>
-	/// <param name="p1">線分 1 の始点</param>
-	/// <param name="q1">線分 1 の終点</param>
-	/// <param name="p2">線分 2 の始点</param>
-	/// <param name="q2">線分 2 の終点</param>
-	/// <param name="s">線分１上の最短位置を表す係数</param>
-	/// <param name="t">線分 2 上の最短位置を表す係数</param>
-	/// <param name="c1">線分１上の最短距離の位置 </param>
-	/// <param name="c2">線分 2 上の最短距離の位置</param>
-	/// <returns>２つの線分の最短距離の平方</returns>
-	float ClosestPtSegmentSegment(const DirectX::SimpleMath::Vector3& p1, const DirectX::SimpleMath::Vector3& q1,
-		const DirectX::SimpleMath::Vector3& p2, const DirectX::SimpleMath::Vector3& q2, float& s, float& t,
-		DirectX::SimpleMath::Vector3& c1, DirectX::SimpleMath::Vector3& c2);
-
-
-
-	/// <summary>
-	/// カプセルとカプセルの衝突判定関数
-	/// </summary>
-	/// <param name="capsule1">当たり判定を取りたいカプセル 1 つ目</param>
-	/// <param name="capsule2">当たり判定を取りたいカプセル 2 つ目</param>
-	/// <returns>true= 当たった、false=当たってない</returns>
-	bool HitCheck_Capsule2Capsule(Capsule capsule1, Capsule capsule2);
 
 	/// <summary>
 	/// プレイヤーを吹き飛ばす	

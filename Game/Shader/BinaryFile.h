@@ -7,14 +7,6 @@
 
 class BinaryFile
 {
-protected:
-
-	// データ
-	std::unique_ptr<char[]> m_data;
-
-	// サイズ
-	unsigned int m_size;
-
 public:
 
 	// ファイル名を指定してロード
@@ -28,4 +20,11 @@ public:
 	// アクセサ
 	char* GetData() { return m_data.get(); }
 	unsigned int GetSize() { return m_size; }
+protected:
+
+	// データ
+	std::unique_ptr<char[]> m_data;
+
+	// サイズ
+	unsigned int m_size;
 };

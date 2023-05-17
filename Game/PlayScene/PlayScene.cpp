@@ -26,8 +26,8 @@ PlayScene::PlayScene()
 	m_pAdx2(),
 	m_pModel{},
 	m_obstacleManager{},
-	m_itemManeger{},
-	m_stageManeger{},
+	m_itemManager{},
+	m_stageManager{},
 	m_pCamera{},
 	m_spriteBatch{},
 	m_countDownTexture{},
@@ -75,14 +75,14 @@ void PlayScene::Initialize()
 	m_shadowMap->Initialize(device, L"Resources/Shaders");
 
 	//ステージマネージャー作成
-	m_stageManeger = std::make_unique<StageManager>();
-	m_stageManeger->Initialize( m_stageNum);
-	m_stageManeger->SetShadowMap(m_shadowMap.get());
+	m_stageManager = std::make_unique<StageManager>();
+	m_stageManager->Initialize( m_stageNum);
+	m_stageManager->SetShadowMap(m_shadowMap.get());
 
 	//アイテムマネージャー作成
-	m_itemManeger = std::make_unique< ItemManager>();
-	m_itemManeger->Initialize();
-	m_itemManeger->SetStageManeger(m_stageManeger.get());
+	m_itemManager = std::make_unique< ItemManager>();
+	m_itemManager->Initialize();
+	m_itemManager->SetStageManeger(m_stageManager.get());
 
 	//カウントダウン初期化	
 	m_countDownTime = COUNT_DOWN_TIME_S;
@@ -94,7 +94,7 @@ void PlayScene::Initialize()
 		"Resources/Sounds/CueSheet_0.acb");
 
 	//プレイヤー作成
-	CreatePlayer();
+	//CreatePlayer();
 
 	//BGMを鳴らす
 	m_musicID = m_pAdx2->Play(CRI_CUESHEET_0_PLAY);
@@ -110,11 +110,13 @@ void PlayScene::Initialize()
 	GameContext& gameContext = GameContext::GetInstance();
 	//コモンステートをゲームコンテキストにセット
 	gameContext.SetCommonState(m_commonState.get());
-	//スプライトバッチをゲームコンテキストにセット
-	gameContext.SetSpriteBatcth(m_spriteBatch.get());
 	//キーボードステートトラッカーをゲームコンテキストにセット
 	gameContext.SetKeyboardStateTracker(m_keyboardStateTracker.get());
 
+	//プレイヤーマネージャーの作成
+	m_playerManager = std::make_unique<PlayerManager>(m_playerMode,m_stageManager.get(),m_itemManager.get(),m_obstacleManager.get());
+	//初期化
+	m_playerManager->Initialize();
 }
 
 /// <summary>
@@ -131,8 +133,10 @@ GAME_SCENE PlayScene::Update(const DX::StepTimer& timer)
 	DirectX::Keyboard::State keyState = DirectX::Keyboard::Get().GetState();
 	m_keyboardStateTracker->Update(keyState);
 
+	//tabキーを押している状態か確認
 	m_isTabKey = keyState.IsKeyDown(DirectX::Keyboard::Keys::Tab);
 
+	//押している場合これ以降の処理を行わない
 	if (m_isTabKey)
 	{
 		return GAME_SCENE::NONE;
@@ -166,32 +170,40 @@ GAME_SCENE PlayScene::Update(const DX::StepTimer& timer)
 	m_aliveTime->Update(timer);
 
 	//プレイヤー更新
-	for (std::vector<std::unique_ptr<Player>>::iterator player = m_players.begin(); player != m_players.end(); ++player)
+	/*for (std::vector<std::unique_ptr<Player>>::iterator player = m_players.begin(); player != m_players.end(); ++player)
 	{
 		(*player)->Update(timer);
-	}
+	}*/
+
+	m_playerManager->Update(timer);
 
 	//障害物マネージャー更新
 	m_obstacleManager->Update(timer);
 	
 	//障害物に渡すプレイヤーの番号
-	size_t randomPlayer = static_cast<size_t>(MyRandom::GetIntRange(0, m_players.size() - 1));
+	//size_t randomPlayer = static_cast<size_t>(MyRandom::GetIntRange(0, m_players.size() - 1));
+	
 	//障害物マネージャーにプレイヤーの座標を送る
-	m_obstacleManager->SetPlayerPosition(m_players[randomPlayer]->GetPosition());
+	m_obstacleManager->SetPlayerPosition(m_playerManager->GetRandomPlayerPosition());
 
 	//アイテムマネージャー更新
-	m_itemManeger->Update(timer);
+	m_itemManager->Update(timer);
 
 	//ステージマネージャー更新
-	m_stageManeger->Update(timer);
+	m_stageManager->Update(timer);
 	
 
 	//全てプレイヤーが死んでいればフェードアウトする
-	if (AllPlayerIsDead())
+	if (m_playerManager->GetPlayerIsAllDaed())
 	{
 		m_fadeInOut->FadeOut();
-		
 	}
+
+	if (m_playerMode == GameMain::PlayerMode::Player2)
+	{
+		//HitCheck_Capsule2Capsule(*(m_players[0]->GetCapsule()), *(m_players[1]->GetCapsule()));
+	}
+	
 
 	return GAME_SCENE::NONE;
 }
@@ -212,20 +224,22 @@ void PlayScene::Draw()
 	m_pModel->Draw(context, *m_commonState.get(), DirectX::SimpleMath::Matrix::Identity, m_pCamera->GetViewMatrix(),m_pCamera->GetProjectionMatrix());
 
 	//ステージマネージャー描画
-	m_stageManeger->Draw(m_pCamera.get());
+	m_stageManager->Draw(m_pCamera.get());
 
 	//障害物マネージャー描画
 	m_obstacleManager->Draw(m_pCamera.get());
 
 	//アイテムマネージャー描画
-	m_itemManeger->Draw(m_pCamera.get());
+	m_itemManager->Draw(m_pCamera.get());
 	
 	
-	//プレイヤーの描画
-	for (std::vector<std::unique_ptr<Player>>::iterator player = m_players.begin(); player != m_players.end(); ++player)
-	{
-		(*player)->Draw(m_pCamera.get());
-	}
+	////プレイヤーの描画
+	//for (std::vector<std::unique_ptr<Player>>::iterator player = m_players.begin(); player != m_players.end(); ++player)
+	//{
+	//	(*player)->Draw(m_pCamera.get());
+	//}
+
+	m_playerManager->Draw(m_pCamera.get());
 
 	//画像の描画
 	m_spriteBatch->Begin(DirectX::SpriteSortMode_Deferred, m_commonState->NonPremultiplied());
@@ -237,11 +251,12 @@ void PlayScene::Draw()
 	DrawCountDown();
 	
 	//プレイヤーの盾描画
-	for (std::vector<std::unique_ptr<Player>>::iterator player = m_players.begin(); player != m_players.end(); ++player)
+	/*for (std::vector<std::unique_ptr<Player>>::iterator player = m_players.begin(); player != m_players.end(); ++player)
 	{
 		(*player)->TextureDraw(m_spriteBatch.get());
-	}
+	}*/
 	
+	//tabキーが押している状態であれば操作方法を表示する
 	if (m_isTabKey)
 	{
 		m_spriteBatch->Draw(m_playerMoveKey.Get(), DirectX::SimpleMath::Vector2::Zero, nullptr, DirectX::Colors::White, 0.0f, DirectX::SimpleMath::Vector2::Zero, 1.0f);
@@ -276,7 +291,8 @@ void PlayScene::LoadResources()
 
 	// スプライトバッチ::デバッグ情報の表示に必要
 	m_spriteBatch = std::make_unique<DirectX::SpriteBatch>(context);
-
+	//スプライトバッチをゲームコンテキストにセット
+	GameContext::GetInstance().SetSpriteBatcth(m_spriteBatch.get());
 
 	//	コモンステート::D3Dレンダリング状態オブジェクト
 	m_commonState = std::make_unique<DirectX::CommonStates>(device);
@@ -312,11 +328,12 @@ void PlayScene::LoadResources()
 	//カウントダウンの画像
 	m_countDownTexture = textureManager.LoadTexture(L"Resources/Textures/num.png");
 
+	//１ｐモードと２ｐモードの操作方法画像ファイルパス
 	std::wstring playerMoveKeyTex[2] = { 
 		{L"Resources/Textures/1playerMoveKey.png"},
 		{L"Resources/Textures/2playerMoveKey.png"}
 	};
-
+	//モードによって読み込む画像を変える
 	m_playerMoveKey = textureManager.LoadTexture(playerMoveKeyTex[static_cast<int>(m_playerMode) - 1]);
 
 }
@@ -326,13 +343,11 @@ void PlayScene::LoadResources()
 /// </summary>
 void PlayScene::CreatePlayer()
 {
-
-
 	//プレイヤーのキーデータ
 	std::vector<std::vector<DirectX::Keyboard::Keys>> playerKeyData =
 	{
 		//プレイヤー１のキーデータ(右、左、前、後ろ、ジャンプ)
-		{DirectX::Keyboard::Keys::Right,DirectX::Keyboard::Keys::Left,DirectX::Keyboard::Keys::Up,DirectX::Keyboard::Keys::Down,DirectX::Keyboard::Keys::RightShift},	
+		{DirectX::Keyboard::Keys::Right,DirectX::Keyboard::Keys::Left,DirectX::Keyboard::Keys::Up,DirectX::Keyboard::Keys::Down,DirectX::Keyboard::Keys::RightControl},	
 		//プレイヤー２のキーデータ(右、左、前、後ろ、ジャンプ)
 		{DirectX::Keyboard::Keys::D,DirectX::Keyboard::Keys::A,DirectX::Keyboard::Keys::W,DirectX::Keyboard::Keys::S,DirectX::Keyboard::Keys::Space}
 	};
@@ -364,9 +379,9 @@ void PlayScene::CreatePlayer()
 		m_players.push_back(std::make_unique<Player>());
 
 		//ステージマネージャー設定
-		m_players[i]->SetStageManeger(m_stageManeger.get());
+		m_players[i]->SetStageManeger(m_stageManager.get());
 		//アイテムマネージャー設定
-		m_players[i]->SetIteManeger(m_itemManeger.get());
+		m_players[i]->SetIteManeger(m_itemManager.get());
 		//障害物マネージャー設定
 		m_players[i]->SetObstacleManager(m_obstacleManager.get());
 		
@@ -488,7 +503,7 @@ void PlayScene::CreateShadow()
 	}
 
 	//アイテムの影
-	m_itemManeger->Shadow(m_shadowMap.get(), lightView, projection);
+	m_itemManager->Shadow(m_shadowMap.get(), lightView, projection);
 
 	
 	m_shadowMap->End(context, lightView * projection);

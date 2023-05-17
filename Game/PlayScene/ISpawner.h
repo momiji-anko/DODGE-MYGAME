@@ -31,7 +31,7 @@ public:
 	/// </summary>
 	/// <param name="actors">アクター</param>
 	/// <param name="position">座標</param>
-	/// <param name="angle">アングル</param>
+	/// <param name="rotation">角度</param>
 	/// <param name="behavior">ビヘイビアー</param>
 	/// <param name="model">モデル</param>
 	/// <param name="commonState">コモンステート</param>

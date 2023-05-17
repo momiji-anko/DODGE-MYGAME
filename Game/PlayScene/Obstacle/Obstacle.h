@@ -161,8 +161,6 @@ private:
 	/// <returns>true = エリア外、false = エリア内</returns>
 	bool  CheckInArea();
 
-
-
 public:
 	//障害物タイプの列挙体
 	enum class ObstacleType

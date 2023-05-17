@@ -276,6 +276,9 @@
     <ClInclude Include="Game\PlayScene\GameContext\GameContext.h">
       <Filter>Game\PlayScene\GameContext</Filter>
     </ClInclude>
+    <ClInclude Include="Game\PlayScene\Player\PlayerManager.h">
+      <Filter>Game\PlayScene\Player</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -439,6 +442,9 @@
     </ClCompile>
     <ClCompile Include="Game\PlayScene\GameContext\GameContext.cpp">
       <Filter>Game\PlayScene\GameContext</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\PlayScene\Player\PlayerManager.cpp">
+      <Filter>Game\PlayScene\Player</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
