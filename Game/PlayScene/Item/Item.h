@@ -79,9 +79,6 @@ public:
 	/// 終了処理
 	/// </summary>
 	void Finalize()override;
-	
-
-
 
 	/// <summary>
 	/// リセット

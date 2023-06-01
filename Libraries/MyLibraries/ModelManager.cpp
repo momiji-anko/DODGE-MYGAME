@@ -14,7 +14,7 @@
 /// </summary>
 /// <param name="fileName">モデルのファイルパス</param>
 /// <returns>モデルの生ポインタ</returns>
-DirectX::Model* ModelManager::LoadModel(std::wstring fileName)
+DirectX::Model* ModelManager::LoadModel(const std::wstring& fileName)
 {
 	//nullptrであればモデルを作る
 	if (m_models[fileName] == nullptr)

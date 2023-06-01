@@ -115,7 +115,7 @@ private:
 	/// <param name="actor">アクター/param>
 	/// <param name="polygonVertexPos">ポリゴンの頂点座標</param>
 	/// <param name="normalVec">法線ベクトル</param>
-	void ActorPolygonPenetration(Actor* actor, std::vector<DirectX::SimpleMath::Vector3> polygonVertexPos, DirectX::SimpleMath::Vector3 normalVec);
+	void ActorPolygonPenetration(Actor* actor, const std::vector<DirectX::SimpleMath::Vector3>& polygonVertexPos, const DirectX::SimpleMath::Vector3& normalVec);
 
 
 	/// <summary>
@@ -124,7 +124,7 @@ private:
 	/// <param name="normalVec">ポリゴンの法線ベクトル</param>
 	/// <param name="actorVel">アクターの移動量</param>
 	/// <returns>スライドベクトル</returns>
-	DirectX::SimpleMath::Vector3 SlideVecCalculation(DirectX::SimpleMath::Vector3 normalVec, DirectX::SimpleMath::Vector3 actorVel);
+	DirectX::SimpleMath::Vector3 SlideVecCalculation(const DirectX::SimpleMath::Vector3& normalVec,const DirectX::SimpleMath::Vector3& actorVel);
 
 public:
 	//ステージ選択
@@ -135,14 +135,18 @@ public:
 		//ステージ２
 		Stage2,
 		//ステージ３
-		Stage3
+		Stage3,
+		//ステージ２
+		Stage4,
+		//ステージ２
+		Stage5,
 	};
 
 private:
 	//ステージ配列
-	std::vector<std::unique_ptr<Stage>>         m_stage;
+	std::vector<std::unique_ptr<Stage>>     m_stage;
 	//ステージビヘイビアー
-	std::vector<std::unique_ptr<IBehavior>>     m_behavior;
+	std::vector<std::unique_ptr<IBehavior>> m_behavior;
 
 
 };

@@ -310,7 +310,7 @@ void ObstacleManager::CreateBehavior()
 /// プレイヤーの座標設定
 /// </summary>
 /// <param name="position">プレイヤーの座標</param>
-void ObstacleManager::SetPlayerPosition(DirectX::SimpleMath::Vector3 position)
+void ObstacleManager::SetPlayerPosition(const DirectX::SimpleMath::Vector3& position)
 {
 	//プレイヤーの座標設定
 	m_playerPosition = position;
@@ -392,8 +392,6 @@ bool ObstacleManager::PlayerCapsuleHitCheck(Actor* player, DirectX::SimpleMath::
 		//当たっていれば実行する
 		if (CapsuleHit::HitCheck_Capsule2Capsule(*cap, *player->GetCapsule(),m_capsuleHitC1,m_capsuleHitC2))
 		{
-			
-
 			bool isRoteStick = obstacle->GetTypeInt() == static_cast<int>(Obstacle::ObstacleType::ROTATESTICK);
 
 			//下の回転棒に当たった時の処理

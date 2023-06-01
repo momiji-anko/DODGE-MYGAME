@@ -34,9 +34,9 @@ PlayScene::PlayScene()
 	m_shadowMap{},
 	m_fadeInOut{},
 	m_aliveTime{},
-	m_players{},
 	m_playerMode(),
-	m_stageNum()
+	m_stageNum(),
+	m_playerManager{}
 {
 
 	m_pCamera = std::make_unique<Camera>();
@@ -93,8 +93,6 @@ void PlayScene::Initialize()
 	m_pAdx2->Initialize("Resources/Sounds/DODGESound.acf",
 		"Resources/Sounds/CueSheet_0.acb");
 
-	//プレイヤー作成
-	//CreatePlayer();
 
 	//BGMを鳴らす
 	m_musicID = m_pAdx2->Play(CRI_CUESHEET_0_PLAY);
@@ -170,11 +168,6 @@ GAME_SCENE PlayScene::Update(const DX::StepTimer& timer)
 	m_aliveTime->Update(timer);
 
 	//プレイヤー更新
-	/*for (std::vector<std::unique_ptr<Player>>::iterator player = m_players.begin(); player != m_players.end(); ++player)
-	{
-		(*player)->Update(timer);
-	}*/
-
 	m_playerManager->Update(timer);
 
 	//障害物マネージャー更新
@@ -233,12 +226,7 @@ void PlayScene::Draw()
 	m_itemManager->Draw(m_pCamera.get());
 	
 	
-	////プレイヤーの描画
-	//for (std::vector<std::unique_ptr<Player>>::iterator player = m_players.begin(); player != m_players.end(); ++player)
-	//{
-	//	(*player)->Draw(m_pCamera.get());
-	//}
-
+	//プレイヤーの描画
 	m_playerManager->Draw(m_pCamera.get());
 
 	//画像の描画
@@ -250,11 +238,6 @@ void PlayScene::Draw()
 	//カウントダウン描画
 	DrawCountDown();
 	
-	//プレイヤーの盾描画
-	/*for (std::vector<std::unique_ptr<Player>>::iterator player = m_players.begin(); player != m_players.end(); ++player)
-	{
-		(*player)->TextureDraw(m_spriteBatch.get());
-	}*/
 	
 	//tabキーが押している状態であれば操作方法を表示する
 	if (m_isTabKey)
@@ -338,96 +321,7 @@ void PlayScene::LoadResources()
 
 }
 
-/// <summary>
-/// プレイヤーの作成
-/// </summary>
-void PlayScene::CreatePlayer()
-{
-	//プレイヤーのキーデータ
-	std::vector<std::vector<DirectX::Keyboard::Keys>> playerKeyData =
-	{
-		//プレイヤー１のキーデータ(右、左、前、後ろ、ジャンプ)
-		{DirectX::Keyboard::Keys::Right,DirectX::Keyboard::Keys::Left,DirectX::Keyboard::Keys::Up,DirectX::Keyboard::Keys::Down,DirectX::Keyboard::Keys::RightControl},	
-		//プレイヤー２のキーデータ(右、左、前、後ろ、ジャンプ)
-		{DirectX::Keyboard::Keys::D,DirectX::Keyboard::Keys::A,DirectX::Keyboard::Keys::W,DirectX::Keyboard::Keys::S,DirectX::Keyboard::Keys::Space}
-	};
 
-	//プレイヤーのモデルファイルパス
-	std::vector<std::vector<std::wstring>>playerModelFile = {
-		//プレイヤー１のモデルファイルパス（アイドル状態、左足出している状態、右足出している状態、ジャンプしている状態）
-		{ L"Resources/Models/playeraidoru.cmo",L"Resources/Models/playerhidari.cmo",L"Resources/Models/playermigiasi.cmo",L"Resources/Models/playerjanp.cmo"},
-		//プレイヤー２のモデルファイルパス（アイドル状態、左足出している状態、右足出している状態、ジャンプしている状態）
-		{L"Resources/Models/Player2idoru.cmo",L"Resources/Models/Player2hidari.cmo",L"Resources/Models/Player2Migi.cmo",L"Resources/Models/Player2Janp.cmo"}
-	};
-
-	//二人用プレイヤースタート座標
-	DirectX::SimpleMath::Vector3 playersStartPos[2] =
-	{
-		DirectX::SimpleMath::Vector3{3.0f,0.0f,6.0f} ,
-		DirectX::SimpleMath::Vector3{-3.0f,0.0f,6.0f}
-	};
-
-	//プレイヤーモードが1人モードなら一人用のスタート座標、キーデータにする
-	if (m_playerMode == GameMain::PlayerMode::Player1)
-	{
-		playersStartPos[0] = DirectX::SimpleMath::Vector3(0.0f, 7.0f, 6.0f);
-		playerKeyData[0] = { DirectX::Keyboard::Keys::Right,DirectX::Keyboard::Keys::Left,DirectX::Keyboard::Keys::Up,DirectX::Keyboard::Keys::Down,DirectX::Keyboard::Keys::Space };
-	}
-	//プレイヤーモードの数プレイヤーを作成
-	for (int i = 0; i < static_cast<int>(m_playerMode); i++)
-	{
-		m_players.push_back(std::make_unique<Player>());
-
-		//ステージマネージャー設定
-		m_players[i]->SetStageManeger(m_stageManager.get());
-		//アイテムマネージャー設定
-		m_players[i]->SetIteManeger(m_itemManager.get());
-		//障害物マネージャー設定
-		m_players[i]->SetObstacleManager(m_obstacleManager.get());
-		
-		//プレイヤーモデルファイルパス設定
-		m_players[i]->SetPlayerModelFile(playerModelFile[i]);
-		//プレイヤーの移動キー設定
-		m_players[i]->SetKeys(playerKeyData[i]);
-		//プレイヤーID設定
-		m_players[i]->SetTypeInt(i);
-		
-		//初期化
-		m_players[i]->Initialize(DirectX::SimpleMath::Vector3::Zero, playersStartPos[i], DirectX::SimpleMath::Vector3(2.0f, 2.0f, 2.0f), DirectX::SimpleMath::Vector3::Zero, true, nullptr, nullptr);
-	}
-
-
-}
-
-/// <summary>
-/// 全てプレイヤーが死んでいるか確認
-/// </summary>
-/// <returns>true=全て死んでいる、false=全て死んでいない</returns>
-bool PlayScene::AllPlayerIsDead()
-{
-	//プレイヤーのデスカウント
-	int  deathCount = 0;
-
-	//全てのプレイヤーが死んでいるか確認
-	for (std::vector<std::unique_ptr<Player>>::iterator player = m_players.begin(); player != m_players.end(); ++player)
-	{
-		//アクティブ状態状態ではなければカウントを増やす
-		if (!(*player)->IsActive())
-		{
-			deathCount++;
-		}
-	}
-
-	//デスカウントがプレイヤーの同じ数であれば全てのプレイヤーが死んでいる
-	if (deathCount == m_players.size())
-	{
-		//全てのプレイヤーが死んでいる
-		return true;
-	}
-
-	//全てのプレイヤーが死んでいない
-	return false;
-}
 
 /// <summary>
 /// カウントダウンの表示
@@ -497,10 +391,7 @@ void PlayScene::CreateShadow()
 	m_obstacleManager->ObstacleShadow(m_shadowMap.get(), lightView, projection);
 
 	//プレイヤーの影
-	for (std::vector<std::unique_ptr<Player>>::iterator player = m_players.begin(); player != m_players.end(); ++player)
-	{
-		(*player)->CreateShadow(m_shadowMap.get(), lightView, projection);
-	}
+	m_playerManager->PlayerShadow(m_shadowMap.get(), lightView, projection);
 
 	//アイテムの影
 	m_itemManager->Shadow(m_shadowMap.get(), lightView, projection);

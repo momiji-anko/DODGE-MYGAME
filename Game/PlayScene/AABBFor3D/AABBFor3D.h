@@ -3,7 +3,6 @@
 	3D空間でAABBの当たり判定を置こうなうために
 	機能をプログラムするクラスのヘッダのファイル
 
-
 */
 #pragma once
 
@@ -19,7 +18,7 @@ class AABBFor3D
 {
 public:
 	//AABB用の当たり判定データを設定する
-	void SetData(DirectX::SimpleMath::Vector3 minPos, DirectX::SimpleMath::Vector3 maxPos);
+	void SetData(const DirectX::SimpleMath::Vector3& minPos,const DirectX::SimpleMath::Vector3& maxPos);
 
 public:
 	//コンストラクタ
@@ -30,14 +29,14 @@ public:
 	//初期化
 	void Initialize();
 	//描画
-	void Draw(DirectX::SimpleMath::Matrix world, DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix projection, DirectX::XMFLOAT4 color);
+	void Draw(const DirectX::SimpleMath::Matrix& world, const DirectX::SimpleMath::Matrix& view, const DirectX::SimpleMath::Matrix& projection,const DirectX::XMFLOAT4& color);
 
 	//当たり判定を行う
 	bool HitCheck(AABBFor3D* other);
 
 private:
 
-	void DrawBox(DirectX::XMFLOAT4 color);
+	void DrawBox(const DirectX::XMFLOAT4& color);
 
 private:
 	//中心座標

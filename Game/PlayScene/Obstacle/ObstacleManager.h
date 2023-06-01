@@ -46,7 +46,7 @@ public:
 	/// プレイヤーの座標設定
 	/// </summary>
 	/// <param name="position">プレイヤーの座標</param>
-	void SetPlayerPosition(DirectX::SimpleMath::Vector3 position);
+	void SetPlayerPosition(const DirectX::SimpleMath::Vector3& position);
 
 
 

@@ -279,6 +279,18 @@
     <ClInclude Include="Game\PlayScene\Player\PlayerManager.h">
       <Filter>Game\PlayScene\Player</Filter>
     </ClInclude>
+    <ClInclude Include="Libraries\MyLibraries\FileLoadManager.h">
+      <Filter>Libraries\MyLibraries</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\TitleScene\TitleTextureMove.h">
+      <Filter>Game\TitleScene</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\TitleScene\ModeSelect.h">
+      <Filter>Game\TitleScene</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\TitleScene\StageSelect.h">
+      <Filter>Game\TitleScene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -445,6 +457,18 @@
     </ClCompile>
     <ClCompile Include="Game\PlayScene\Player\PlayerManager.cpp">
       <Filter>Game\PlayScene\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Libraries\MyLibraries\FileLoadManager.cpp">
+      <Filter>Libraries\MyLibraries</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\TitleScene\TitleTextureMove.cpp">
+      <Filter>Game\TitleScene</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\TitleScene\ModeSelect.cpp">
+      <Filter>Game\TitleScene</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\TitleScene\StageSelect.cpp">
+      <Filter>Game\TitleScene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

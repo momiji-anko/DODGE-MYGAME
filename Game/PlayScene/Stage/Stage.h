@@ -126,11 +126,7 @@ public:
 	/// </summary>
 	/// <param name="shadowMap">シャドウマップの生ポインタ</param>
 	void SetShadowMap(ShadowMap* shadowMap) { m_shadowMap = shadowMap; }
-
-
 public:
-	
-
 	/// <summary>
 	/// コンストラクタ
 	/// </summary>
@@ -189,7 +185,6 @@ public:
 		 return start + (end - start) * t;
 	 }
 
-
 	 /// <summary>
 	 /// リセット
 	 /// </summary>
@@ -199,9 +194,8 @@ public:
 	 /// 現実の頂点座標の更新
 	 /// </summary>
 	 void UpdateVertices();
-
 private:
-
+	//回転する時間
 	static const float ROTARION_TIME_S;
 
 	//変数

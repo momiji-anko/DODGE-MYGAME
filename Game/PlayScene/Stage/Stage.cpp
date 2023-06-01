@@ -97,8 +97,6 @@ void Stage::Draw(Camera* camera)
 {
 	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
 	ID3D11DeviceContext1* context = pDR->GetD3DDeviceContext();
-
-
 	
 	//ワールド行列計算
 	DirectX::SimpleMath::Matrix world = CalculationWorld();

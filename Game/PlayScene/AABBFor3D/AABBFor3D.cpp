@@ -84,7 +84,7 @@ void AABBFor3D::Initialize()
 
 	戻り値　void
 */
-void AABBFor3D::Draw(DirectX::SimpleMath::Matrix world, DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix projection, DirectX::XMFLOAT4 color)
+void AABBFor3D::Draw(const DirectX::SimpleMath::Matrix& world, const DirectX::SimpleMath::Matrix& view, const DirectX::SimpleMath::Matrix& projection, const DirectX::XMFLOAT4& color)
 {
 
 	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
@@ -118,7 +118,7 @@ void AABBFor3D::Draw(DirectX::SimpleMath::Matrix world, DirectX::SimpleMath::Mat
 
 	戻り値 void
 */
-void AABBFor3D::SetData(DirectX::SimpleMath::Vector3 minPos, DirectX::SimpleMath::Vector3 maxPos)
+void AABBFor3D::SetData(const DirectX::SimpleMath::Vector3& minPos, const DirectX::SimpleMath::Vector3& maxPos)
 {
 	//ボックスの中心点を計算する
 	m_center.x = (minPos.x + maxPos.x) / 2.0f;
@@ -172,7 +172,7 @@ bool AABBFor3D::HitCheck(AABBFor3D* other)
 
 	戻り値　void
 */
-void AABBFor3D::DrawBox(DirectX::XMFLOAT4 color)
+void AABBFor3D::DrawBox(const DirectX::XMFLOAT4& color)
 {
 	DirectX::VertexPositionColor lineList[24];
 	DirectX::SimpleMath::Vector3 minPos;

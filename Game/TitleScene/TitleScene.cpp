@@ -14,6 +14,7 @@
 #include"Libraries/MyLibraries/Camera.h"
 #include"Libraries/MyLibraries/TextureManager.h"
 #include"Game/PlayScene/GameContext/GameContext.h"
+#include"Libraries/MyLibraries/FileLoadManager.h"
 
 //タイトルの移動時間
 const float TitleScene::MOVE_TIME = 3.0f;
@@ -48,7 +49,11 @@ TitleScene::TitleScene()
 	m_playerMode(GameMain::PlayerMode::Player1),
 	m_titleAlpha(0.7f),
 	m_pAdx2(),
-	m_musicID(0)
+	m_musicID(0),
+	m_stageTextureBasePosition(DirectX::SimpleMath::Vector2::Zero),
+	m_stageTexturetime(5),
+	m_nextPosition(DirectX::SimpleMath::Vector2::Zero),
+	m_prePosition(DirectX::SimpleMath::Vector2::Zero)
 {
 }
 
@@ -66,6 +71,8 @@ TitleScene::~TitleScene()
 /// </summary>
 void TitleScene::Initialize()
 {
+
+	
 	//デバイスリソース取得
 	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
 	//Adx取得
@@ -93,8 +100,12 @@ void TitleScene::Initialize()
 	m_keyboardStateTracker = std::make_unique < DirectX::Keyboard::KeyboardStateTracker >();
 
 	GameContext::GetInstance().SetCommonState(m_commonState.get());
+	GameContext::GetInstance().SetKeyboardStateTracker(m_keyboardStateTracker.get());
+	GameContext::GetInstance().SetSpriteBatcth(m_spriteBatch.get());
 
-	
+	m_stageSelect = std::make_unique<StageSelect>();
+	m_stageSelect->Initialize();
+	m_stageSelect->SetStageManager(m_stageManager.get());
 }
 
 /// <summary>
@@ -116,7 +127,7 @@ GAME_SCENE TitleScene::Update(const DX::StepTimer& timer)
 	m_cameraRot += CAMERA_ROT_SPEED;
 
 	//タイトルの状態更新
-	TitleStateUpdate();
+	TitleStateUpdate(timer);
 
 	//タイトル文字の動き
 	TitleMove(timer);
@@ -219,8 +230,9 @@ void TitleScene::Draw()
 	case TitleScene::TitleState::STAGESELECT:
 
 		// ステージ選択の画像を描画
-		DrawStageSelect();
-		
+		//DrawStageSelect();
+		m_stageSelect->Draw();
+
 		break;
 
 	case TitleScene::TitleState::MODESELECT:
@@ -241,7 +253,7 @@ void TitleScene::Draw()
 /// <summary>
 /// タイトルの状態の更新
 /// </summary>
-void TitleScene::TitleStateUpdate()
+void TitleScene::TitleStateUpdate(const DX::StepTimer& timer)
 {
 	//現在のタイトルの状態で処理を切り替える
 	switch (m_titleSelect)
@@ -272,7 +284,12 @@ void TitleScene::TitleStateUpdate()
 	case TitleScene::TitleState::STAGESELECT:
 
 		//ステージセレクトの更新
-		StageSelectUpdate();
+		//StageSelectUpdate(timer);
+		if(m_stageSelect->Update(timer))
+		{
+			m_titleSelect = TitleScene::TitleState::MODESELECT;
+		}
+
 
 		break;
 	case TitleScene::TitleState::MODESELECT:
@@ -388,60 +405,79 @@ void TitleScene::TitleMove(const DX::StepTimer& timer)
 /// </summary>
 void TitleScene::DrawStageSelect()
 {
+	//ステージ画像の数
+	int stageSelectTextureNum = 3;
+
+	DirectX::SimpleMath::Vector2 stageBasePosition = DirectX::SimpleMath::Vector2::Zero;
+
+	FileLoadManager& fileLoadManager = FileLoadManager::GetInstance();
+
+	int stageNum = fileLoadManager.LoadFile(L"Resources/StageData/").size();
+
+	//ステージ画像テクスチャのロード
+	std::vector<Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>> stageSelectTexture;
+
+	stageSelectTexture.resize(stageSelectTextureNum);
+	//ステージ画像のファイルパス
+	std::wstring stageTexFileName = { L"Resources/Textures/stageText.png" };
+	std::wstring stageNumFileName = { L"Resources/Textures/stageNum.png" };
+
+	TextureManager& textureManager = TextureManager::GetInstance();
+
+	//ステージ画像テクスチャのロード
+	m_stageSelectTexture[0] = textureManager.LoadTexture(stageTexFileName.c_str());
+	DirectX::SimpleMath::Vector2 StageTextTextureSize = textureManager.GetTextureSize(stageTexFileName.c_str());
+
+	m_stageSelectTexture[1] = textureManager.LoadTexture(stageNumFileName.c_str());
+	DirectX::SimpleMath::Vector2 StageNumTextureSize = textureManager.GetTextureSize(stageNumFileName.c_str());
+
+	float stageNumSize = (StageNumTextureSize.x ) / 10;
+	
 	//デバイスリソース取得
 	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
 
 	// ウィンドウサイズの取得
 	RECT size = pDR->GetOutputSize();
 
-	//ステージ２からステージ１と３が離れてる量
-	float stage2ToStage1And3Distace = static_cast<float>(size.right / 3.0f);
-	//ウィンドウの横幅のセンター座標
-	float stage2Pos = static_cast<float>(size.right / 2.0f);
 	//ステージ画像のY座標
 	float stageSelectPosY = static_cast<float>(size.bottom / 2.0f + size.bottom / 4.0);
-
-	//ステージポジション
-	DirectX::SimpleMath::Vector2 stageSelectPosition[] =
-	{
-		//ステージ１の座標
-		DirectX::SimpleMath::Vector2{stage2Pos - stage2ToStage1And3Distace , stageSelectPosY  },
-		//ステージ２の座標
-		DirectX::SimpleMath::Vector2{stage2Pos  , stageSelectPosY },
-		//ステージ３の座標
-		DirectX::SimpleMath::Vector2{stage2Pos + stage2ToStage1And3Distace , stageSelectPosY }
-	};
-
-	//ステージ画像の色
-	DirectX::SimpleMath::Vector4 stageSelectColor = DirectX::Colors::White;
-
-	//ステージ画像の中心点位置
-	DirectX::SimpleMath::Vector2 stageTexCenterPos[] =
-	{
-		//ステージ１
-		DirectX::SimpleMath::Vector2(117.5f,39.0f),
-		//ステージ２
-		DirectX::SimpleMath::Vector2(123.0f,39.0f),
-		//ステージ３
-		DirectX::SimpleMath::Vector2(102.0f,39.0f)
-	};
 
 	//ステージ画像の拡大率
 	float stageTexScale = 1.5f;
 
-	//ステージ画像描画
-	for (int i = 0; i < m_stageSelectTexture.size(); i++)
+	float stagePositionX = size.right ;
+
+	DirectX::SimpleMath::Vector2 stageTextTextureOrigin = StageTextTextureSize / 2.0f;
+
+	//ステージ画像の色
+	DirectX::SimpleMath::Vector4 stageSelectColor = DirectX::Colors::White;
+
+	stageBasePosition = DirectX::SimpleMath::Vector2(-(stagePositionX * m_stageNum)+ size.right / 2.0f,0);
+
+	for (int i = 0; i < stageNum; i++)
 	{
 		//カラー
-		DirectX::SimpleMath::Vector4 color = stageSelectColor;
+		DirectX::SimpleMath::Vector4 color = DirectX::Colors::White;
+
+		DirectX::SimpleMath::Vector2 texturePosition = DirectX::SimpleMath::Vector2(stagePositionX * i, stageSelectPosY);
+		RECT texRect = 
+		{
+			stageNumSize* i,
+			0,
+			stageNumSize* (i+1) - (stageNumSize/5),
+			StageNumTextureSize.y
+		};
 
 		//現在の選択されているステージは赤色で表示する
 		if (i == m_stageNum)
 		{
 			color = DirectX::Colors::Red;
 		}
+
 		//ステージ描画
-		m_spriteBatch->Draw(m_stageSelectTexture[i].Get(), stageSelectPosition[i], nullptr, color, 0.0f, stageTexCenterPos[i], stageTexScale);
+		m_spriteBatch->Draw(m_stageSelectTexture[0].Get(), m_stageTextureBasePosition + texturePosition , nullptr, color, 0.0f, stageTextTextureOrigin, stageTexScale);
+
+		m_spriteBatch->Draw(m_stageSelectTexture[1].Get(), m_stageTextureBasePosition + texturePosition + DirectX::SimpleMath::Vector2((StageTextTextureSize.x)+ stageNumSize/2, 0), &texRect, color, 0.0f, DirectX::SimpleMath::Vector2(stageNumSize, StageNumTextureSize.y/2), stageTexScale);
 
 	}
 
@@ -586,7 +622,7 @@ void TitleScene::LoadResources()
 /// <summary>
 /// ステージセレクトの更新
 /// </summary>
-void TitleScene::StageSelectUpdate()
+void TitleScene::StageSelectUpdate(const DX::StepTimer& timer)
 {
 	//ボタンを押したか
 	bool isKeyPush = false;
@@ -611,21 +647,40 @@ void TitleScene::StageSelectUpdate()
 		m_pAdx2->Play(CRI_CUESHEET_0_BUTTON);
 	}
 
+
+	FileLoadManager& fileLoadManager = FileLoadManager::GetInstance();
+
+	int stageNum = fileLoadManager.LoadFile(L"Resources/StageData/").size();
+
 	//ステージ選択の値がステージの数より低くったらステージ１にする
 	if (m_stageNum < static_cast<int>(StageManager::StageSelect::Stage1))
 	{
 		m_stageNum = static_cast<int>(StageManager::StageSelect::Stage1);
 	}
 	//ステージ選択の値がステージの数より大きくなったらステージ３にする
-	else if (m_stageNum > static_cast<int>(StageManager::StageSelect::Stage3))
+	else if (m_stageNum > stageNum-1)
 	{
-		m_stageNum = static_cast<int>(StageManager::StageSelect::Stage3);
+		m_stageNum = stageNum-1;
 	}
+
+
+	//デバイスリソース取得
+	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
+	// ウィンドウサイズの取得
+	RECT size = pDR->GetOutputSize();
+
+	DirectX::SimpleMath::Vector2 pos = DirectX::SimpleMath::Vector2( size.right/2, 0);
+
 
 	//押したらステージマネージャーのステージを変える
 	if (isKeyPush)
 	{
 		m_stageManager->Initialize( static_cast<StageManager::StageSelect>(m_stageNum));
+
+		m_stageTexturetime = 0.0f;
+
+		m_nextPosition = (pos * -(m_stageNum)) + DirectX::SimpleMath::Vector2( size.right / 2.0f,0);
+		m_prePosition = m_stageTextureBasePosition;
 	}
 
 	//スペースキーを押すとモードセレクトに移動
@@ -635,6 +690,27 @@ void TitleScene::StageSelectUpdate()
 		m_pAdx2->Play(CRI_CUESHEET_0_BUTTON);
 
 	}
+
+
+
+	m_stageTextureBasePosition.x = -(size.right * m_stageNum) + size.right / 2.0f;
+
+	static const float MOVE_TIME = 1;
+
+	m_stageTexturetime += timer.GetElapsedSeconds();
+
+
+
+
+	m_stageTextureBasePosition=DirectX::SimpleMath::Vector2::Lerp(m_prePosition, m_nextPosition, m_stageTexturetime / MOVE_TIME);
+
+	if (m_stageTexturetime > MOVE_TIME)
+	{
+		m_stageTexturetime = MOVE_TIME;
+		m_prePosition = m_stageTextureBasePosition;
+	}
+
+
 }
 
 /// <summary>

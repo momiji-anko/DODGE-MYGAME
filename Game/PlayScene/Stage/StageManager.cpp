@@ -14,6 +14,8 @@
 #include"../MyRandom.h"
 #include<stdlib.h>
 #include"Libraries/MyLibraries/ModelManager.h"
+#include <windows.h>
+#include"Libraries/MyLibraries/FileLoadManager.h"
 
 //ビヘイビアーのインクルード
 #include"StageBehaviors/FirstFloorToFallBehavior.h"
@@ -62,31 +64,23 @@ StageManager::~StageManager()
 void StageManager::Initialize( StageSelect stage)
 {
 
-
-	//ステージjsonファイルパス
-	std::wstring stageFileName;
-
-	//ステージによって読み込むjsonを変える
-	switch (stage)
-	{
-	case StageSelect::Stage1:
-		stageFileName = L"Resources/StageData/Stage1.json";
-		break;
-	case StageSelect::Stage2:
-		stageFileName = L"Resources/StageData/Stage2.json";
-		break;
-	case StageSelect::Stage3:
-		stageFileName = L"Resources/StageData/Stage3.json";
-		break;
-	default:
-		break;
-	}
-	
-	
 	//ビヘイビアー作成
 	CreateBehavior();
+
+
+	//ステージjsonファイルパス
+	std::vector<std::wstring> stageFileNames;
+
+	//ステージのjsonがあるファイルパス
+	std::wstring stageFilePath = L"Resources/StageData/";
+	
+	//ファイルを読み込む
+	stageFileNames = FileLoadManager::GetInstance().LoadFile(stageFilePath);
+
+	size_t stageNumber = static_cast<int>(stage);
+
 	//jsonを読み込みステージを作成
-	LoadStageJson(stageFileName);
+	LoadStageJson(stageFileNames[stageNumber]);
 
 }
 
@@ -113,6 +107,7 @@ void StageManager::Update(const DX::StepTimer& timer)
 /// <param name="camera">カメラの生ポインタ</param>
 void StageManager::Draw(Camera* camera)
 {
+	//描画
 	for (std::unique_ptr<Stage>& stage : m_stage)
 	{
 		stage->Draw(camera);
@@ -287,6 +282,9 @@ std::wstring StageManager::ConvertWString(const std::string& str)
 	return result;
 }
 
+/// <summary>
+/// ステージが行動を終了しているか確認
+/// </summary>
 void StageManager::CheckStageMoveEnd()
 {
 
@@ -338,7 +336,7 @@ void StageManager::CheckStageMoveEnd()
 /// <param name="actor">アクター/param>
 /// <param name="polygonVertexPos">ポリゴンの頂点座標</param>
 /// <param name="normalVec">法線ベクトル</param>
-void StageManager::ActorPolygonPenetration(Actor* actor, std::vector<DirectX::SimpleMath::Vector3> polygonVertexPos, DirectX::SimpleMath::Vector3 normalVec)
+void StageManager::ActorPolygonPenetration(Actor* actor, const std::vector<DirectX::SimpleMath::Vector3>& polygonVertexPos, const DirectX::SimpleMath::Vector3& normalVec)
 {
 	//アクターを少しめり込ませる用変数
 	float actorPenetration = 0.1f;
@@ -361,16 +359,17 @@ void StageManager::ActorPolygonPenetration(Actor* actor, std::vector<DirectX::Si
 /// <param name="normalVec">ポリゴンの法線ベクトル</param>
 /// <param name="actorVel">アクターの移動量</param>
 /// <returns>スライドベクトル</returns>
-DirectX::SimpleMath::Vector3 StageManager::SlideVecCalculation(DirectX::SimpleMath::Vector3 normalVec, DirectX::SimpleMath::Vector3 actorVel)
+DirectX::SimpleMath::Vector3 StageManager::SlideVecCalculation(const DirectX::SimpleMath::Vector3& normalVec, const DirectX::SimpleMath::Vector3& actorVel)
 {
+	DirectX::SimpleMath::Vector3 normalVector = normalVec;
 	//法線ベクトルの正規化
-	normalVec.Normalize();
+	normalVector.Normalize();
 	//プレイヤーの移動ベクトルと法線ベクトルの内積の計算
-	float dot = actorVel.Dot(normalVec);
+	float dot = actorVel.Dot(normalVector);
 	//スライドする量計算
 	DirectX::SimpleMath::Vector3 slideAmount = { actorVel.x - dot,actorVel.y - dot,actorVel.z - dot };
 	//スライドベクトルを計算
-	DirectX::SimpleMath::Vector3 slideVec = normalVec * slideAmount;
+	DirectX::SimpleMath::Vector3 slideVec = normalVector * slideAmount;
 	//スライドベクトルを返す
 	return slideVec;
 }
@@ -408,7 +407,6 @@ bool StageManager::StageToActorHitCheck(Actor* actor)
 			{
 				//めり込み処理
 				ActorPolygonPenetration(actor, polygonVertexPos, normalVec);
-
 
 				//アクターのベクトル
 				DirectX::SimpleMath::Vector3 actorVel = actor->GetVelocity();

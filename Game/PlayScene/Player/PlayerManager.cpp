@@ -60,10 +60,12 @@ void PlayerManager::Draw(Camera* camera)
 		player->Draw(camera);
 	}
 
+	//プレイヤーモードがマルチモードの時
 	if (m_playerMode == GameMain::PlayerMode::Player2)
 	{
 		DirectX::SimpleMath::Vector3 c1;
 		DirectX::SimpleMath::Vector3 c2;
+		//プレイヤー同士が当たっていた場合押し合いする
 		if (CapsuleHit::HitCheck_Capsule2Capsule(*m_players[0]->GetCapsule(), *m_players[1]->GetCapsule(), c1, c2))
 		{
 			PlayerCapuslePenetration(m_players[0].get(), c2 - c1, m_players[0]->GetCapsule()->r, m_players[1]->GetCapsule()->r);
@@ -119,6 +121,19 @@ bool PlayerManager::GetPlayerIsAllDaed()
 
 	//全てのプレイヤーが死んでいない
 	return false;
+}
+
+void PlayerManager::PlayerShadow(ShadowMap* shadowMap, const DirectX::SimpleMath::Matrix& view, const DirectX::SimpleMath::Matrix& projection)
+{
+	//プレイヤーの更新
+	for (std::unique_ptr<Player>& player : m_players)
+	{
+		if (!player->IsActive())
+			continue;
+
+		player->CreateShadow(shadowMap, view, projection);
+	}
+
 }
 
 /// <summary>

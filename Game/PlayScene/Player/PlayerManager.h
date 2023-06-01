@@ -58,6 +58,15 @@ public:
 	/// </summary>
 	/// <returns>true=全員死亡,false=全員死亡していない</returns>
 	bool GetPlayerIsAllDaed();
+
+	/// <summary>
+	/// プレイヤーの影作成
+	/// </summary>
+	/// <param name="shadowMap">シャドウマップの生ポインタ</param>
+	/// <param name="view">ビュー行列</param>
+	/// <param name="projection">プロジェクション行列</param>
+	void PlayerShadow(ShadowMap* shadowMap, const DirectX::SimpleMath::Matrix& view, const DirectX::SimpleMath::Matrix& projection);
+
 private:
 	/// <summary>
 	/// プレイヤー作成

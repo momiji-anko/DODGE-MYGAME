@@ -25,7 +25,7 @@ public:
 	/// コモンステートの取得
 	/// </summary>
 	/// <returns>コモンステートの生ポインタ</returns>
-	DirectX::CommonStates* GetCommonState() { return m_commonState; }
+	DirectX::CommonStates* GetCommonState()const { return m_commonState; }
 
 	/// <summary>
 	/// スプライトバッチの設定
@@ -36,7 +36,7 @@ public:
 	/// スプライトバッチの取得
 	/// </summary>
 	/// <returns>スプライトバッチの生ポインタ</returns>
-	DirectX::SpriteBatch* GetSpriteBatcth() { return m_spriteBatcth; }
+	DirectX::SpriteBatch* GetSpriteBatcth()const { return m_spriteBatcth; }
 	
 	/// <summary>
 	/// キーボードステートトラッカーの設定
@@ -47,7 +47,7 @@ public:
 	/// キーボードステートトラッカーの取得
 	/// </summary>
 	/// <returns>キーボードステートトラッカー</returns>
-	DirectX::Keyboard::KeyboardStateTracker* GetKeyboardStateTracker() { return m_keyBoardStateTracker; }
+	DirectX::Keyboard::KeyboardStateTracker* GetKeyboardStateTracker() const{ return m_keyBoardStateTracker; }
 		
 
 

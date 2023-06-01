@@ -16,7 +16,7 @@
 #include"../PlayScene/Stage/Stage.h"
 #include"Game/Shader/Fade.h"
 #include"Game/PlayScene/Stage/StageManager.h"
-
+#include"StageSelect.h"
 
 class TitleScene : public IScene
 {
@@ -26,19 +26,19 @@ public:
 	/// プレイヤーモード取得
 	/// </summary>
 	/// <returns>選択したプレイヤーモード</returns>
-	GameMain::PlayerMode  GetPlayerMode() { return m_playerMode; }
+	GameMain::PlayerMode  GetPlayerMode()const { return m_playerMode; }
 
 	/// <summary>
 	/// ステージの番号取得
 	/// </summary>
 	/// <returns>選択したステージの番号</returns>
-	int GetStageNum() { return m_stageNum; }
+	int GetStageNum() const{ return m_stageNum; }
 
-
-
+	/// <summary>
+	/// ステージ番号の設定
+	/// </summary>
+	/// <param name="stageNum">ステージ番号</param>
 	void SetStageNum(int stageNum)override { UNREFERENCED_PARAMETER(stageNum); }
-
-
 
 public:
 
@@ -110,12 +110,13 @@ private:
 	/// <summary>
 	/// タイトルの状態の更新
 	/// </summary>
-	void TitleStateUpdate();
+	void TitleStateUpdate(const DX::StepTimer& timer);
 
 	/// <summary>
 	/// ステージセレクトの更新
 	/// </summary>
-	void StageSelectUpdate();
+	/// <param name="timer">タイマー</param>
+	void StageSelectUpdate(const DX::StepTimer& timer);
 
 	/// <summary>
 	/// モードセレクトの更新
@@ -219,5 +220,12 @@ private:
 	//背景用ステージマネージャー
 	std::unique_ptr<StageManager> m_stageManager;
 
+	DirectX::SimpleMath::Vector2 m_stageTextureBasePosition;
+	float m_stageTexturetime;
 
+	DirectX::SimpleMath::Vector2 m_nextPosition;
+	DirectX::SimpleMath::Vector2 m_prePosition;
+
+	std::unique_ptr<StageSelect> m_stageSelect;
+	
 };
