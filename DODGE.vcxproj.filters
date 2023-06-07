@@ -282,7 +282,7 @@
     <ClInclude Include="Libraries\MyLibraries\FileLoadManager.h">
       <Filter>Libraries\MyLibraries</Filter>
     </ClInclude>
-    <ClInclude Include="Game\TitleScene\TitleTextureMove.h">
+    <ClInclude Include="Game\TitleScene\TitleText.h">
       <Filter>Game\TitleScene</Filter>
     </ClInclude>
     <ClInclude Include="Game\TitleScene\ModeSelect.h">
@@ -461,7 +461,7 @@
     <ClCompile Include="Libraries\MyLibraries\FileLoadManager.cpp">
       <Filter>Libraries\MyLibraries</Filter>
     </ClCompile>
-    <ClCompile Include="Game\TitleScene\TitleTextureMove.cpp">
+    <ClCompile Include="Game\TitleScene\TitleText.cpp">
       <Filter>Game\TitleScene</Filter>
     </ClCompile>
     <ClCompile Include="Game\TitleScene\ModeSelect.cpp">

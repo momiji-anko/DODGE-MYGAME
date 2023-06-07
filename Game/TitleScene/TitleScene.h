@@ -17,6 +17,8 @@
 #include"Game/Shader/Fade.h"
 #include"Game/PlayScene/Stage/StageManager.h"
 #include"StageSelect.h"
+#include"ModeSelect.h"
+#include"TitleText.h"
 
 class TitleScene : public IScene
 {
@@ -80,32 +82,7 @@ public:
 	void LoadResources() override;
 
 
-	/// <summary>
-	/// 線形補間
-	/// </summary>
-	/// <param name="start">開始の数値</param>
-	/// <param name="end">終了の数値</param>
-	/// <param name="t">現在の位置</param>
-	/// <returns>現在の数値</returns>
-	float Lerp(float start, float end, float t)
-	{
-		return start + (end - start) * t;
-	}
-
-	/// <summary>
-	/// イージング
-	/// </summary>
-	float easeOutCubic(float x)
-	{
-		return static_cast <float>(1 - pow(1 - x, 3));
-	}
-
 private:
-	/// <summary>
-	/// タイトル文字の動き
-	/// </summary>
-	/// <param name="timer">タイマー</param>
-	void TitleMove(const DX::StepTimer& timer);
 
 	/// <summary>
 	/// タイトルの状態の更新
@@ -113,25 +90,9 @@ private:
 	void TitleStateUpdate(const DX::StepTimer& timer);
 
 	/// <summary>
-	/// ステージセレクトの更新
+	/// タイトルの状態の描画
 	/// </summary>
-	/// <param name="timer">タイマー</param>
-	void StageSelectUpdate(const DX::StepTimer& timer);
-
-	/// <summary>
-	/// モードセレクトの更新
-	/// </summary>
-	void ModeSelectUpdate();
-
-	/// <summary>
-	/// ステージ選択の画像を描画
-	/// </summary>
-	void DrawStageSelect();
-
-	/// <summary>
-	/// モード選択の画像を描画
-	/// </summary>
-	void DrawModeSelect();
+	void TitleStateDraw();
 
 private:
 	//タイトルの移動時間
@@ -149,7 +110,6 @@ private:
 	//アルファの最小値
 	static const float ALPHA_MIN_NUM;
 
-
 	//タイトルの状態
 	enum class TitleState
 	{
@@ -164,6 +124,7 @@ private:
 		//フェードアウト
 		FADEOUT,
 	};
+
 	//音関連
 	ADX2* m_pAdx2;
 	int m_musicID;
@@ -178,14 +139,10 @@ private:
 	std::unique_ptr<DirectX::Keyboard::KeyboardStateTracker> m_keyboardStateTracker;
 
 	// テクスチャ
-	//タイトル
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>              m_titileTexture;
 	//PUSH_SPASE_KEYのテクスチャ
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>              m_pushTexture;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_pushTexture;
 	//CRIロゴテクスチャ
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>              m_CRIWARETexture;
-	//モードセレクトテクスチャ
-	std::vector<Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>> m_modeSelectTextures;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_CRIWARETexture;
 
 	//PUSH_SPASE_KEYのアルファ値
 	float m_alpha;
@@ -197,16 +154,7 @@ private:
 
 	//カメラの角度（ラジアン）
 	float m_cameraRot;
-	//タイトルの動きのタイム
-	float m_titleTimer_s;
-	//タイトルのルーチン
-	int m_titleRoutine;
-	//タイトルのポジション
-	std::vector<DirectX::SimpleMath::Vector2> m_titlePosition;
-	//タイトルの角度
-	float m_titleRotetion;
-	//タイトルのアルファ値
-	float m_titleAlpha;
+
 	//タイトルの状態
 	TitleState m_titleSelect;
 
@@ -215,17 +163,14 @@ private:
 
 	//選択したステージの番号
 	int m_stageNum;
-	//ステージの画像
-	std::vector<Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>> m_stageSelectTexture;
 	//背景用ステージマネージャー
 	std::unique_ptr<StageManager> m_stageManager;
 
-	DirectX::SimpleMath::Vector2 m_stageTextureBasePosition;
-	float m_stageTexturetime;
-
-	DirectX::SimpleMath::Vector2 m_nextPosition;
-	DirectX::SimpleMath::Vector2 m_prePosition;
-
+	//ステージセレクト
 	std::unique_ptr<StageSelect> m_stageSelect;
+	//モードセレクト
+	std::unique_ptr<ModeSelect> m_modeSelect;
+	//タイトル文字
+	std::unique_ptr<TitleText> m_titleText;
 	
 };

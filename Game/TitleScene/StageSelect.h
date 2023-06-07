@@ -17,10 +17,23 @@
 class StageSelect
 {
 public:
-	void SetStageManager(StageManager* stageManager) { m_stageManager = stageManager; }
 
-	StageSelect() = default;
-	~StageSelect() = default;
+	/// <summary>
+	/// 選択したステージ番号の取得
+	/// </summary>
+	/// <returns>選択したステージ番号</returns>
+	int  GetSelectStageNum() { return m_selectStageNum; }
+
+	/// <summary>
+	/// コンストラクタ
+	/// </summary>
+	/// <param name="stageManager">ステージマネージャーの生ポインタ</param>
+	StageSelect(StageManager* stageManager);
+	
+	/// <summary>
+	/// デストラクタ
+	/// </summary>
+	~StageSelect();
 
 	/// <summary>
 	/// 初期化
@@ -45,24 +58,28 @@ public:
 	void Finalize();
 
 private:
-
-	static const float MOVE_TIME;
-
-	DirectX::SimpleMath::Vector2 m_nextPosition;
-	
-	DirectX::SimpleMath::Vector2 m_prePosition;
-
-	std::wstring m_stageTextTextureFileName;
-	
-	std::wstring m_stageNumTextureFileName;
-
-	std::wstring m_stageArrowTextureFileName;
-
+	//ステージテキストテクスチャのファイルパス
+	std::wstring m_stageTextTextureFilePath;
+	//ステージ番号テクスチャのファイルパス
+	std::wstring m_stageNumTextureFilePath;
+	//ステージ矢印テクスチャのファイルパス
+	std::wstring m_stageArrowTextureFilePath;
+	//座標
 	DirectX::SimpleMath::Vector2 m_nowPosition;
-
-	std::vector<float> m_stageTextureScales;
-
+	//選択したステージの番号
 	int m_selectStageNum;
-	
+	//ステージマネージャー
 	StageManager* m_stageManager;
+	//ステージの最大数
+	int m_stageMaxNum;
+
+	//ステージセレクトテクスチャ
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_stageTextTexture;
+	
+	//テクスチャ
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_stageNumTexture;
+	
+	//ステージセレクトテクスチャ
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_stageArrowTexture;
+
 };

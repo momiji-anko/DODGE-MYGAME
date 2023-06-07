@@ -14,8 +14,6 @@
 /// </summary>
 class ModelManager : public Singleton<ModelManager>
 {
-
-
 public:
 	/// <summary>
 	/// ƒ‚ƒfƒ‹“Ç‚İ‚İ
