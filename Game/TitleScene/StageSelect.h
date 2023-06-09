@@ -14,6 +14,9 @@
 #include"../PlayScene/Stage/Stage.h"
 #include"Game/PlayScene/Stage/StageManager.h"
 
+/// <summary>
+/// ステージセレクト
+/// </summary>
 class StageSelect
 {
 public:
@@ -64,14 +67,17 @@ private:
 	std::wstring m_stageNumTextureFilePath;
 	//ステージ矢印テクスチャのファイルパス
 	std::wstring m_stageArrowTextureFilePath;
+
 	//座標
-	DirectX::SimpleMath::Vector2 m_nowPosition;
+	DirectX::SimpleMath::Vector2 m_texturePosition;
+	
 	//選択したステージの番号
 	int m_selectStageNum;
-	//ステージマネージャー
-	StageManager* m_stageManager;
 	//ステージの最大数
 	int m_stageMaxNum;
+
+	//ステージマネージャー
+	StageManager* m_stageManager;
 
 	//ステージセレクトテクスチャ
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_stageTextTexture;

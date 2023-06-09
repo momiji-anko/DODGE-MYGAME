@@ -11,7 +11,7 @@
 
 #include <WICTextureLoader.h>
 #include"Libraries/MyLibraries/TextureManager.h"
-
+#include<WICTextureLoader.h>
 
 /*--------------------------------------------------
 コンストラクタ
@@ -55,13 +55,26 @@ void LoadingScreen::Initialize(IScene* targetScene)
 	m_spriteBatch = std::make_unique<DirectX::SpriteBatch>(context);
 	m_spriteFont = std::make_unique<DirectX::SpriteFont>(device, L"Resources/Fonts/SegoeUI_18.spritefont");
 	
-	TextureManager& textureManager = TextureManager::GetInstance();
+
+	
+
+	//テクスチャの読み込み
+	DirectX::CreateWICTextureFromFile(
+		device,
+		L"Resources/Textures/nowLoading.png",
+		nullptr,
+		m_texture.ReleaseAndGetAddressOf()
+	);
+
+
 
 	// テクスチャの読み込み
-	m_texture = textureManager.LoadTexture(L"Resources/Textures/nowLoading.png");
-
-	// テクスチャの読み込み
-	m_blackTexture = textureManager.LoadTexture(L"Resources/Textures/black.png");
+	DirectX::CreateWICTextureFromFile(
+		device,
+		L"Resources/Textures/black.png",
+		nullptr,
+		m_blackTexture.ReleaseAndGetAddressOf()
+	);
 
 	RECT rect = pDR->GetOutputSize();
 

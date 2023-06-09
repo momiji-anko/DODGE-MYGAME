@@ -6,6 +6,7 @@
 #include"DeviceResources.h"
 #include"../../Helpers/CueSheet_0.h"
 #include"../../Helpers/DODGESound_acf.h"
+#include"Libraries/MyLibraries/MemoryLeakDetector.h"
 
 /// <summary>
 /// コンストラクタ
@@ -22,6 +23,10 @@ ModeSelect::ModeSelect()
 /// </summary>
 ModeSelect::~ModeSelect()
 {
+	for (auto texture : m_modeSelectTextures)
+	{
+		texture.Reset();
+	}
 }
 
 /// <summary>
@@ -29,6 +34,9 @@ ModeSelect::~ModeSelect()
 /// </summary>
 void ModeSelect::Initialize()
 {
+
+	SetUpMemoryLeakDetector();
+	
 	//モードファイルパスの設定
 	m_modeFilePaths.resize(static_cast<int>(GameMain::PlayerMode::Player2));
 	m_modeFilePaths[0] = L"Resources/Textures/SOLO.png";
@@ -40,8 +48,9 @@ void ModeSelect::Initialize()
 	//画像の読み込み
 	for (int i = 0; i < m_modeFilePaths.size(); i++)
 	{
-		m_modeSelectTextures.push_back(textureManager.LoadTexture(m_modeFilePaths[i].c_str()));
+		m_modeSelectTextures.push_back(textureManager.LoadTexture(m_modeFilePaths[i]));
 	}
+
 
 }
 
@@ -85,7 +94,7 @@ bool ModeSelect::Update(const DX::StepTimer& timer)
 /// </summary>
 void ModeSelect::Draw()
 {
-	TextureManager& textureManager = TextureManager::GetInstance();
+	
 
 	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
 
@@ -118,7 +127,7 @@ void ModeSelect::Draw()
 		DirectX::SimpleMath::Vector4 color = DirectX::Colors::White;
 
 		//画像の中心位置
-		const DirectX::SimpleMath::Vector2& center = textureManager.GetTextureSize(m_modeFilePaths[i].c_str()) / 2.0f;
+		 DirectX::SimpleMath::Vector2 center = TextureManager::GetInstance().GetTextureSize(m_modeFilePaths[i]) / 2.0f;
 
 		//現在の選択しているモードを赤色で表示する
 		if (i == static_cast<int>(m_playerMode) - 1)

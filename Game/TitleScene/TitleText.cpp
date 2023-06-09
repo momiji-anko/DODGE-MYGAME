@@ -39,6 +39,7 @@ TitleText::TitleText()
 /// </summary>
 TitleText::~TitleText()
 {
+	m_titileTexture.Reset();
 }
 
 /// <summary>
@@ -150,7 +151,7 @@ void TitleText::Update(const DX::StepTimer& timer)
 void TitleText::Draw()
 {
 	//タイトル画面のサイズ取得
-	DirectX::SimpleMath::Vector2 textureSize = TextureManager::GetInstance().GetTextureSize(m_titleTextureFilePath.c_str());
+	DirectX::SimpleMath::Vector2 textureSize = TextureManager::GetInstance().GetTextureSize(m_titleTextureFilePath);
 
 	//タイトル文字描画
 	for (DirectX::SimpleMath::Vector2& position : m_titlePosition)

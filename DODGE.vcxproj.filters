@@ -291,6 +291,9 @@
     <ClInclude Include="Game\TitleScene\StageSelect.h">
       <Filter>Game\TitleScene</Filter>
     </ClInclude>
+    <ClInclude Include="Libraries\MyLibraries\MemoryLeakDetector.h">
+      <Filter>Libraries\MyLibraries</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />

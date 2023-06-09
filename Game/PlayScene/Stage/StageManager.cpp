@@ -77,7 +77,7 @@ void StageManager::Initialize( StageSelect stage)
 	//ファイルを読み込む
 	stageFileNames = FileLoadManager::GetInstance().LoadFile(stageFilePath);
 
-	size_t stageNumber = static_cast<int>(stage);
+	size_t stageNumber = static_cast<size_t>(stage);
 
 	//jsonを読み込みステージを作成
 	LoadStageJson(stageFileNames[stageNumber]);

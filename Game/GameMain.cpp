@@ -14,7 +14,7 @@
 #include"Game/ResultScene/ResultScene.h"
 
 #include "Game/LoadingScreen/LoadingScreen.h"
-
+#include"Libraries/MyLibraries/MemoryLeakDetector.h"
 
 
 
@@ -24,11 +24,17 @@
 // コンストラクタ
 //-------------------------------------------------------------------
 GameMain::GameMain()
-	: m_nextScene(GAME_SCENE::TITLE)		// 初期シーンの設定
-	, m_pScene(nullptr)
-	,m_playerMode(GameMain::PlayerMode::NONE)
-	, m_stageNum(0)
+	: 
+	m_nextScene(GAME_SCENE::TITLE),		// 初期シーンの設定 
+	m_pScene(nullptr),
+	m_playerMode(GameMain::PlayerMode::NONE),
+	m_stageNum(0),
+	m_keybord{}, 
+	m_mouse{},
+	m_loadingScreen{},
+	m_pTitleScene(nullptr)
 {
+
 }
 
 //-------------------------------------------------------------------

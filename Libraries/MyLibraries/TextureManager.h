@@ -17,6 +17,9 @@ class TextureManager :public Singleton<TextureManager>
 {
 
 public:
+
+	TextureManager();
+	
 	/// <summary>
 	/// テクスチャを読み込む
 	/// </summary>
@@ -36,7 +39,7 @@ public:
 	/// </summary>
 	/// <param name="resouce">リソース</param>
 	/// <param name="fileName">テクスチャのファイルパス</param>
-	void TextureSize(Microsoft::WRL::ComPtr<ID3D11Resource> resouce, const std::wstring& fileName);
+	void TextureSize(const Microsoft::WRL::ComPtr<ID3D11Resource>& resouce, const std::wstring& fileName);
 
 private:
 	//テクスチャ

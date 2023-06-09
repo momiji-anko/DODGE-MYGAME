@@ -261,6 +261,7 @@
     <ClInclude Include="Libraries\MyLibraries\DebugCamera.h" />
     <ClInclude Include="Libraries\MyLibraries\FileLoadManager.h" />
     <ClInclude Include="Libraries\MyLibraries\GridFloor.h" />
+    <ClInclude Include="Libraries\MyLibraries\MemoryLeakDetector.h" />
     <ClInclude Include="Libraries\MyLibraries\ModelManager.h" />
     <ClInclude Include="Libraries\MyLibraries\Singleton.h" />
     <ClInclude Include="Libraries\MyLibraries\TextureManager.h" />

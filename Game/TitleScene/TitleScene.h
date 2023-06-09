@@ -95,14 +95,7 @@ private:
 	void TitleStateDraw();
 
 private:
-	//タイトルの移動時間
-	static const float MOVE_TIME;
-	//タイトルの移動角度
-	static const float MOVE_RORATION;
-	//タイトルの初期角度
-	static const float RORATION_ZERO;
-	//タイトルの回転ルーチンのリセット
-	static const int ROTATION_RESET_ROUTINE;
+
 	//カメラの回転速度
 	static const float CAMERA_ROT_SPEED;
 	//アルファの最大値

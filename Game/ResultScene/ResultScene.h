@@ -131,17 +131,17 @@ private:
 
 	// テクスチャ
 	//数字
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_numTexture;
+	ID3D11ShaderResourceView* m_numTexture;
 	//PUSH_SPASE_KEY
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_pushTexture;
+	ID3D11ShaderResourceView* m_pushTexture;
 	//ランク
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_rankTexture;
+	ID3D11ShaderResourceView* m_rankTexture;
 	//アライブタイム文字画像
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_aliveTimeTexture;
+	ID3D11ShaderResourceView* m_aliveTimeTexture;
 	//リザルト文字
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_resultTexture;
+	ID3D11ShaderResourceView* m_resultTexture;
 	//ランク文字
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_rankStringTexture;
+	ID3D11ShaderResourceView* m_rankStringTexture;
 
 	//PUSH_SPASE_KEYのアルファ値
 	float m_alpha;

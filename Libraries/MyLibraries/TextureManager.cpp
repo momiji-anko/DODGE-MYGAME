@@ -7,7 +7,11 @@
 #include"pch.h"
 #include"TextureManager.h"
 #include"DeviceResources.h"
-
+#include"MemoryLeakDetector.h"
+TextureManager::TextureManager()
+{
+	SetUpMemoryLeakDetector();
+}
 /// <summary>
 /// テクスチャを読み込む
 /// </summary>
@@ -24,7 +28,7 @@ Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> TextureManager::LoadTexture(con
 		Microsoft::WRL::ComPtr<ID3D11Resource> resouce;
 
 		//テクスチャの読み込み
-		DirectX::CreateWICTextureFromFile(
+		HRESULT hr = DirectX::CreateWICTextureFromFile(
 			device,
 			fileName.c_str(),
 			resouce.ReleaseAndGetAddressOf(),
@@ -36,7 +40,7 @@ Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> TextureManager::LoadTexture(con
 		
 	}
 
-	return m_textures[fileName].Get();
+	return m_textures[fileName];
 }
 
 /// <summary>
@@ -61,7 +65,7 @@ DirectX::SimpleMath::Vector2 TextureManager::GetTextureSize(const std::wstring& 
 /// </summary>
 /// <param name="resouce">リソース</param>
 /// <param name="fileName">テクスチャのファイルパス</param>
-void TextureManager::TextureSize(Microsoft::WRL::ComPtr<ID3D11Resource> resouce, const std::wstring& fileName)
+void TextureManager::TextureSize(const Microsoft::WRL::ComPtr<ID3D11Resource>& resouce, const std::wstring& fileName)
 {
 	//テクスチャ２D
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> texture2d;

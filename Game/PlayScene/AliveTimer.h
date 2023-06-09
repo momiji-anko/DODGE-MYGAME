@@ -16,29 +16,52 @@
 class AliveTimer : public Singleton< AliveTimer>
 {
 public:
+
+	/// <summary>
+	/// コンストラクタ
+	/// </summary>
 	AliveTimer();
+	
+	/// <summary>
+	/// デストラクタ
+	/// </summary>
 	~AliveTimer();
 
-	// 初期化
+	/// <summary>
+	/// 初期化
+	/// </summary>
 	void Initialize();
 
-	// 更新
+	/// <summary>
+	/// 更新
+	/// </summary>
+	/// <param name="timer"></param>
 	void Update(const DX::StepTimer& timer);
 
-	// 描画
+	/// <summary>
+	/// 描画
+	/// </summary>
 	void Draw();
 
-	// 終了処理
+	/// <summary>
+	/// 終了処理
+	/// </summary>
 	void Finalize();
 
+	/// <summary>
+	/// タイマーの取得
+	/// </summary>
+	/// <returns>タイマー</returns>
 	float GetTimer() { return m_timer_s; }
 
 private:
+	//タイマー
 	float m_timer_s;
 
 	// スプライトバッチ
-	std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
+	DirectX::SpriteBatch* m_spriteBatch;
 
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_numTexture;
+	//数字テクスチャ
+	ID3D11ShaderResourceView* m_numTexture;
 
 };

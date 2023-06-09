@@ -192,7 +192,7 @@ void ResultScene::Draw()
 	//リザルト文字の表示座標
 	DirectX::SimpleMath::Vector2 resultPos{ width / 2 , 100};
 	//リザルト文字の表示
-	m_spriteBatch->Draw(m_resultTexture.Get(), resultPos, nullptr, DirectX::Colors::White, 0.0f, { 129.0f,44.0f }, 2.0f, DirectX::SpriteEffects_None, 0);
+	m_spriteBatch->Draw(m_resultTexture, resultPos, nullptr, DirectX::Colors::White, 0.0f, { 129.0f,44.0f }, 2.0f, DirectX::SpriteEffects_None, 0);
 
 	//タイムの表示
 	DrawAliveTime();
@@ -218,16 +218,16 @@ void ResultScene::Draw()
 	float rankStrTexScale = 2.0f;
 
 	//ランク文字の表示
-	m_spriteBatch->Draw(m_rankStringTexture.Get(), rankStrPos + rankStrCenterPos, nullptr, DirectX::Colors::White, 0.0f, rankStrCenterPos, rankStrTexScale);
+	m_spriteBatch->Draw(m_rankStringTexture, rankStrPos + rankStrCenterPos, nullptr, DirectX::Colors::White, 0.0f, rankStrCenterPos, rankStrTexScale);
 	//ランクの表示
-	m_spriteBatch->Draw(m_rankTexture.Get(), rankPos, &rectRank[static_cast<int>(m_rank)], DirectX::Colors::White, 0.0f, DirectX::SimpleMath::Vector2::Zero);
+	m_spriteBatch->Draw(m_rankTexture, rankPos, &rectRank[static_cast<int>(m_rank)], DirectX::Colors::White, 0.0f, DirectX::SimpleMath::Vector2::Zero);
 
 	//PUSH_SPASE_KEYの表示座標
 	DirectX::SimpleMath::Vector2 pushSpeseKeyPos = DirectX::SimpleMath::Vector2::Zero;
 	//PUSH_SPASE_KEYの色
 	DirectX::SimpleMath::Vector4 pushColor{ 1.0f,1.0f,1.0f,m_alpha };
 	//PUSH_SPASE_KEYの表示
-	m_spriteBatch->Draw(m_pushTexture.Get(), pushSpeseKeyPos, nullptr, pushColor, 0.0f, DirectX::SimpleMath::Vector2::Zero);
+	m_spriteBatch->Draw(m_pushTexture, pushSpeseKeyPos, nullptr, pushColor, 0.0f, DirectX::SimpleMath::Vector2::Zero);
 
 
 	m_spriteBatch->End();
@@ -266,17 +266,17 @@ void ResultScene::LoadResources()
 	
 	// テクスチャの読み込み
 	// 数字
-	m_numTexture =textureManager.LoadTexture(L"Resources/Textures/num.png");
+	m_numTexture =textureManager.LoadTexture(L"Resources/Textures/num.png").Get();
 	// PUSH_SPASE_KEY
-	m_pushTexture = textureManager.LoadTexture(L"Resources/Textures/PushSpaceKey.png");
+	m_pushTexture = textureManager.LoadTexture(L"Resources/Textures/PushSpaceKey.png").Get();
 	// ランク
-	m_rankTexture = textureManager.LoadTexture(L"Resources/Textures/rank.png");
+	m_rankTexture = textureManager.LoadTexture(L"Resources/Textures/rank.png").Get();
 	// アライブタイム
-	m_aliveTimeTexture = textureManager.LoadTexture(L"Resources/Textures/time.png");
+	m_aliveTimeTexture = textureManager.LoadTexture(L"Resources/Textures/time.png").Get();
 	// リザルト文字
-	m_resultTexture = textureManager.LoadTexture(L"Resources/Textures/result.png");
+	m_resultTexture = textureManager.LoadTexture(L"Resources/Textures/result.png").Get();
 	// ランク文字
-	m_rankStringTexture = textureManager.LoadTexture(L"Resources/Textures/rankString.png");
+	m_rankStringTexture = textureManager.LoadTexture(L"Resources/Textures/rankString.png").Get();
 
 }
 
@@ -380,13 +380,13 @@ void ResultScene::DrawAliveTime()
 	int hundredNum = static_cast<int>(m_aliveTime / 100) % 10;
 
 	//アライブタイムの表示
-	m_spriteBatch->Draw(m_aliveTimeTexture.Get(), timePos + aliveTimeTextureCenterPos, nullptr, DirectX::Colors::White, 0.0f, aliveTimeTextureCenterPos, texScale, DirectX::SpriteEffects_None, 0);
+	m_spriteBatch->Draw(m_aliveTimeTexture, timePos + aliveTimeTextureCenterPos, nullptr, DirectX::Colors::White, 0.0f, aliveTimeTextureCenterPos, texScale, DirectX::SpriteEffects_None, 0);
 	//一の位の表示
-	m_spriteBatch->Draw(m_numTexture.Get(), onePos, &rectNum[oneNum], DirectX::Colors::White, 0.0f, { 0.0f,0.0f }, texScale, DirectX::SpriteEffects_None, 0);
+	m_spriteBatch->Draw(m_numTexture, onePos, &rectNum[oneNum], DirectX::Colors::White, 0.0f, { 0.0f,0.0f }, texScale, DirectX::SpriteEffects_None, 0);
 	//十の位の表示
-	m_spriteBatch->Draw(m_numTexture.Get(), tenPos, &rectNum[tenNum], DirectX::Colors::White, 0.0f, { 0.0f,0.0f }, texScale, DirectX::SpriteEffects_None, 0);
+	m_spriteBatch->Draw(m_numTexture, tenPos, &rectNum[tenNum], DirectX::Colors::White, 0.0f, { 0.0f,0.0f }, texScale, DirectX::SpriteEffects_None, 0);
 	//百の位の表示
-	m_spriteBatch->Draw(m_numTexture.Get(), hundredPos, &rectNum[hundredNum], DirectX::Colors::White, 0.0f, { 0.0f,0.0f }, texScale, DirectX::SpriteEffects_None, 0);
+	m_spriteBatch->Draw(m_numTexture, hundredPos, &rectNum[hundredNum], DirectX::Colors::White, 0.0f, { 0.0f,0.0f }, texScale, DirectX::SpriteEffects_None, 0);
 	
 
 }

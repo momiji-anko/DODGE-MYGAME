@@ -97,11 +97,6 @@ void PlayScene::Initialize()
 	//BGMを鳴らす
 	m_musicID = m_pAdx2->Play(CRI_CUESHEET_0_PLAY);
 
-	//アライブタイム取得
-	m_aliveTime = &AliveTimer::GetInstance();
-	//初期化	
-	m_aliveTime->Initialize();
-
 	//キーボードステートトラッカーの生成
 	m_keyboardStateTracker = std::make_unique<DirectX::Keyboard::KeyboardStateTracker>();
 
@@ -115,6 +110,11 @@ void PlayScene::Initialize()
 	m_playerManager = std::make_unique<PlayerManager>(m_playerMode,m_stageManager.get(),m_itemManager.get(),m_obstacleManager.get());
 	//初期化
 	m_playerManager->Initialize();
+
+	//アライブタイム取得
+	m_aliveTime = &AliveTimer::GetInstance();
+	//初期化	
+	m_aliveTime->Initialize();
 }
 
 /// <summary>

@@ -16,14 +16,7 @@
 #include"Game/PlayScene/GameContext/GameContext.h"
 #include"Libraries/MyLibraries/FileLoadManager.h"
 
-//タイトルの移動時間
-const float TitleScene::MOVE_TIME = 3.0f;
-//タイトルの移動角度
-const float TitleScene::MOVE_RORATION = 0.1f;
-//タイトルの初期角度
-const float TitleScene::RORATION_ZERO = 0.0f;
-//タイトルの回転ルーチンのリセット
-const int TitleScene::ROTATION_RESET_ROUTINE = 2;
+
 //カメラの回転速度
 const float TitleScene::CAMERA_ROT_SPEED = 0.001f;
 //アルファの最大値
@@ -55,6 +48,9 @@ TitleScene::~TitleScene()
 {
 	//Adx2の終了処理
 	m_pAdx2->Finalize();
+
+	m_CRIWARETexture.Reset();
+	m_pushTexture.Reset();
 }
 
 /// <summary>
