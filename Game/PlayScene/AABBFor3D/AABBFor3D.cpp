@@ -179,7 +179,7 @@ void AABBFor3D::DrawBox(const DirectX::XMFLOAT4& color)
 	DirectX::SimpleMath::Vector3 maxPos;
 	DirectX::SimpleMath::Vector3 tmp;
 
-	//
+	
 	for (int i = 0; i < 24; i++)
 	{
 		lineList[i].color = color;

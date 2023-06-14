@@ -18,8 +18,6 @@ class TextureManager :public Singleton<TextureManager>
 
 public:
 
-	TextureManager();
-	
 	/// <summary>
 	/// テクスチャを読み込む
 	/// </summary>

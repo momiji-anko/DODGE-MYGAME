@@ -8,10 +8,7 @@
 #include"TextureManager.h"
 #include"DeviceResources.h"
 #include"MemoryLeakDetector.h"
-TextureManager::TextureManager()
-{
-	SetUpMemoryLeakDetector();
-}
+
 /// <summary>
 /// テクスチャを読み込む
 /// </summary>
@@ -28,7 +25,7 @@ Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> TextureManager::LoadTexture(con
 		Microsoft::WRL::ComPtr<ID3D11Resource> resouce;
 
 		//テクスチャの読み込み
-		HRESULT hr = DirectX::CreateWICTextureFromFile(
+		DirectX::CreateWICTextureFromFile(
 			device,
 			fileName.c_str(),
 			resouce.ReleaseAndGetAddressOf(),
@@ -77,5 +74,5 @@ void TextureManager::TextureSize(const Microsoft::WRL::ComPtr<ID3D11Resource>& r
 	texture2d->GetDesc(&texDesc);
 
 	//テクスチャサイズを設定
-	m_textureSize[fileName] = DirectX::SimpleMath::Vector2(texDesc.Width, texDesc.Height);
+	m_textureSize[fileName] = DirectX::SimpleMath::Vector2(static_cast<float>(texDesc.Width), static_cast<float>(texDesc.Height));
 }

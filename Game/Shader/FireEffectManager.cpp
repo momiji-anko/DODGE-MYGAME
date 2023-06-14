@@ -56,6 +56,8 @@ void FireEffectManager::Create()
 
 void FireEffectManager::Initialize(float life, DirectX::SimpleMath::Vector3 pos)
 {
+	UNREFERENCED_PARAMETER(pos);
+
 	srand((unsigned int)time(NULL));
 	//life,pos,vel ‚Ì’l‚Åm_effect‚ğ‰Šú‰»‚·‚é
 	for (std::list<std::unique_ptr<FireShader>>::iterator ite = m_effectList.begin();

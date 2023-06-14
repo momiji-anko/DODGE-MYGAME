@@ -71,7 +71,7 @@ void StageSelect::Initialize()
 	//ファイルマネージャーの取得
 	FileLoadManager& fileLoadManager = FileLoadManager::GetInstance();
 	//ファイルの数取得
-	m_stageMaxNum = fileLoadManager.LoadFile(L"Resources/StageData/").size();
+	m_stageMaxNum = static_cast<int>(fileLoadManager.LoadFile(L"Resources/StageData/").size());
 
 
 }
@@ -83,6 +83,7 @@ void StageSelect::Initialize()
 /// <returns>次の選択画面に行くか</returns>
 bool StageSelect::Update(const DX::StepTimer& timer)
 {
+	UNREFERENCED_PARAMETER(timer);
 	//ゲームコンテキスト取得
 	GameContext& gameContext = GameContext::GetInstance();
 	//ゲームコンテキストからキーボードステートトラッカーの取得
@@ -150,8 +151,6 @@ bool StageSelect::Update(const DX::StepTimer& timer)
 /// </summary>
 void StageSelect::Draw()
 {
-	//デバイスリソース取得
-	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
 
 	//テクスチャマネージャーの取得
 	TextureManager& textureManager = TextureManager::GetInstance();
@@ -174,11 +173,13 @@ void StageSelect::Draw()
 	//切り取り位置
 	RECT texRect ={
 
-		stageNumSize * m_selectStageNum + 1,
-		0,
-		stageNumSize * (m_selectStageNum + 1) - (stageNumSize / 5),
-		stageNumTextureSize.y
+		static_cast<LONG>(stageNumSize * m_selectStageNum + 1),
+		static_cast < LONG>(0),
+		static_cast<LONG>(stageNumSize * (m_selectStageNum + 1) - (stageNumSize / 5)),
+		static_cast<LONG>(stageNumTextureSize.y)
 	};
+
+	
 
 	//拡大率
 	float textureScale = 1.5f;

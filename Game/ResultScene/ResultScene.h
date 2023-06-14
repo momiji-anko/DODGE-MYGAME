@@ -28,7 +28,16 @@
 class ResultScene : public IScene
 {
 public:
-	enum class RANK : int;
+	//ランク
+	enum class RANK : int
+	{
+		D,
+		C,
+		B,
+		A,
+		S,
+		NONE,
+	};
 
 	/// <summary>
 	/// ステージ番号の設定
@@ -96,16 +105,7 @@ private:
 	void DrawAliveTime();
 
 private:
-	//ランク
-	enum class RANK : int
-	{
-		D,
-		C,
-		B,
-		A,
-		S,
-		NONE,
-	};
+	
 
 	//カメラの回転速度
 	static const float CAMERA_ROT_SPEED;

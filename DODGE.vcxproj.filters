@@ -29,9 +29,6 @@
     <Filter Include="Resources\Textures">
       <UniqueIdentifier>{a7088ee9-fd00-4d18-b3f2-71b96f0dc9c8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resources\Fonts">
-      <UniqueIdentifier>{eea3c579-7cc7-4e3d-b495-74ec5c148a13}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Resources\Icon">
       <UniqueIdentifier>{e17ffd14-7217-4e09-89a0-685e2df92d2e}</UniqueIdentifier>
     </Filter>
@@ -88,6 +85,9 @@
     </Filter>
     <Filter Include="Game\PlayScene\GameContext">
       <UniqueIdentifier>{69c333c8-e5f9-4618-90c8-8a8ca5d7150f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources\Fonts">
+      <UniqueIdentifier>{eea3c579-7cc7-4e3d-b495-74ec5c148a13}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

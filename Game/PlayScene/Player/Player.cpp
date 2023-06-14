@@ -134,8 +134,6 @@ void Player::Initialize(const DirectX::SimpleMath::Vector3& velocity, const Dire
 	float blinkTime_s = 0.25f;
 	//点滅回数
 	int blinkCount = 12;
-	//だんだん早くする点滅速度
-	float blinkFastTime_s = 0.01f;
 	//ブリンクする
 	m_blink = std::make_unique<Blink>();
 	//初期化
@@ -333,15 +331,18 @@ void Player::CreateShadow(ShadowMap* shadow, const DirectX::SimpleMath::Matrix& 
 	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
 	//デバイスコンテキスト取得
 	ID3D11DeviceContext1* context = pDR->GetD3DDeviceContext();
+	
+	//現在のモデルの番号
+	int nowModelNum = m_playerModelNum[static_cast<unsigned __int64>(m_modelTime_s)];
 
 	//モデルがあれば影を生成する
-	if (m_playerModel[m_playerModelNum[m_modelTime_s]] != nullptr)
+	if (m_playerModel [nowModelNum] != nullptr)
 	{
 		//ワールド行列を計算する
 		CalculationWorld();
-
+		
 		//影生成
-		m_playerModel[m_playerModelNum[m_modelTime_s]]->Draw(context, *GameContext::GetInstance().GetCommonState(), GetWorld(), view, projection, false, [&]()
+		m_playerModel[nowModelNum]->Draw(context, *GameContext::GetInstance().GetCommonState(), GetWorld(), view, projection, false, [&]()
 			{
 				shadow->DrawShadowMap(context);
 			}

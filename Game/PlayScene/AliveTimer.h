@@ -62,6 +62,6 @@ private:
 	DirectX::SpriteBatch* m_spriteBatch;
 
 	//数字テクスチャ
-	ID3D11ShaderResourceView* m_numTexture;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_numTexture;
 
 };

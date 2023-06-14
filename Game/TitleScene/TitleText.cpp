@@ -24,7 +24,7 @@ const float TitleText::MOVEING_TEXTURE_ALPHA = 0.7f;
 /// </summary>
 TitleText::TitleText()
 	:
-	m_titleTextureFilePath{L"Resources/Textures/title.png"},
+	m_titleTextureFilePath{L"Resources/Textures/DODGETitle.png"},
 	m_titileTexture{},
 	m_titleTimer_s{0.0f},
 	m_titleRoutine{0},
@@ -32,6 +32,7 @@ TitleText::TitleText()
 	m_titleRotetion{0.0f},
 	m_titleAlpha{0.0f}
 {
+
 }
 
 /// <summary>
@@ -75,16 +76,16 @@ void TitleText::Update(const DX::StepTimer& timer)
 	m_titleTimer_s += elapsedTime_s;
 
 	//タイトルの移動前の座標
-	DirectX::SimpleMath::Vector2 titleStartPosition = DirectX::SimpleMath::Vector2(static_cast<float>(size.right), 0.0f);
+	DirectX::SimpleMath::Vector2 titleStartPosition = DirectX::SimpleMath::Vector2(static_cast<float>(size.right), static_cast<float>(size.bottom / 3));
 	//タイトルの移動後の座標
-	DirectX::SimpleMath::Vector2 titleMovedPosition = DirectX::SimpleMath::Vector2::Zero;
+	DirectX::SimpleMath::Vector2 titleMovedPosition = DirectX::SimpleMath::Vector2(static_cast<float>(size.right/2), static_cast<float>(size.bottom/ 3));
 
 
 	switch (m_titleRoutine)
 	{
 	case 0:
 		//ラープで移動
-		m_titlePosition[0] = DirectX::SimpleMath::Vector2::Lerp(-titleStartPosition, titleMovedPosition, easeOutCubic(m_titleTimer_s / MOVE_TIME));
+		m_titlePosition[0] = DirectX::SimpleMath::Vector2::Lerp(DirectX::SimpleMath::Vector2(-titleStartPosition.x, titleStartPosition.y), titleMovedPosition, easeOutCubic(m_titleTimer_s / MOVE_TIME));
 		m_titlePosition[1] = DirectX::SimpleMath::Vector2::Lerp(titleStartPosition, titleMovedPosition, easeOutCubic(m_titleTimer_s / MOVE_TIME));
 		break;
 	case 1:
@@ -153,10 +154,13 @@ void TitleText::Draw()
 	//タイトル画面のサイズ取得
 	DirectX::SimpleMath::Vector2 textureSize = TextureManager::GetInstance().GetTextureSize(m_titleTextureFilePath);
 
+
 	//タイトル文字描画
 	for (DirectX::SimpleMath::Vector2& position : m_titlePosition)
 	{
-		GameContext::GetInstance().GetSpriteBatcth()->Draw(m_titileTexture.Get(), position + textureSize / 2, nullptr, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, m_titleAlpha), m_titleRotetion, textureSize / 2);
+
+		GameContext::GetInstance().GetSpriteBatcth()->Draw(m_titileTexture.Get(), position, nullptr, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, m_titleAlpha), m_titleRotetion, textureSize / 2.0f, 2.0f);
+		
 	}
 
 }

@@ -88,6 +88,8 @@ void ADX2::SetVolume(float volume)
 
 void ADX2::user_error_callback_func(const CriChar8 *errid, CriUint32 p1, CriUint32 p2, CriUint32 *parray)
 {
+	UNREFERENCED_PARAMETER(parray);
+
 	size_t len = 0;
 	wchar_t buf[128];
 	const CriChar8 *errmsg;
@@ -102,6 +104,7 @@ void ADX2::user_error_callback_func(const CriChar8 *errid, CriUint32 p1, CriUint
 /* メモリ確保関数のユーザ実装 */
 void *ADX2::user_alloc_func(void *obj, CriUint32 size)
 {
+	UNREFERENCED_PARAMETER(obj);
 	void *ptr;
 	ptr = malloc(size);
 	return ptr;
@@ -110,5 +113,6 @@ void *ADX2::user_alloc_func(void *obj, CriUint32 size)
 /* メモリ解放関数のユーザ実装 */
 void ADX2::user_free_func(void *obj, void *ptr)
 {
+	UNREFERENCED_PARAMETER(obj);
 	free(ptr);
 }

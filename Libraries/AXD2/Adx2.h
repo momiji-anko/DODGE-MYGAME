@@ -40,6 +40,15 @@ private:
 	CriAtomExPlayerHn m_player;          /* プレーヤハンドル */
 
 public:
+	ADX2()
+		:
+		m_voice_pool{},
+		m_dbas{},
+		m_acb_hn{},
+		m_player{}
+	{
+	}
+
 	// 初期化
 	void Initialize(const char* acf, const char* acb);
 

@@ -88,7 +88,7 @@ void PlayerManager::Finalize()
 DirectX::SimpleMath::Vector3 PlayerManager::GetRandomPlayerPosition()
 {
 	//プレイヤーの番号
-	size_t randomPlayer = static_cast<size_t>(MyRandom::GetIntRange(0, m_players.size() - 1));
+	size_t randomPlayer = static_cast<size_t>(MyRandom::GetIntRange(0, static_cast<int>(m_players.size() - 1)));
 	//プレイヤー座標を返す
 	return m_players[randomPlayer]->GetPosition();
 }

@@ -61,6 +61,8 @@ void ModeSelect::Initialize()
 /// <returns>次の選択画面に行くか</returns>
 bool ModeSelect::Update(const DX::StepTimer& timer)
 {
+	UNREFERENCED_PARAMETER(timer);
+
 	//キーボードステートトラッカーの取得
 	DirectX::Keyboard::KeyboardStateTracker* keybord = GameContext::GetInstance().GetKeyboardStateTracker();
 
