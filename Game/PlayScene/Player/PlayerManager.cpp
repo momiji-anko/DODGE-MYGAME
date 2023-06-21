@@ -1,4 +1,9 @@
-#include"pch.h"
+/*
+* 2023/06/12
+* PlayerManager.cpp
+* プレイヤーマネージャー
+* 麻生　楓
+*/#include"pch.h"
 #include"PlayerManager.h"
 #include"Game/PlayScene/MyRandom.h"
 

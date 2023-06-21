@@ -1,3 +1,9 @@
+/*
+* *2023/03/10
+* FireEffectManager.h
+* ファイヤーシェーダー
+* 麻生　楓
+*/
 #include "pch.h"
 #include "DeviceResources.h"
 #include "FireEffectManager.h"

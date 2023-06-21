@@ -17,9 +17,6 @@
 #include"Libraries/MyLibraries/MemoryLeakDetector.h"
 
 
-
-
-
 //-------------------------------------------------------------------
 // コンストラクタ
 //-------------------------------------------------------------------
@@ -152,26 +149,28 @@ void GameMain::CreateScene()
 	{
 	case GAME_SCENE::TITLE:
 	{
-		m_pTitleScene = new TitleScene();
-		m_pScene = m_pTitleScene;
+		m_pScene = std::make_unique<TitleScene>();
+
+		m_pTitleScene = dynamic_cast<TitleScene*>(m_pScene.get());
+
 		break;
 	}
 	case GAME_SCENE::PLAY:
 	{
 
-		PlayScene* playScene = new PlayScene();
+		std::unique_ptr<PlayScene> playScene = std::make_unique<PlayScene>();
 
 		playScene->SetPlayerMode(m_playerMode);
 		playScene->SetStageNum(m_stageNum);
 
-		m_pScene = playScene;
+		m_pScene = std::move(playScene);
 		
 
 		break;
 	}
 	case GAME_SCENE::RESULT:
 	{
-		m_pScene = new ResultScene();
+		m_pScene = std::make_unique<ResultScene>();
 
 		m_pScene->SetStageNum(m_stageNum);
 	
@@ -238,7 +237,7 @@ void GameMain::DeleteScene()
 	m_pScene->Finalize();
 
 	// 現シーンの削除
-	delete m_pScene;
+	m_pScene.release();
 	m_pScene = nullptr;
 }
 /*--------------------------------------------------
@@ -249,7 +248,7 @@ void GameMain::LoadResources(bool useLoadingScreen)
 	if (useLoadingScreen)
 	{
 		m_loadingScreen = std::make_unique<LoadingScreen>();
-		m_loadingScreen->Initialize(m_pScene);
+		m_loadingScreen->Initialize(m_pScene.get());
 	}
 	else
 	{

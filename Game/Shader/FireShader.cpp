@@ -1,3 +1,9 @@
+/*
+* 2023/03/10
+* FireShader.cpp
+* ファイヤーシェーダー
+* 麻生　楓
+*/
 #include "pch.h"
 #include "FireShader.h"
 #include "BinaryFile.h"
@@ -20,11 +26,13 @@ const std::vector<D3D11_INPUT_ELEMENT_DESC> FireShader::INPUT_LAYOUT =
 	{ "TEXCOORD",	0, DXGI_FORMAT_R32G32_FLOAT, 0, sizeof(DirectX::SimpleMath::Vector3) + sizeof(DirectX::SimpleMath::Vector4), D3D11_INPUT_PER_VERTEX_DATA, 0 },
 };
 
+/// <summary>
+/// コンストラクタ
+/// </summary>
 FireShader::FireShader()
 	:
 	m_scale(1.0f),
 	m_CBuffer{},
-	m_timer{},
 	m_inputLayout{},
 	m_batch{},
 	m_states{},
@@ -36,7 +44,6 @@ FireShader::FireShader()
 	m_view{},
 	m_proj{},
 	m_camera{},
-	m_gravity{},
 	m_position{},
 	m_velocity{},
 	m_life{},
@@ -47,16 +54,12 @@ FireShader::FireShader()
 	m_positionList{},
 	m_rot{},
 	m_angle{},
-	m_color{},
-	m_rutin{},
-	m_colorTime{},
-	m_time{},
 	m_offsetPos{}
-
-
 {
 }
-
+/// <summary>
+/// デストラクタ
+/// </summary>
 FireShader::~FireShader()
 {
 	Lost();
@@ -149,32 +152,26 @@ void FireShader::SetRenderState(const DirectX::SimpleMath::Vector3& camera, cons
 	m_proj = proj;
 }
 
+/// <summary>
+/// 初期化
+/// </summary>
+/// <param name="life">寿命</param>
+/// <param name="pos">座標</param>
+/// <param name="velocity">移動量</param>
 void FireShader::Initialize(float life, const DirectX::SimpleMath::Vector3& pos, const DirectX::SimpleMath::Vector3& velocity)
 {
+	//初期化
 	m_startPosition = pos;
 	m_startVelocity = velocity;
 	m_startLife = life;
 
 
-
+	//シード値
 	int seed = 100;
 	m_wait = ((rand() % seed) / (float)seed) * m_startLife;
 
+	//リセット
 	Reset();
-	m_rutin = 0;
-	if (m_velocity.x > 0)
-	{
-
-		m_gravity = DirectX::SimpleMath::Vector3(0, -0.001f, 0);
-	}
-	else if (m_velocity.x < 0)
-	{
-
-		m_gravity = DirectX::SimpleMath::Vector3(0, 0.001f, 0);
-	}
-
-
-
 }
 
 void FireShader::Reset()
@@ -183,8 +180,6 @@ void FireShader::Reset()
 	m_velocity = m_startVelocity;
 	m_life = m_startLife;
 	m_scale = 0.2f;
-	m_rutin = 0;
-	m_time = 0.0f;
 }
 //-----------------------------------------------------------------------------------
 //	Update()
@@ -196,9 +191,9 @@ void FireShader::Update(DX::StepTimer timer)
 {
 	//処理に使う秒速計(1秒で1.0f)を取得する。
 	float time = static_cast<float>(timer.GetElapsedSeconds());
-
+	//だんだん減らす
 	m_wait -= time;
-
+	//０より高ければ処理しない
 	if (m_wait > 0)
 	{
 		return;
@@ -206,8 +201,7 @@ void FireShader::Update(DX::StepTimer timer)
 
 	DirectX::SimpleMath::Vector3 vel = DirectX::SimpleMath::Vector3(0.002f, 0, 0);
 
-
-
+	//中心に向かう
 	if (m_position.x > 0)
 	{
 		m_velocity.x -= vel.x;
@@ -217,21 +211,23 @@ void FireShader::Update(DX::StepTimer timer)
 		m_velocity.x += vel.x;
 	}
 
-
-
-
+	//移動
 	m_position += m_velocity;
 
+	//だんだん小さくする
 	m_scale = Lerp(1.0f, 0.0f, 1.0f - m_life / m_startLife);
+	
+	//角度を曲げる
 	m_angle += 0.1f;
-
+	
+	//寿命を減らす
 	m_life -= time;
 
+	//寿命が０より低くなれば消える
 	if (m_life < 0.0f)
 	{
 		Reset();
 	}
-
 
 }
 
@@ -256,7 +252,7 @@ void FireShader::Render()
 	DirectX::SimpleMath::Matrix scaleMat, rotMat;
 	scaleMat = DirectX::SimpleMath::Matrix::CreateScale(m_scale);
 	rotMat = DirectX::SimpleMath::Matrix::CreateRotationZ(m_angle);
-
+	//ワールド行列計算
 	m_world = scaleMat * rotMat * revMat * wrold;
 
 	ShaderDraw();
@@ -287,8 +283,6 @@ void FireShader::ShaderDraw()
 	cbuff.matProj = m_proj.Transpose();
 	cbuff.matWorld = m_world.Transpose();
 	cbuff.Diffuse = DirectX::SimpleMath::Vector4(1.0, 0.3, 0.1, 1);
-	/*Vector3 pos = vx[0].position;
-	cbuff.Diffuse = Vector4(pos.x, pos.y, pos.z, 1);*/
 
 	//受け渡し用バッファの内容更新(ConstBufferからID3D11Bufferへの変換）
 	context->UpdateSubresource(m_CBuffer.Get(), 0, NULL, &cbuff, 0, 0);

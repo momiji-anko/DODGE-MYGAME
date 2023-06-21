@@ -1,3 +1,9 @@
+/*
+* 2023/06/12
+* StageSelect.cpp
+* ステージセレクト
+* 麻生　楓
+*/
 #include"pch.h"
 #include"StageSelect.h"
 #include"Libraries/MyLibraries/TextureManager.h"
@@ -118,17 +124,11 @@ bool StageSelect::Update(const DX::StepTimer& timer)
 		//音を出す
 		ADX2::GetInstance().Play(CRI_CUESHEET_0_BUTTON);
 
-		//ステージ選択の値がステージの数より低くったらステージ１にする
-		if (m_selectStageNum < static_cast<int>(StageManager::StageSelect::Stage1))
-		{
-			m_selectStageNum = static_cast<int>(StageManager::StageSelect::Stage1);
-		}
-		//ステージ選択の値がステージの数より大きくなったらステージ３にする
-		else if (m_selectStageNum > m_stageMaxNum - 1)
-		{
-			m_selectStageNum = m_stageMaxNum - 1;
-		}
-
+		//ステージの最低数
+		int stageMinNum = static_cast<int>(StageManager::StageSelect::Stage1);
+		//範囲内か確認
+		m_selectStageNum =  std::min(std::max(stageMinNum, m_selectStageNum), m_stageMaxNum - 1);
+		
 		//背景のステージを変える
 		m_stageManager->Initialize(static_cast<StageManager::StageSelect>(m_selectStageNum));
 

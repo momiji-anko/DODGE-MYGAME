@@ -1,3 +1,9 @@
+/*
+* 2023/05/25
+* Stage.cpp
+* ステージ
+* 麻生　楓
+*/
 #include"pch.h"
 #include"Stage.h"
 #include"../MyRandom.h"

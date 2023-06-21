@@ -1,3 +1,9 @@
+/*
+* 2023/05/16
+* Fade.cpp
+* フェード
+* 麻生　楓
+*/
 #include "pch.h"
 #include "Fade.h"
 #include"BinaryFile.h"
@@ -12,7 +18,11 @@
 #include<Keyboard.h>
 #include"DeviceResources.h"
 
+//フェードアウト終了値
+const float Fade::FADEOUT_END_NUM = 1.0f;
 
+//フェードイン終了値
+const float Fade::FADEIN_END_NUM = 0.0f;
 
 const std::vector<D3D11_INPUT_ELEMENT_DESC> Fade::INPUT_LAYOUT =
 {
@@ -21,6 +31,9 @@ const std::vector<D3D11_INPUT_ELEMENT_DESC> Fade::INPUT_LAYOUT =
 	{ "TEXCOORD",	0, DXGI_FORMAT_R32G32_FLOAT, 0, sizeof(DirectX::SimpleMath::Vector3) + sizeof(DirectX::SimpleMath::Vector4), D3D11_INPUT_PER_VERTEX_DATA, 0 },
 };
 
+/// <summary>
+/// コンストラクタ
+/// </summary>
 Fade::Fade():
 	m_CBuffer{},
 	m_timer{},
@@ -35,10 +48,6 @@ Fade::Fade():
 	m_billboardTranslation{},
 	m_view{},
 	m_proj{},
-	m_model{},
-	m_capture{},
-	m_rtv{},
-	m_srv{},
 	m_fadeTime_s{},
 	m_fadeState{}
 {
@@ -46,6 +55,9 @@ Fade::Fade():
 	
 }
 
+/// <summary>
+/// デストラクタ
+/// </summary>
 Fade::~Fade()
 {
 	Lost();
@@ -114,10 +126,7 @@ void Fade::Create()
 	device->CreateBuffer(&bd, nullptr, &m_CBuffer);
 
 
-	/*std::unique_ptr<EffectFactory> fxFactory = std::make_unique<EffectFactory>(device);
-	fxFactory->SetDirectory(L"Resources/Models");
 
-	m_model = Model::CreateFromCMO(device, L"Resources/Models/cup.cmo", *fxFactory);*/
 
 }
 //-----------------------------------------------------------------------------------
@@ -145,6 +154,11 @@ void Fade::SetRenderState(const DirectX::SimpleMath::Vector3& camera, const Dire
 	m_billboardTranslation = rev * m_billboardTranslation;
 }
 
+/// <summary>
+/// 初期化
+/// </summary>
+/// <param name="pos">座標</param>
+/// <param name="fade">フェードアルファ</param>
 void Fade::Initialize(const DirectX::SimpleMath::Vector3& pos, float fade)
 {
 	m_centerPosition = pos;
@@ -152,35 +166,45 @@ void Fade::Initialize(const DirectX::SimpleMath::Vector3& pos, float fade)
 	m_fadeState = State::FADE_NONE;
 }
 
-//-----------------------------------------------------------------------------------
-//	Update()
-//	更新処理
-//	IN	:	タイマー		DX::StepTimer timer
-//	RE	:	void
-//-----------------------------------------------------------------------------------
+/// <summary>
+/// 更新
+/// </summary>
+/// <param name="timer">タイマー</param>
 void Fade::Update(DX::StepTimer timer)
 {
+	//タイマーの代入
 	m_timer = timer;
+	
+	//経過時間
 	float elapsedTime = static_cast<float>(timer.GetElapsedSeconds());
+
+	//フェード状態によって処理を変える
 	switch (m_fadeState)
 	{
+	//フェードイン
 	case Fade::State::FADE_IN:
+		//フェードタイムを経過時間で引く
 		m_fadeTime_s -= elapsedTime;
 
-		if (m_fadeTime_s <= 0)
+		//フェードタイムが０以下になったら何もしない
+		if (m_fadeTime_s <= FADEIN_END_NUM)
 		{
 			m_fadeState = State::FADE_NONE;
 		}
 
 		break;
+	//フェードイン
 	case Fade::State::FADE_OUT:
+		//フェードタイムを経過時間で足す
 		m_fadeTime_s += elapsedTime;
 
-		if (m_fadeTime_s >= 1)
+		//フェードタイムが１以上になったら何もしない
+		if (m_fadeTime_s >= FADEOUT_END_NUM)
 		{
 			m_fadeState = State::FADE_NONE;
 		}
 		break;
+
 	case Fade::State::FADE_NONE:
 		break;
 	default:
@@ -188,18 +212,11 @@ void Fade::Update(DX::StepTimer timer)
 	}
 }
 
-//-----------------------------------------------------------------------------------
-//	Render()
-//	描画処理(メイン以外の外部要因）
-//	IN	:	void
-//	RE	:	void
-//-----------------------------------------------------------------------------------
+/// <summary>
+/// 描画
+/// </summary>
 void Fade::Render()
 {
-	//回転するモデルを表示
-	static float rot = 0.0f;
-	rot += 0.1f;
-	//m_model->Draw(pDR->GetD3DDeviceContext(),*m_states, Matrix::CreateRotationZ(rot), m_view, m_proj);
 
 	//全画面エフェクト
 	DirectX::SimpleMath::Matrix  mat = DirectX::SimpleMath::Matrix::Identity;
@@ -208,12 +225,13 @@ void Fade::Render()
 	//板ポリゴンエフェクト
 	//Draw(m_billboardTranslation, m_view, m_proj);
 }
-//-----------------------------------------------------------------------------------
-//	Draw()
-//	メイン描画処理
-//	IN	:	void
-//	RE	:	void
-//-----------------------------------------------------------------------------------
+
+/// <summary>
+/// メイン描画処理
+/// </summary>
+/// <param name="world">ワールド行列</param>
+/// <param name="view">ビュー行列</param>
+/// <param name="proj">プロジェクション行列</param>
 void Fade::Draw(const DirectX::SimpleMath::Matrix& world, const DirectX::SimpleMath::Matrix& view, const DirectX::SimpleMath::Matrix& proj)
 {
 	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
@@ -231,10 +249,7 @@ void Fade::Draw(const DirectX::SimpleMath::Matrix& world, const DirectX::SimpleM
 	cbuff.matView = view.Transpose();
 	cbuff.matProj = proj.Transpose();
 	cbuff.matWorld = world.Transpose();
-	//Time		x:経過時間(トータル秒)	y:1Fの経過時間(秒）	z:反復（サインカーブ） w:未使用（暫定で１）
-	
-	//cbuff.Time = Vector4((float)m_timer.GetTotalSeconds(), (float)m_timer.GetElapsedSeconds(), Mouse::Get().GetState().x / 800.0f, Mouse::Get().GetState().y / 600.0f);
-	
+
 	cbuff.Time = DirectX::SimpleMath::Vector4((float)m_timer.GetTotalSeconds(), m_fadeTime_s, DirectX::Mouse::Get().GetState().x / 800.0f, DirectX::Mouse::Get().GetState().y / 600.0f);
 	
 	
@@ -287,6 +302,9 @@ void Fade::Draw(const DirectX::SimpleMath::Matrix& world, const DirectX::SimpleM
 
 }
 
+/// <summary>
+/// 削除
+/// </summary>
 void Fade::Lost()
 {
 	m_CBuffer.Reset();
@@ -297,63 +315,3 @@ void Fade::Lost()
 	m_vertexShader.Reset();
 	m_pixelShader.Reset();
 }
-
-//モデル等をテクスチャ(m_srv)に描画する処理
-void Fade::RenderModel()
-{
-	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
-	ID3D11DeviceContext1* context = pDR->GetD3DDeviceContext();
-
-	D3D11_TEXTURE2D_DESC texDesc;
-	pDR->GetRenderTarget()->GetDesc(&texDesc);
-	texDesc.Format = DXGI_FORMAT_R8G8B8A8_TYPELESS;
-	texDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-	pDR->GetD3DDevice()->CreateTexture2D(&texDesc, NULL, m_capture.ReleaseAndGetAddressOf());
-
-	// レンダーターゲットビューの設定
-	D3D11_RENDER_TARGET_VIEW_DESC rtvDesc;
-	memset(&rtvDesc, 0, sizeof(rtvDesc));
-	rtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-	// レンダーターゲットビューの生成
-	pDR->GetD3DDevice()->CreateRenderTargetView(m_capture.Get(), &rtvDesc, &m_rtv);
-
-	//シェーダリソースビューの設定
-	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
-	ZeroMemory(&srvDesc, sizeof(srvDesc));
-	srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-	srvDesc.Texture2D.MostDetailedMip = 0;
-	srvDesc.Texture2D.MipLevels = texDesc.MipLevels;
-
-	//レンダーターゲットビュー,深度ビューを取得（後で元に戻すため）
-	ID3D11RenderTargetView* defaultRTV = pDR->GetRenderTargetView();
-	ID3D11DepthStencilView* pDSV = pDR->GetDepthStencilView();
-
-	//背景色の設定（アルファを０にするとオブジェクトのみ表示）
-	float clearColor[4] = { 1.0f, 1.0f, 1.0f, 0.0f };
-
-	//レンダーターゲットビューをセットし、初期化する
-	context->OMSetRenderTargets(1, m_rtv.GetAddressOf(), pDSV);
-	context->ClearRenderTargetView(m_rtv.Get(), clearColor);
-	context->ClearDepthStencilView(pDSV, D3D11_CLEAR_DEPTH, 1.0f, 0);
-
-	//----------------------------------------------------------------------------
-	//とりあえずの動きのために回転
-	static float rot = 0.0f;
-	rot += 0.1f;
-
-	//モデルを描画
-	m_model->Draw(pDR->GetD3DDeviceContext(), *m_states, DirectX::SimpleMath::Matrix::CreateRotationZ(rot), m_view, m_proj);
-
-	
-
-	//------------------------------------------------------------------
-	//設定をもとに戻す
-	clearColor[0] = 0.3f;
-	clearColor[1] = 0.3f;
-	context->OMSetRenderTargets(1, &defaultRTV, pDSV);
-	context->ClearRenderTargetView(defaultRTV, clearColor);
-	context->ClearDepthStencilView(pDSV, D3D11_CLEAR_DEPTH, 1.0f, 0);
-}
-

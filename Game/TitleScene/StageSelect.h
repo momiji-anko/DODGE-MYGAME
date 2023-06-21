@@ -1,3 +1,9 @@
+/*
+* 2023/06/12
+* StageSelect.h
+* ステージセレクト
+* 麻生　楓
+*/
 #pragma once
 #include"StepTimer.h"
 #include<SimpleMath.h>

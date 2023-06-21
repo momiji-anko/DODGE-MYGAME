@@ -169,8 +169,6 @@ Item::ItemType ItemManager::PlayerHitItemType(AABBFor3D* player)
 			item->Reset();
 			//当たっているアイテムタイプを返す
 			return hitItemType;
-
-			
 		}	
 	}
 

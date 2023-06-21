@@ -172,10 +172,7 @@ GAME_SCENE PlayScene::Update(const DX::StepTimer& timer)
 
 	//障害物マネージャー更新
 	m_obstacleManager->Update(timer);
-	
-	//障害物に渡すプレイヤーの番号
-	//size_t randomPlayer = static_cast<size_t>(MyRandom::GetIntRange(0, m_players.size() - 1));
-	
+		
 	//障害物マネージャーにプレイヤーの座標を送る
 	m_obstacleManager->SetPlayerPosition(m_playerManager->GetRandomPlayerPosition());
 
@@ -190,11 +187,6 @@ GAME_SCENE PlayScene::Update(const DX::StepTimer& timer)
 	if (m_playerManager->GetPlayerIsAllDaed())
 	{
 		m_fadeInOut->FadeOut();
-	}
-
-	if (m_playerMode == GameMain::PlayerMode::Player2)
-	{
-		//HitCheck_Capsule2Capsule(*(m_players[0]->GetCapsule()), *(m_players[1]->GetCapsule()));
 	}
 	
 

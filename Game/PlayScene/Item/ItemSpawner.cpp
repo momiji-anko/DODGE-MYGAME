@@ -1,3 +1,9 @@
+/*
+* 2023/04/14
+* ItemSpawner.cpp
+* アイテムスポナー
+* 麻生　楓
+*/
 #include"pch.h"
 #include"ItemSpawner.h"
 #include"../Actor/Actor.h"

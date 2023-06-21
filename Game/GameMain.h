@@ -76,8 +76,8 @@ private:
 	GAME_SCENE m_nextScene;
 
 	// シーン
-	IScene* m_pScene;
-
+	std::unique_ptr<IScene> m_pScene;
+	
 
 	// ロード画面 
 	std::unique_ptr<ILoadingScreen> m_loadingScreen;

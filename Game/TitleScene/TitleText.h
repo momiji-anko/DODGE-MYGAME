@@ -1,8 +1,17 @@
+/*
+* 2023/06/12
+* TitleText.h
+* タイトルの文字
+* 麻生　楓
+*/
 #pragma once
 #include"StepTimer.h"
 #include<vector>
 #include<SimpleMath.h>
 
+/// <summary>
+/// タイトルの文字
+/// </summary>
 class TitleText
 {
 public:

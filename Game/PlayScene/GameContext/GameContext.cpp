@@ -1,3 +1,9 @@
+/*
+* 2023/04/28
+* GameContext.cpp
+* ゲームコンテキスト
+* 麻生楓
+*/
 #include"pch.h"
 #include "GameContext.h"
 

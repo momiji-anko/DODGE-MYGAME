@@ -1,3 +1,9 @@
+/*
+* 2023/06/12
+* PlayerManagerh
+* プレイヤーマネージャー
+* 麻生　楓
+*/
 #pragma once
 #include"Player.h"
 #include"Game/PlayScene/Obstacle/ObstacleManager.h"

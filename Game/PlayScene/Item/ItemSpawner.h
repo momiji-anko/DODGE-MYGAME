@@ -1,6 +1,15 @@
+/*
+* 2023/04/14
+* ItemSpawner.h
+* アイテムスポナー
+* 麻生　楓
+*/
 #pragma once 
 #include"../ISpawner.h"
 
+/// <summary>
+/// アイテムスポナー
+/// </summary>
 class ItemSpawner :public ISpawner
 {
 public:

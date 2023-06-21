@@ -1,3 +1,9 @@
+/*
+* 2023/06/12
+* ModeSelect.cpp
+* モードセレクト
+* 麻生　楓
+*/
 #include"pch.h"
 #include"ModeSelect.h"
 #include"Libraries/MyLibraries/TextureManager.h"
@@ -34,8 +40,6 @@ ModeSelect::~ModeSelect()
 /// </summary>
 void ModeSelect::Initialize()
 {
-
-	SetUpMemoryLeakDetector();
 	
 	//モードファイルパスの設定
 	m_modeFilePaths.resize(static_cast<int>(GameMain::PlayerMode::Player2));
@@ -50,7 +54,6 @@ void ModeSelect::Initialize()
 	{
 		m_modeSelectTextures.push_back(textureManager.LoadTexture(m_modeFilePaths[i]));
 	}
-
 
 }
 

@@ -1,3 +1,9 @@
+/*
+* 2023/05/25
+* Stage.h
+* ステージ
+* 麻生　楓
+*/
 #pragma once 
 #include"../Actor/Actor.h"
 #include"../ShadowMap.h"

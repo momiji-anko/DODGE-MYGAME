@@ -1,7 +1,8 @@
 /*
 * 2023/04/26
 * AliveTimer.h
-* 
+* アライブタイム
+* 麻生　楓
 */
 #pragma once
 

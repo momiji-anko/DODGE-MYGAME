@@ -1,8 +1,17 @@
+/*
+* 2023/06/12
+* ModeSelect.h
+* モードセレクト
+* 麻生　楓
+*/
 #pragma once
 #include "Game/GameMain.h"
 #include<string>
 #include<vector>
 
+/// <summary>
+/// モードセレクト
+/// </summary>
 class ModeSelect
 {
 public:
