@@ -37,6 +37,8 @@ public:
 	void SetUpVector(DirectX::SimpleMath::Vector3 up) { m_up = up; }
 	DirectX::SimpleMath::Vector3 GetUpVector() const { return m_up; }
 
+	void ShakeCamera();
+
 protected:
 
 	// ビュー行列の算出
@@ -45,7 +47,11 @@ protected:
 	// プロジェクション行列の算出
 	virtual void CalculateProjectionMatrix();
 public:
-	static const float DEFAULT_CAMERA_DISTANCE;	// カメラの距離
+	//カメラの距離
+	static const DirectX::SimpleMath::Vector3 CAMERA_DISTANCE_POSITION;
+
+	// ターゲットの座標
+	static const DirectX::SimpleMath::Vector3 CAMERA_TARGET_POSITION;	
 
 private:
 
@@ -63,4 +69,6 @@ private:
 
 	// 上向きベクトル
 	DirectX::SimpleMath::Vector3 m_up;
+
+	int m_shake;
 };

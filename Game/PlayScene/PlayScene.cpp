@@ -48,6 +48,8 @@ PlayScene::PlayScene()
 PlayScene::~PlayScene()
 {
 	
+	ModelManager::GetInstance().Reset();
+
 	m_pAdx2->Finalize();
 }
 

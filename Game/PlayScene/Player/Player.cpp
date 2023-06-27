@@ -13,6 +13,9 @@
 #include"Libraries/MyLibraries/ModelManager.h"
 #include"Libraries/MyLibraries/TextureManager.h"
 #include"Game/PlayScene/GameContext/GameContext.h"
+#include<Effects.h>
+#include"Game/PlayScene/AliveTimer.h"
+
 
 //	1秒間に進むマスの数
 const float Player::MOVE_SPEED = 9.0f;
@@ -139,6 +142,11 @@ void Player::Initialize(const DirectX::SimpleMath::Vector3& velocity, const Dire
 	//初期化
 	m_blink->Initialize(blinkTime_s, blinkCount);
 
+	m_fireEffect = std::make_unique<FireEffectManager>();
+	m_fireEffect->Create();
+	m_fireEffect->Initialize(3.0f, GetPosition());
+
+	m_effectLifeTime_s = 1.0f;
 }
 
 /// <summary>
@@ -150,6 +158,24 @@ void Player::Update(const DX::StepTimer& timer)
 	//アクティブでなければ処理をしない
 	if (!IsActive())
 		return;
+
+	if (m_effectLifeTime_s <= 0)
+	{
+		SetActive(false);
+	}
+	if (m_shieldCount <= -1)
+	{
+		m_effectLifeTime_s -= timer.GetElapsedSeconds();
+		
+		for (int i = 0; i < 10; i++)
+		{
+			m_fireEffect->Update(timer);
+		}
+
+		return;
+	}
+
+	
 
 	//アイテムと当たり判定を取る
 	Item::ItemType itemType = m_itemManager->PlayerHitItemType(GetAABB());
@@ -207,11 +233,16 @@ void Player::Update(const DX::StepTimer& timer)
 	//落下してY座標が-50になったら死亡する
 	if (GetPosition().y < FALL_DEAD_AREA)
 	{
-		SetActive(false);
+		//ダメージ音を出す
+		m_pAdx2->Play(CRI_CUESHEET_0_DAMAGE1);
+
+		m_shieldCount = -1;
 	}
 
 	//ブリンクの更新
 	m_blink->Update(timer);
+
+	
 
 }
 
@@ -233,16 +264,33 @@ void Player::Draw(Camera* camera)
 	//ワールド行列計算
 	CalculationWorld();
 
+	//現在のモデルの状態
+	int modelTime = static_cast<int>(m_modelTime_s);
+
 
 	//ブリンクしていなければモデル表示
 	if (m_blink->IsBlink())
 	{
-		//現在のモデルの状態
-		int modelTime = static_cast<int>(m_modelTime_s);
-
 		m_playerModel[m_playerModelNum[modelTime]]->Draw(context, *GameContext::GetInstance().GetCommonState(), GetWorld(), camera->GetViewMatrix(), camera->GetProjectionMatrix());
 	}
+	
+	//盾が-1であればプレイヤー死亡
+	if (m_shieldCount <= -1) 
+	{
+		//カメラを揺らす
+		camera->ShakeCamera();
 
+		//プレイヤー死亡演出
+		PlayerDeath(m_obstacleManager->GetHitType(),camera);
+
+		//ゲームコンテキストにプレイヤー死亡したと設定
+		GameContext::GetInstance().SetIsPlayerDeath(true);
+
+		//タイマーを止める
+		AliveTimer::GetInstance().SetTimerStop(true);
+
+
+	}
 	//盾UIの描画
 	TextureDraw();
 }
@@ -308,11 +356,7 @@ void Player::ShieldCountDown()
 		//点滅する
 		m_blink->Start();
 
-		//シールドがマイナスになったら死亡する
-		if (m_shieldCount <= -1)
-		{
-			SetActive(false);
-		}
+		
 
 	}
 
@@ -553,4 +597,71 @@ void Player::PlayerMove(const DX::StepTimer& timer)
 	SetPosition(GetPosition() + velocity);
 	//角度設定
 	SetRotation(rotation);
+}
+
+/// <summary>
+/// プレイヤーの死亡演出
+/// </summary>
+/// <param name="hitType">当たった障害物の種類</param>
+/// <param name="camera">カメラ</param>
+void Player::PlayerDeath(Obstacle::ObstacleType hitType, Camera* camera)
+{
+	//デバイスリソースの取得
+	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
+
+	//当たった障害物がファイアーだったらプレイヤーが燃える
+	if (hitType == Obstacle::ObstacleType::NORMAL || hitType == Obstacle::ObstacleType::MEANDERING)
+	{
+		//描画の設定
+		m_fireEffect->SetRenderState(camera->GetEyePosition(), camera->GetViewMatrix(), camera->GetProjectionMatrix());
+		
+		std::vector<DirectX::SimpleMath::Vector3> firePositions = 
+		{
+			DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.3f),
+			DirectX::SimpleMath::Vector3(-0.1f, 0.0f, 0.3f),
+			DirectX::SimpleMath::Vector3(0.1f, 0.0f, 0.3f)
+		};
+
+		//エフェクト表示する
+		for (const DirectX::SimpleMath::Vector3& firePosition : firePositions)
+		{
+			m_fireEffect->SetOffsetPosition(GetPosition() + firePosition);
+			m_fireEffect->Render();
+		}
+
+	}
+	//当たった障害物が棒だったらプレイヤーが紫色になる
+	else if (hitType != Obstacle::ObstacleType::NORMAL && hitType != Obstacle::ObstacleType::MEANDERING)
+	{
+
+		ID3D11Device1* device = pDR->GetD3DDevice();
+
+		static std::shared_ptr<DirectX::BasicEffect> effect;
+
+		if (effect == nullptr)
+			effect = std::make_shared<DirectX::BasicEffect>(device);
+
+		effect->SetWorld(DirectX::SimpleMath::Matrix::Identity);
+		effect->SetView(camera->GetViewMatrix());
+		effect->SetProjection(camera->GetProjectionMatrix());
+		effect->SetColorAndAlpha(DirectX::SimpleMath::Vector4(0.5f,0.0f,0.5f,0.5f));
+
+		effect->SetTextureEnabled(false);
+
+		effect->EnableDefaultLighting();
+
+		for (const auto& mesh : m_playerModel[m_playerModelNum[static_cast<int>(m_modelTime_s)]]->meshes)
+		{
+			for (const auto& part : mesh->meshParts)
+			{
+				part->ModifyEffect(pDR->GetD3DDevice(), effect);
+			}
+		}
+
+		DirectX::SimpleMath::Vector3 rotation = GetRotation().ToEuler();
+		rotation.x = DirectX::XM_PI/2;
+		//角度設定
+		SetRotation(rotation);
+	}
+
 }

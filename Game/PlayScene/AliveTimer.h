@@ -55,6 +55,9 @@ public:
 	/// <returns>タイマー</returns>
 	float GetTimer() { return m_timer_s; }
 
+
+	void SetTimerStop(bool isStop) { m_isTimerStop = isStop; }
+
 private:
 	//タイマー
 	float m_timer_s;
@@ -64,5 +67,7 @@ private:
 
 	//数字テクスチャ
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_numTexture;
+
+	bool m_isTimerStop;
 
 };

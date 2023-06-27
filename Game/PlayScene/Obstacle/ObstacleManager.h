@@ -48,7 +48,11 @@ public:
 	/// <param name="position">プレイヤーの座標</param>
 	void SetPlayerPosition(const DirectX::SimpleMath::Vector3& position);
 
-
+	/// <summary>
+	/// プレイヤーと当たった障害物のタイプ
+	/// </summary>
+	/// <returns>当たった障害物のタイプ</returns>
+	Obstacle::ObstacleType GetHitType() { return m_hitType; }
 
 public:
 	/// <summary>
@@ -210,4 +214,9 @@ private:
 	float                                                        m_spawneTime_s;
 	//障害物のスポーンクールタイム
 	float                                                        m_spawneCoolTime_s;
+
+	//当たった障害物のタイプ
+	Obstacle::ObstacleType m_hitType;
+
+	
 };

@@ -39,3 +39,12 @@ DirectX::Model* ModelManager::LoadModel(const std::wstring& fileName)
 	//モデルを生ポインタで返す
 	return m_models[fileName].get();
 }
+
+void ModelManager::Reset()
+{
+	for (auto& model : m_models)
+	{
+		model.second.reset();
+	}
+
+}

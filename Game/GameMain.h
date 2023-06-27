@@ -77,7 +77,7 @@ private:
 
 	// シーン
 	std::unique_ptr<IScene> m_pScene;
-	
+
 
 	// ロード画面 
 	std::unique_ptr<ILoadingScreen> m_loadingScreen;
@@ -85,7 +85,6 @@ private:
 	PlayerMode m_playerMode;
 	int m_stageNum;
 
-	TitleScene* m_pTitleScene;
 
 
 };

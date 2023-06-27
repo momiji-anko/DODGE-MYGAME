@@ -49,7 +49,17 @@ public:
 	/// <returns>キーボードステートトラッカー</returns>
 	DirectX::Keyboard::KeyboardStateTracker* GetKeyboardStateTracker() const{ return m_keyBoardStateTracker; }
 		
+	/// <summary>
+	/// プレイヤーが死亡しているか取得
+	/// </summary>
+	/// <returns>true = 死亡していいる、false = 死亡していない</returns>
+	bool GetIsPlayerDeath() { return m_isPlayerDeath; }
 
+	/// <summary>
+	/// プレイヤーが死亡しているか設定
+	/// </summary>
+	/// <param name="flag">true = 死亡していいる、false = 死亡していない</param>
+	void SetIsPlayerDeath(bool flag) { m_isPlayerDeath = flag; }
 
 
 public:
@@ -75,6 +85,6 @@ private:
 	DirectX::SpriteBatch* m_spriteBatcth;
 	//キーボードステートトラッカー
 	DirectX::Keyboard::KeyboardStateTracker* m_keyBoardStateTracker;
-
-
+	//プレイシーンストップ
+	bool m_isPlayerDeath;
 };

@@ -10,6 +10,7 @@
 #include"DeviceResources.h"
 #include"Libraries/MyLibraries/ModelManager.h"
 #include"../Stage/StageManager.h"
+#include"Game/PlayScene/GameContext/GameContext.h"
 
 //アイテムの最大数
 const int ItemManager::ITEM_MAX_NUM = 30;
@@ -80,6 +81,10 @@ void ItemManager::Update(const DX::StepTimer& timer)
 {
 	//経過時間
 	float elapsedTime = static_cast<float>(timer.GetElapsedSeconds());
+
+	if (GameContext::GetInstance().GetIsPlayerDeath() == false)
+		return;
+
 	//スポーンタイムを経過時間で引く
 	m_spawneTime_s -= elapsedTime;
 
@@ -169,6 +174,8 @@ Item::ItemType ItemManager::PlayerHitItemType(AABBFor3D* player)
 			item->Reset();
 			//当たっているアイテムタイプを返す
 			return hitItemType;
+
+			
 		}	
 	}
 

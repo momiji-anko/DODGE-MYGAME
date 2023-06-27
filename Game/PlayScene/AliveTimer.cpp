@@ -18,7 +18,8 @@ AliveTimer::AliveTimer()
 	:
 	m_timer_s(0.0f),
 	m_numTexture(nullptr),
-	m_spriteBatch(nullptr)
+	m_spriteBatch(nullptr),
+	m_isTimerStop(false)
 {
 }
 
@@ -40,6 +41,8 @@ void AliveTimer::Initialize()
 	 m_numTexture = TextureManager::GetInstance().LoadTexture(L"Resources/Textures/num.png");
 
 	m_timer_s = 0.0f;
+
+	m_isTimerStop = false;
 }
 
 /// <summary>
@@ -49,6 +52,10 @@ void AliveTimer::Initialize()
 void AliveTimer::Update(const DX::StepTimer& timer)
 {
 	float elapsedTime = static_cast<float>(timer.GetElapsedSeconds());
+
+	if (m_isTimerStop)
+		return;
+
 
 	m_timer_s += elapsedTime;
 }

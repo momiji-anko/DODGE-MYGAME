@@ -51,7 +51,8 @@ ObstacleManager::ObstacleManager()
 	m_hitvel{0,0,0},
 	m_time_s(0.0f),
 	m_spawneCoolTime_s(0.0f),
-	m_spawneTime_s(0.0f)
+	m_spawneTime_s(0.0f),
+	m_hitType(Obstacle::ObstacleType::NONE)
 {
 }
 
@@ -126,6 +127,11 @@ void ObstacleManager::Initialize(StageManager::StageSelect stage)
 /// <param name="timer">タイマー</param>
 void ObstacleManager::Update(const DX::StepTimer& timer)
 {
+	if (m_hitType != Obstacle::ObstacleType::NONE)
+	{
+		return;
+	}
+
 	//経過時間
 	float elapsedTime = static_cast<float>(timer.GetElapsedSeconds());
 
@@ -342,6 +348,10 @@ bool ObstacleManager::PlayerHitCheck(AABBFor3D* playerAABB)
 		//障害物をプレイヤーと当たり判定を取る
 		if (obstacle->GetAABB()->HitCheck(playerAABB))
 		{
+
+			//プレイヤーに当たった障害物のタイプ設定
+			m_hitType = static_cast<Obstacle::ObstacleType>(obstacle->GetTypeInt());
+			
 			//当たっている
 			return true;
 		}

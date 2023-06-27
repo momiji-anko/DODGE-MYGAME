@@ -16,6 +16,7 @@
 #include"Libraries/MyLibraries/ModelManager.h"
 #include <windows.h>
 #include"Libraries/MyLibraries/FileLoadManager.h"
+#include"Game/PlayScene/GameContext/GameContext.h"
 
 //ビヘイビアーのインクルード
 #include"StageBehaviors/FirstFloorToFallBehavior.h"
@@ -92,6 +93,10 @@ void StageManager::Update(const DX::StepTimer& timer)
 {
 	//ステージが行動を終了しているか確認
 	CheckStageMoveEnd();
+
+	if (GameContext::GetInstance().GetIsPlayerDeath() == false)
+		return;
+
 
 	//ステージの更新
 	for (int i = 0; i < m_stage.size(); i++)

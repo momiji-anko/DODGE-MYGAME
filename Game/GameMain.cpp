@@ -17,6 +17,9 @@
 #include"Libraries/MyLibraries/MemoryLeakDetector.h"
 
 
+
+
+
 //-------------------------------------------------------------------
 // コンストラクタ
 //-------------------------------------------------------------------
@@ -28,8 +31,7 @@ GameMain::GameMain()
 	m_stageNum(0),
 	m_keybord{}, 
 	m_mouse{},
-	m_loadingScreen{},
-	m_pTitleScene(nullptr)
+	m_loadingScreen{}
 {
 
 }
@@ -149,10 +151,8 @@ void GameMain::CreateScene()
 	{
 	case GAME_SCENE::TITLE:
 	{
+		
 		m_pScene = std::make_unique<TitleScene>();
-
-		m_pTitleScene = dynamic_cast<TitleScene*>(m_pScene.get());
-
 		break;
 	}
 	case GAME_SCENE::PLAY:
@@ -206,38 +206,21 @@ void GameMain::DeleteScene()
 		return;
 	}
 	
-	switch (m_nextScene)
+	if (m_nextScene == GAME_SCENE::PLAY)
 	{
-	case GAME_SCENE::TITLE:
-	{
-	
-
-		break;
-	}
-	case GAME_SCENE::PLAY:
-	{
-
-		if (m_pTitleScene != nullptr)
+		TitleScene* title = dynamic_cast<TitleScene*>(m_pScene.get());
+		//タイトルからステージ番号とプレイヤーモードを取得
+		if (title != nullptr)
 		{
-			m_playerMode = m_pTitleScene->GetPlayerMode();
-			m_stageNum   = m_pTitleScene->GetStageNum();
+			m_playerMode = title->GetPlayerMode();
+			m_stageNum = title->GetStageNum();
 		}
-
-		break;
-	}
-	case GAME_SCENE::RESULT:
-	{
-		
-
-		break;
-	}
 	}
 
 	// 現シーンの終了処理
 	m_pScene->Finalize();
 
 	// 現シーンの削除
-	m_pScene.release();
 	m_pScene = nullptr;
 }
 /*--------------------------------------------------

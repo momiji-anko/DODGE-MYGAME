@@ -20,6 +20,7 @@
 #include<WICTextureLoader.h>
 #include"Game/PlayScene/Blink.h"
 #include"Game/PlayScene/Obstacle/ObstacleManager.h"
+#include"Game/Shader/FireEffectManager.h"
 
 /// <summary>
 /// プレイヤー
@@ -173,6 +174,19 @@ private:
 	/// <param name="timer">タイマー</param>
 	void PlayerMove(const DX::StepTimer& timer);
 
+	
+	/// <summary>
+	/// プレイヤーの死亡演出
+	/// </summary>
+	/// <param name="hitType">当たった障害物の種類</param>
+	
+	/// <summary>
+	/// プレイヤーの死亡演出
+	/// </summary>
+	/// <param name="hitType">当たった障害物の種類</param>
+	/// <param name="camera">カメラ</param>
+	void PlayerDeath(Obstacle::ObstacleType hitType, Camera* camera);
+
 public:
 
 	//プレイヤーの状態
@@ -236,6 +250,7 @@ private:
 
 	//持っている盾の数
 	int   m_shieldCount;
+
 	//ダメージを受けた時の無敵時間
 	float m_invincibleCountCoolDownTime_s;
 
@@ -254,10 +269,19 @@ private:
 
 	//点滅
 	std::unique_ptr<Blink> m_blink;
+
 	//プレイヤーの移動キー
 	std::vector<DirectX::Keyboard::Keys> m_keys;
 
 	//プレイヤーのモデルファイルパス
 	std::vector<std::wstring> m_modelFiles;
 
+	//ファイヤーエフェクト
+	std::unique_ptr<FireEffectManager> m_fireEffect;
+
+	//エフェクトの出ている時間
+	float m_effectLifeTime_s;
+
+	//死亡エフェクト
+	std::shared_ptr<DirectX::BasicEffect> m_deathEffect;
 };
