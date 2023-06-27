@@ -14,7 +14,8 @@ GameContext::GameContext()
 	:
 	m_commonState(nullptr),
 	m_spriteBatcth(nullptr),
-	m_keyBoardStateTracker(nullptr)
+	m_keyBoardStateTracker(nullptr),
+	m_isPlayerDeath(false)
 {
 }
 
@@ -33,4 +34,5 @@ void GameContext::Reset()
 	m_commonState = nullptr;
 	m_spriteBatcth = nullptr;
 	m_keyBoardStateTracker = nullptr;
+	m_isPlayerDeath = false;
 }

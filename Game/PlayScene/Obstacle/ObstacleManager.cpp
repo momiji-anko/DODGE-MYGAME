@@ -12,6 +12,7 @@
 #include"../Player/Player.h"
 #include"../../GameMain.h"
 #include"Libraries/MyLibraries/ModelManager.h"
+#include"Game/PlayScene/GameContext/GameContext.h"
 
 //障害物最大数
 const int ObstacleManager::OBSTACLE_MAX_NUM = 100;
@@ -127,10 +128,9 @@ void ObstacleManager::Initialize(StageManager::StageSelect stage)
 /// <param name="timer">タイマー</param>
 void ObstacleManager::Update(const DX::StepTimer& timer)
 {
-	if (m_hitType != Obstacle::ObstacleType::NONE)
-	{
+	//プレイヤー死亡していれば更新しない
+	if (GameContext::GetInstance().GetIsPlayerDeath())
 		return;
-	}
 
 	//経過時間
 	float elapsedTime = static_cast<float>(timer.GetElapsedSeconds());

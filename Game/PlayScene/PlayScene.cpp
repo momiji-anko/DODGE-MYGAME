@@ -70,7 +70,7 @@ void PlayScene::Initialize()
 
 	//障害物マネージャー作成
 	m_obstacleManager = std::make_unique< ObstacleManager>();
-	m_obstacleManager->Initialize( m_stageNum);
+	m_obstacleManager->Initialize(m_stageNum);
 
 	//シャドウマップ作成
 	m_shadowMap = std::make_unique<ShadowMap>();
@@ -78,7 +78,7 @@ void PlayScene::Initialize()
 
 	//ステージマネージャー作成
 	m_stageManager = std::make_unique<StageManager>();
-	m_stageManager->Initialize( m_stageNum);
+	m_stageManager->Initialize(m_stageNum);
 	m_stageManager->SetShadowMap(m_shadowMap.get());
 
 	//アイテムマネージャー作成
@@ -92,8 +92,10 @@ void PlayScene::Initialize()
 	//Adx取得
 	m_pAdx2 = &ADX2::GetInstance();
 	//初期化	
-	m_pAdx2->Initialize("Resources/Sounds/DODGESound.acf",
-		"Resources/Sounds/CueSheet_0.acb");
+	m_pAdx2->Initialize(
+		"Resources/Sounds/DODGESound.acf",
+		"Resources/Sounds/CueSheet_0.acb"
+	);
 
 
 	//BGMを鳴らす

@@ -26,6 +26,9 @@
 #include"StageBehaviors/TiltingFloorbehavior.h"
 #include"StageBehaviors/RotationCubeBehavior.h"
 
+//ビヘイビアーの数
+const int StageManager::BEHAVIOR_NUM = 6;
+
 
 /// <summary>
 /// ステージにシャドウマップを渡す
@@ -64,10 +67,8 @@ StageManager::~StageManager()
 /// <param name="stage">ステージ選択</param>
 void StageManager::Initialize( StageSelect stage)
 {
-
 	//ビヘイビアー作成
 	CreateBehavior();
-
 
 	//ステージjsonファイルパス
 	std::vector<std::wstring> stageFileNames;
@@ -94,7 +95,8 @@ void StageManager::Update(const DX::StepTimer& timer)
 	//ステージが行動を終了しているか確認
 	CheckStageMoveEnd();
 
-	if (GameContext::GetInstance().GetIsPlayerDeath() == false)
+	//プレイヤー死亡していれば更新しない
+	if (GameContext::GetInstance().GetIsPlayerDeath())
 		return;
 
 
@@ -133,8 +135,6 @@ void StageManager::Finalize()
 /// </summary>
 void StageManager::CreateBehavior()
 {
-	//ビヘイビアーの数
-	static const int BEHAVIOR_NUM = 6;
 
 	m_behavior.resize(BEHAVIOR_NUM);
 	//一番目に落ちる床のビヘイビアー
@@ -526,6 +526,7 @@ bool StageManager::StageHitCheck(const std::vector<DirectX::SimpleMath::Vector3>
 		float checkDot1 = cross1.Dot(cross2);
 		float checkDot2 = cross2.Dot(cross3);
 		float checkDot3 = cross3.Dot(cross1);
+
 		//算出した内積を掛け算し０以上であればポリゴンの中に線分がある
 		if (checkDot1 * checkDot2 >= 0 && checkDot2 * checkDot3 >= 0 && checkDot3 * checkDot1 >= 0)
 		{

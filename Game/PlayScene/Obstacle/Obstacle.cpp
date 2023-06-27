@@ -116,7 +116,7 @@ void Obstacle::Draw(Camera* camera)
 
 	
 	//ワールド行列を計算する
-	CalculationWorld();
+	CalculateWorld();
 
 	//炎でなければモデル表示する
 	if (m_type != ObstacleType::NORMAL && m_type != ObstacleType::MEANDERING)

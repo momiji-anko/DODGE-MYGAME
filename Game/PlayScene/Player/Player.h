@@ -179,11 +179,6 @@ private:
 	/// プレイヤーの死亡演出
 	/// </summary>
 	/// <param name="hitType">当たった障害物の種類</param>
-	
-	/// <summary>
-	/// プレイヤーの死亡演出
-	/// </summary>
-	/// <param name="hitType">当たった障害物の種類</param>
 	/// <param name="camera">カメラ</param>
 	void PlayerDeath(Obstacle::ObstacleType hitType, Camera* camera);
 
@@ -227,7 +222,7 @@ private:
 	//プレイヤーのシールド画面表示位置
 	static const DirectX::SimpleMath::Vector2 PLAYERS_SHIELD_TEXTURE_POSITION[2];
 
-
+private:
 	//変数=====================================================
 
 	//無敵時間

@@ -105,7 +105,7 @@ void Stage::Draw(Camera* camera)
 	ID3D11DeviceContext1* context = pDR->GetD3DDeviceContext();
 	
 	//ワールド行列計算
-	DirectX::SimpleMath::Matrix world = CalculationWorld();
+	DirectX::SimpleMath::Matrix world = CalculateWorld();
 
 	//揺れを計算
 	world *= DirectX::SimpleMath::Matrix::CreateTranslation(m_offsetPosition);

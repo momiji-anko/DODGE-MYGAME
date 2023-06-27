@@ -36,7 +36,7 @@ public:
 	/// アクティブ状態か非アクティブ状態か
 	/// </summary>
 	/// <returns>true = アクティブ、false = 非アクティブ</returns>
-	bool IsActive() { return m_active; }
+	bool IsActive()const { return m_active; }
 
 	/// <summary>
 	/// 座標の設定
@@ -259,7 +259,7 @@ public:
 	/// ワールド行列の計算
 	/// </summary>
 	/// <returns>ワールド行列</returns>
-	DirectX::SimpleMath::Matrix CalculationWorld();
+	DirectX::SimpleMath::Matrix CalculateWorld();
 
 
 	/// <summary>

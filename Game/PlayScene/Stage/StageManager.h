@@ -127,6 +127,7 @@ private:
 	DirectX::SimpleMath::Vector3 SlideVecCalculation(const DirectX::SimpleMath::Vector3& normalVec,const DirectX::SimpleMath::Vector3& actorVel);
 
 public:
+
 	//ステージ選択
 	enum class StageSelect
 	{
@@ -136,13 +137,18 @@ public:
 		Stage2,
 		//ステージ３
 		Stage3,
-		//ステージ２
+		//ステージ4
 		Stage4,
-		//ステージ２
+		//ステージ5
 		Stage5,
 	};
 
 private:
+
+	//ビヘイビアーの数
+	static const int BEHAVIOR_NUM;
+
+
 	//ステージ配列
 	std::vector<std::unique_ptr<Stage>>     m_stage;
 	//ステージビヘイビアー

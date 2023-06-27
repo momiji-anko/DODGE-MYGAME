@@ -163,6 +163,7 @@ void Player::Update(const DX::StepTimer& timer)
 	{
 		SetActive(false);
 	}
+
 	if (m_shieldCount <= -1)
 	{
 		m_effectLifeTime_s -= timer.GetElapsedSeconds();
@@ -262,7 +263,7 @@ void Player::Draw(Camera* camera)
 		return;
 
 	//ワールド行列計算
-	CalculationWorld();
+	CalculateWorld();
 
 	//現在のモデルの状態
 	int modelTime = static_cast<int>(m_modelTime_s);
@@ -303,7 +304,7 @@ void Player::TextureDraw()
 
 	DirectX::SpriteBatch* spriteBatch = GameContext::GetInstance().GetSpriteBatcth();
 
-	spriteBatch->Begin();
+	spriteBatch->Begin(DirectX::SpriteSortMode_Deferred, GameContext::GetInstance().GetCommonState()->NonPremultiplied());
 
 	//盾があれば盾描画
 	for (int i = 0; i < m_shieldCount; i++)
@@ -356,8 +357,6 @@ void Player::ShieldCountDown()
 		//点滅する
 		m_blink->Start();
 
-		
-
 	}
 
 }
@@ -383,7 +382,7 @@ void Player::CreateShadow(ShadowMap* shadow, const DirectX::SimpleMath::Matrix& 
 	if (m_playerModel [nowModelNum] != nullptr)
 	{
 		//ワールド行列を計算する
-		CalculationWorld();
+		CalculateWorld();
 		
 		//影生成
 		m_playerModel[nowModelNum]->Draw(context, *GameContext::GetInstance().GetCommonState(), GetWorld(), view, projection, false, [&]()

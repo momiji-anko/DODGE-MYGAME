@@ -82,7 +82,8 @@ void ItemManager::Update(const DX::StepTimer& timer)
 	//経過時間
 	float elapsedTime = static_cast<float>(timer.GetElapsedSeconds());
 
-	if (GameContext::GetInstance().GetIsPlayerDeath() == false)
+	//プレイヤー死亡していれば更新しない
+	if (GameContext::GetInstance().GetIsPlayerDeath())
 		return;
 
 	//スポーンタイムを経過時間で引く

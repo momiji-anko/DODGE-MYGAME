@@ -29,18 +29,18 @@ Actor::Actor():
 }
 
 
-DirectX::SimpleMath::Matrix Actor::CalculationWorld()
+DirectX::SimpleMath::Matrix Actor::CalculateWorld()
 {
 	//ƒ[ƒ‹ƒhs—ñ‚É’PˆÊs—ñ‚ð“ü‚ê‚é
 	m_world = DirectX::SimpleMath::Matrix::Identity;
 	//ˆÚ“®
 	DirectX::SimpleMath::Matrix trans = DirectX::SimpleMath::Matrix::CreateTranslation(m_position);
 	//‰ñ“]
-	DirectX::SimpleMath::Matrix rot = DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_rotation);
+	DirectX::SimpleMath::Matrix rotation = DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_rotation);
 	//Šgk
 	DirectX::SimpleMath::Matrix scale = DirectX::SimpleMath::Matrix::CreateScale(m_scale);
 	//ƒ[ƒ‹ƒhs—ñ‚ÌŒvŽZ
-	m_world *= scale * rot * trans;
+	m_world *= scale * rotation * trans;
 
 	return m_world;
 }
@@ -56,7 +56,7 @@ void Actor::CreateShadow(ShadowMap* shadow, const DirectX::SimpleMath::Matrix& v
 	if (GetModel() != nullptr)
 	{
 		//ƒ[ƒ‹ƒhs—ñ‚ðŒvŽZ‚·‚é
-		CalculationWorld();
+		CalculateWorld();
 
 		//‰e¶¬
 		GetModel()->Draw(context, *GameContext::GetInstance().GetCommonState(), GetWorld(), view, projection, false, [&]()

@@ -142,7 +142,7 @@ void Item::Draw(Camera* camera)
 	 //デバイスリソースからデバイスコンテキスト取得
 	 ID3D11DeviceContext1* context = pDR->GetD3DDeviceContext();
 
-	 CalculationWorld();
+	 CalculateWorld();
 
 	 //点滅状態を取得し、消えている状態でなければ表示する
 	 if (m_blink->IsBlink())

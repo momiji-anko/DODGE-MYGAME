@@ -116,7 +116,7 @@ private:
 	std::unique_ptr<StageManager>                    m_stageManager;
 
 	//カメラ
-	std::unique_ptr<Camera> m_pCamera;
+	std::unique_ptr<Camera>                          m_pCamera;
 
 	// スプライトバッチ
 	std::unique_ptr<DirectX::SpriteBatch>            m_spriteBatch;
