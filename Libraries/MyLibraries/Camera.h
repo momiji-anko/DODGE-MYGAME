@@ -37,7 +37,15 @@ public:
 	void SetUpVector(DirectX::SimpleMath::Vector3 up) { m_up = up; }
 	DirectX::SimpleMath::Vector3 GetUpVector() const { return m_up; }
 
+	/// <summary>
+	/// カメラを揺らす
+	/// </summary>
 	void ShakeCamera();
+
+	/// <summary>
+	/// カメラ揺らす設定のリセット
+	/// </summary>
+	void ShakeReset();
 
 protected:
 

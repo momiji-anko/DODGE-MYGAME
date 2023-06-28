@@ -29,6 +29,12 @@ class Player :public Actor
 {
 public:
 	/// <summary>
+	/// 盾の数を取得
+	/// </summary>
+	/// <returns>盾の数</returns>
+	int GetShield()const { return m_shieldCount; }
+
+	/// <summary>
 	/// 移動キーの設定
 	/// </summary>
 	/// <param name="keys"></param>
@@ -279,4 +285,7 @@ private:
 
 	//死亡エフェクト
 	std::shared_ptr<DirectX::BasicEffect> m_deathEffect;
+
+	//カメラ
+	Camera* m_camera;
 };

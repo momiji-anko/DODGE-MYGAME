@@ -89,6 +89,11 @@ private:
 	/// <param name="obstacleCupsleRadius">プレイヤー２のカプセルの半径</param>
 	void PlayerCapuslePenetration(Actor* player, const DirectX::SimpleMath::Vector3& cupseleToCupseVector, float playerCapsleRadius, float obstacleCupsleRadius);
 
+	/// <summary>
+	/// タイマーを止めるか確認する
+	/// </summary>
+	void TimerStopCheck();
+
 private:
 	//プレイヤー
 	std::vector<std::unique_ptr<Player>> m_players;

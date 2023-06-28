@@ -28,7 +28,10 @@ Actor::Actor():
 
 }
 
-
+/// <summary>
+/// ワールド行列の計算
+/// </summary>
+/// <returns>ワールド行列</returns>
 DirectX::SimpleMath::Matrix Actor::CalculateWorld()
 {
 	//ワールド行列に単位行列を入れる
@@ -45,6 +48,12 @@ DirectX::SimpleMath::Matrix Actor::CalculateWorld()
 	return m_world;
 }
 
+/// <summary>
+/// 影生成
+/// </summary>
+/// <param name="shadow">シャドウマップの生ポインタ</param>
+/// <param name="view">ビュー行列</param>
+/// <param name="projection">プロジェクション行列</param>
 void Actor::CreateShadow(ShadowMap* shadow, const DirectX::SimpleMath::Matrix& view, const DirectX::SimpleMath::Matrix& projection)
 {
 	//デバイスリソース取得
@@ -69,7 +78,9 @@ void Actor::CreateShadow(ShadowMap* shadow, const DirectX::SimpleMath::Matrix& v
 }
 
 
-
+/// <summary>
+/// AABBの作成
+/// </summary>
 void Actor::CreateAABB()
 {
 	//AABB当たり判定作成
@@ -85,6 +96,9 @@ void Actor::CreateAABB()
 
 }
 
+/// <summary>
+/// カプセルの生成
+/// </summary>
 void Actor::CreateCapsule()
 {
 	//カプセルの作成

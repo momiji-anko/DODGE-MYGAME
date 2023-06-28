@@ -270,8 +270,6 @@ public:
 	/// <param name="projection">プロジェクション行列</param>
 	virtual void CreateShadow(ShadowMap* shadow, const DirectX::SimpleMath::Matrix& view, const DirectX::SimpleMath::Matrix& projection);
 
-
-
 private:
 	/// <summary>
 	/// AABBの作成

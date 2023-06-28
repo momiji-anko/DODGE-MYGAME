@@ -6,6 +6,8 @@
 */#include"pch.h"
 #include"PlayerManager.h"
 #include"Game/PlayScene/MyRandom.h"
+#include"Game/PlayScene/GameContext/GameContext.h"
+#include"Game/PlayScene/AliveTimer.h"
 
 /// <summary>
 /// コンストラクタ
@@ -51,6 +53,10 @@ void PlayerManager::Update(const DX::StepTimer& timer)
 	{
 		player->Update(timer);
 	}
+
+	//全プレイヤーの盾の数が-1であればタイマーを止める
+	TimerStopCheck();
+
 }
 
 /// <summary>
@@ -231,5 +237,35 @@ void PlayerManager::PlayerCapuslePenetration(Actor* player, const DirectX::Simpl
 		player->SetPosition(player->GetPosition() + playerPenetrationVelocity);
 	}
 	
+}
+
+/// <summary>
+/// タイマーを止めるか確認する
+/// </summary>
+void PlayerManager::TimerStopCheck()
+{
+	int count = 0;
+
+	//プレイヤーの更新
+	for (std::unique_ptr<Player>& player : m_players)
+	{
+		//プレイヤーの盾の数が-1であればカウントを増やす
+		if (player->GetShield() <= -1)
+		{
+			count++;
+		}
+		
+		//全てのプレイヤーが盾の数が-1であればタイマーを止める
+		if (count == m_players.size())
+		{
+			//ゲームコンテキストにプレイヤー死亡したと設定
+			GameContext::GetInstance().SetIsPlayerDeath(true);
+
+			//タイマーを止める
+			AliveTimer::GetInstance().SetTimerStop(true);
+
+		}
+		
+	}
 }
 

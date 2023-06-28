@@ -403,7 +403,7 @@ bool StageManager::StageToActorHitCheck(Actor* actor)
 			const DirectX::SimpleMath::Vector3 actorPos = actor->GetPosition();
 
 			//アクターの当たり判定の線分
-			std::vector<DirectX::SimpleMath::Vector3> actorLinePos = { DirectX::SimpleMath::Vector3(actorPos),DirectX::SimpleMath::Vector3(actorPos.x,actorPos.y + 2.5f,actorPos.z) };
+			std::vector<DirectX::SimpleMath::Vector3> actorLinePos = { DirectX::SimpleMath::Vector3(actorPos),DirectX::SimpleMath::Vector3(actorPos.x,actorPos.y + 1.5f,actorPos.z) };
 			//法線ベクトル
 			DirectX::SimpleMath::Vector3 normalVec = DirectX::SimpleMath::Vector3::Zero;
 

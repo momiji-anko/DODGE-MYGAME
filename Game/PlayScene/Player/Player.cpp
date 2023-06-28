@@ -10,11 +10,10 @@
 #include<Keyboard.h>
 #include<Mouse.h>
 #include<Effects.h>
+
 #include"Libraries/MyLibraries/ModelManager.h"
 #include"Libraries/MyLibraries/TextureManager.h"
 #include"Game/PlayScene/GameContext/GameContext.h"
-#include<Effects.h>
-#include"Game/PlayScene/AliveTimer.h"
 
 
 //	1秒間に進むマスの数
@@ -147,6 +146,8 @@ void Player::Initialize(const DirectX::SimpleMath::Vector3& velocity, const Dire
 	m_fireEffect->Initialize(3.0f, GetPosition());
 
 	m_effectLifeTime_s = 1.0f;
+
+	GameContext::GetInstance().SetIsPlayerDeath(false);
 }
 
 /// <summary>
@@ -159,15 +160,18 @@ void Player::Update(const DX::StepTimer& timer)
 	if (!IsActive())
 		return;
 
+	//エフェクトタイムが０以下になったら死亡する
 	if (m_effectLifeTime_s <= 0)
 	{
 		SetActive(false);
 	}
 
+	//盾が-1になったら死亡エフェクトだす
 	if (m_shieldCount <= -1)
 	{
 		m_effectLifeTime_s -= timer.GetElapsedSeconds();
 		
+		//エフェクトを複数更新しエフェクトの速度を上げる
 		for (int i = 0; i < 10; i++)
 		{
 			m_fireEffect->Update(timer);
@@ -176,7 +180,6 @@ void Player::Update(const DX::StepTimer& timer)
 		return;
 	}
 
-	
 
 	//アイテムと当たり判定を取る
 	Item::ItemType itemType = m_itemManager->PlayerHitItemType(GetAABB());
@@ -190,7 +193,7 @@ void Player::Update(const DX::StepTimer& timer)
 	//プレイヤーの移動
 	PlayerMove(timer);
 
-
+	//吹き飛ばす量
 	DirectX::SimpleMath::Vector3 flyVelocity = DirectX::SimpleMath::Vector3::Zero;
 
 	//回転する棒と当たり判定取る,当たっていた場合プレイヤーを吹き飛ばす
@@ -238,6 +241,9 @@ void Player::Update(const DX::StepTimer& timer)
 		m_pAdx2->Play(CRI_CUESHEET_0_DAMAGE1);
 
 		m_shieldCount = -1;
+
+		//カメラの揺れをリセット
+		m_camera->ShakeReset();
 	}
 
 	//ブリンクの更新
@@ -268,6 +274,10 @@ void Player::Draw(Camera* camera)
 	//現在のモデルの状態
 	int modelTime = static_cast<int>(m_modelTime_s);
 
+	//カメラを揺らす
+	camera->ShakeCamera();
+
+	m_camera = camera;
 
 	//ブリンクしていなければモデル表示
 	if (m_blink->IsBlink())
@@ -278,17 +288,10 @@ void Player::Draw(Camera* camera)
 	//盾が-1であればプレイヤー死亡
 	if (m_shieldCount <= -1) 
 	{
-		//カメラを揺らす
-		camera->ShakeCamera();
 
 		//プレイヤー死亡演出
 		PlayerDeath(m_obstacleManager->GetHitType(),camera);
 
-		//ゲームコンテキストにプレイヤー死亡したと設定
-		GameContext::GetInstance().SetIsPlayerDeath(true);
-
-		//タイマーを止める
-		AliveTimer::GetInstance().SetTimerStop(true);
 
 
 	}
@@ -357,6 +360,8 @@ void Player::ShieldCountDown()
 		//点滅する
 		m_blink->Start();
 
+		//カメラの揺れをリセット
+		m_camera->ShakeReset();
 	}
 
 }

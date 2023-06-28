@@ -20,7 +20,7 @@ Camera::Camera()
 	, m_eye(CAMERA_DISTANCE_POSITION)
 	, m_target(CAMERA_TARGET_POSITION)
 	, m_up(DirectX::SimpleMath::Vector3::Up)
-	, m_shake(0)
+	, m_shake(6)
 {
 
 	CalculateViewMatrix();
@@ -63,6 +63,9 @@ void Camera::CalculateProjectionMatrix()
 	m_projection = DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(fieldOfView, aspectRatio, nearPlane, farPlane);
 }
 
+/// <summary>
+/// カメラを揺らす
+/// </summary>
 void Camera::ShakeCamera()
 {
 	DirectX::SimpleMath::Vector3 target = { CAMERA_TARGET_POSITION };
@@ -89,7 +92,15 @@ void Camera::ShakeCamera()
 
 	m_shake = std::min(m_shake, max);
 
-	//ビュー行列の計算
+	//ビュー行列の再計算
 	CalculateViewMatrix();
 
+}
+
+/// <summary>
+/// カメラ揺らす設定のリセット
+/// </summary>
+void Camera::ShakeReset()
+{
+	m_shake = 0;
 }
