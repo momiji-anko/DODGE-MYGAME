@@ -48,6 +48,10 @@ const DirectX::SimpleMath::Vector2 Player::PLAYERS_SHIELD_TEXTURE_POSITION[2] = 
 	DirectX::SimpleMath::Vector2(20.0f,10.0f)
 };
 
+//エフェクト更新回数
+const int Player::EFFECT_UPDATE_NUM = 10;
+
+
 /// <summary>
 /// コンストラクタ
 /// </summary>
@@ -70,7 +74,11 @@ Player::Player()
 	m_blink(nullptr),
 	m_keys{},
 	m_modelFiles{},
-	m_obstacleManager{}
+	m_obstacleManager{},
+	m_camera{},
+	m_effectLifeTime_s{},
+	m_deathEffect{},
+	m_fireEffect{}
 {
 
 }
@@ -95,39 +103,28 @@ Player::~Player()
 void Player::Initialize(const DirectX::SimpleMath::Vector3& velocity, const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Vector3& scale, const DirectX::SimpleMath::Vector3& rotation, bool active, IBehavior* behavia, DirectX::Model* model)
 {
 
-
 	//パラメータの設定
 	//移動速度
 	SetVelocity(velocity);
-
 	//座標
 	SetPosition(position);
-
 	//スケール
 	SetScale(scale);
-
 	//アクティブ
 	SetActive(active);
-
-
 	//ビヘイビアー
 	SetBehavior(behavia);
 	//モデル
 	SetModel(model);
-
 	//角度設定
 	SetRotation(rotation);
-
 	//モデルの生成
 	CreatePlayerModel();
-
-	
 	//当たり判定の領域更新
 	HitAreaUpdate();
 
 	//ADX2のインスタンス取得
 	m_pAdx2 = &ADX2::GetInstance();
-
 
 	//盾のテクスチャ読み込み
 	m_shieldTexture = TextureManager::GetInstance().LoadTexture(L"Resources/Textures/haet.png");
@@ -169,10 +166,12 @@ void Player::Update(const DX::StepTimer& timer)
 	//盾が-1になったら死亡エフェクトだす
 	if (m_shieldCount <= -1)
 	{
-		m_effectLifeTime_s -= timer.GetElapsedSeconds();
+		m_effectLifeTime_s -= static_cast<float>(timer.GetElapsedSeconds());
 		
 		//エフェクトを複数更新しエフェクトの速度を上げる
-		for (int i = 0; i < 10; i++)
+		//一回の更新だとエフェクトがゆっくりになってしまうので１０回更新している
+		//障害物の炎と同じものを使っている
+		for (int i = 0; i < EFFECT_UPDATE_NUM; i++)
 		{
 			m_fireEffect->Update(timer);
 		}
@@ -249,8 +248,6 @@ void Player::Update(const DX::StepTimer& timer)
 	//ブリンクの更新
 	m_blink->Update(timer);
 
-	
-
 }
 
 /// <summary>
@@ -291,8 +288,6 @@ void Player::Draw(Camera* camera)
 
 		//プレイヤー死亡演出
 		PlayerDeath(m_obstacleManager->GetHitType(),camera);
-
-
 
 	}
 	//盾UIの描画

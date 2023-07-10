@@ -188,16 +188,7 @@ private:
 	/// <param name="camera">カメラ</param>
 	void PlayerDeath(Obstacle::ObstacleType hitType, Camera* camera);
 
-public:
 
-	//プレイヤーの状態
-	enum class PlayerState
-	{
-		//無敵状態
-		INVINCIBLE,
-		//普通の状態
-		NORMAL,
-	};
 
 private:
 
