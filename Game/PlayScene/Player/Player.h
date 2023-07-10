@@ -219,6 +219,8 @@ private:
 	//プレイヤーのシールド画面表示位置
 	static const DirectX::SimpleMath::Vector2 PLAYERS_SHIELD_TEXTURE_POSITION[2];
 
+	//エフェクト更新回数
+	static const int EFFECT_UPDATE_NUM;
 private:
 	//変数=====================================================
 
