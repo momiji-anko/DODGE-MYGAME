@@ -17,12 +17,14 @@ struct Sphere
 	float r;
 };
 
-
-class  CapsuleHit
+/// <summary>
+/// カプセルの当たり判定
+/// </summary>
+class  CapsuleCollision
 {
 public:
-	CapsuleHit() = default;
-	~ CapsuleHit() = default;
+	CapsuleCollision() = default;
+	~ CapsuleCollision() = default;
 
 	/// <summary>
 	/// クランプ関数
@@ -147,7 +149,7 @@ public:
 	/// <param name="c1">線分１上の最短距離の位置</param>
 	/// <param name="c2">線分２上の最短距離の位置</param>
 	/// <returns>true= 当たった、false=当たってない</returns>
-	static bool HitCheck_Capsule2Capsule(Capsule capsule1, Capsule capsule2, DirectX::SimpleMath::Vector3& c1, DirectX::SimpleMath::Vector3& c2)
+	static bool DetectCollition_Capsule2Capsule(Capsule capsule1, Capsule capsule2, DirectX::SimpleMath::Vector3& c1, DirectX::SimpleMath::Vector3& c2)
 	{
 		float s, t;
 		// カプセルの中心の線分間の距離の平方を計算

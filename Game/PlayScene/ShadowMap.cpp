@@ -17,12 +17,12 @@ void ShadowMap::Initialize(ID3D11Device* device, const wchar_t* path)
 	SetDirectory(path);
 
 	// 頂点シェーダーの読み込み
-	DX::ThrowIfFailed(D3DReadFileToBlob(GetFullName(L"SM_VS.cso"), m_vsBlob.GetAddressOf()));
-	DX::ThrowIfFailed(D3DReadFileToBlob(GetFullName(L"SM_VS_Depth.cso"), m_vsBlobDepth.GetAddressOf()));
+	DX::ThrowIfFailed(D3DReadFileToBlob(GetFullName(L"SM_VS.cso").c_str(), m_vsBlob.GetAddressOf()));
+	DX::ThrowIfFailed(D3DReadFileToBlob(GetFullName(L"SM_VS_Depth.cso").c_str(), m_vsBlobDepth.GetAddressOf()));
 
 	// ピクセルシェーダーの読み込み
-	DX::ThrowIfFailed(D3DReadFileToBlob(GetFullName(L"SM_PS_Texture.cso"), m_psBlobTexture.GetAddressOf()));
-	DX::ThrowIfFailed(D3DReadFileToBlob(GetFullName(L"SM_PS_NoneTex.cso"), m_psBlobNoneTex.GetAddressOf()));
+	DX::ThrowIfFailed(D3DReadFileToBlob(GetFullName(L"SM_PS_Texture.cso").c_str(), m_psBlobTexture.GetAddressOf()));
+	DX::ThrowIfFailed(D3DReadFileToBlob(GetFullName(L"SM_PS_NoneTex.cso").c_str(), m_psBlobNoneTex.GetAddressOf()));
 
 	// 頂点シェーダーの作成
 	device->CreateVertexShader(m_vsBlob->GetBufferPointer(), m_vsBlob->GetBufferSize(), nullptr, m_vertexShader.GetAddressOf());
@@ -186,22 +186,15 @@ void ShadowMap::DrawShadow(ID3D11DeviceContext* context, bool texture)
 	context->PSSetSamplers(1, 1, m_sampler.GetAddressOf());
 }
 
-void ShadowMap::SetDirectory(const wchar_t* path)
+void ShadowMap::SetDirectory(const std::wstring& path)
 {
-	if (path && *path != 0)
+	m_Path = path;
+	
+	wchar_t* a = L"\\";
+
+	//パスの末尾に\\があるか確認
+	if (m_Path.back() != *a)
 	{
-		wcscpy_s(m_Path, path);
-		size_t len = wcsnlen(m_Path, MAX_PATH);
-		if (len > 0 && len < (MAX_PATH - 1))
-		{
-			// Ensure it has a trailing slash
-			if (m_Path[len - 1] != L'\\')
-			{
-				m_Path[len] = L'\\';
-				m_Path[len + 1] = 0;
-			}
-		}
+		m_Path+=(L"\\");
 	}
-	else
-		*m_Path = 0;
 }

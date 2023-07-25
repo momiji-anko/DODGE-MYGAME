@@ -29,6 +29,7 @@
 
 class GridFloor;
 class Camera;
+class GameMain;
 
 /// <summary>
 /// プレイシーン
@@ -41,7 +42,7 @@ public:
 	/// <summary>
 	/// コンストラクタ
 	/// </summary>
-	PlayScene();
+	PlayScene(GameMain* parent);
 
 	/// <summary>
 	/// デストラクタ
@@ -57,8 +58,7 @@ public:
 	/// 更新
 	/// </summary>
 	/// <param name="timer">タイマー</param>
-	/// <returns>次のシーン</returns>
-	GAME_SCENE Update(const DX::StepTimer& timer) override;
+	void Update(const DX::StepTimer& timer) override;
 
 	/// <summary>
 	/// 描画
@@ -75,12 +75,6 @@ public:
 	/// </summary>
 	void LoadResources() override;
 
-
-	/// <summary>
-	/// プレイヤーのモード（一人か二人か）
-	/// </summary>
-	/// <param name="mode">Player1=一人、Player2=二人、</param>
-	void SetPlayerMode(GameMain::PlayerMode mode) { m_playerMode = mode; }
 
 	/// <summary>
 	/// ステージ番号
@@ -152,4 +146,5 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_playerMoveKey;
 	bool m_isTabKey;
 
+	GameMain* m_parent;
 };

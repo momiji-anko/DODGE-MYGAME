@@ -167,7 +167,7 @@ Item::ItemType ItemManager::PlayerHitItemType(AABBFor3D* player)
 		}
 
 		//プレイヤーとアイテムが当たっていれば当たっているアイテムタイプを返す
-		if (item->GetAABB()->HitCheck(player))
+		if (item->GetAABB()->DetectCollition(player))
 		{
 			//当たったアイテムタイプの取得
 			Item::ItemType hitItemType = static_cast<Item::ItemType>(item->GetTypeInt());

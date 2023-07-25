@@ -26,7 +26,7 @@ const float ResultScene::ALPHA_MIN_NUM = 0.0f;
 /*--------------------------------------------------
 コンストラクタ
 --------------------------------------------------*/
-ResultScene::ResultScene()
+ResultScene::ResultScene(GameMain* parent)
 	:
 	m_pAdx2(nullptr),
 	m_musicID(0),
@@ -46,7 +46,8 @@ ResultScene::ResultScene()
 	m_rank(RANK::NONE),
 	m_stageManeger(nullptr),
 	m_cameraRot(0.0f),
-	m_stageNum(StageManager::StageSelect::Stage1)
+	m_stageNum(StageManager::StageSelect::Stage1),
+	m_parent(parent)
 {
 }
 
@@ -55,8 +56,7 @@ ResultScene::ResultScene()
 --------------------------------------------------*/
 ResultScene::~ResultScene()
 {
-	//Adxの終了処理
-	m_pAdx2->Finalize();
+
 }
 
 /*--------------------------------------------------
@@ -99,7 +99,7 @@ void ResultScene::Initialize()
 更新
 戻り値	:次のシーン番号
 --------------------------------------------------*/
-GAME_SCENE ResultScene::Update(const DX::StepTimer& timer)
+void ResultScene::Update(const DX::StepTimer& timer)
 {
 	// キー入力情報を取得する
 	DirectX::Keyboard::State keyState = DirectX::Keyboard::Get().GetState();
@@ -132,11 +132,11 @@ GAME_SCENE ResultScene::Update(const DX::StepTimer& timer)
 	//フェードアウトし終わったらタイトルに遷移
 	if (m_fadeInOut->ISClose())
 	{
-		return GAME_SCENE::TITLE;
+		m_parent->SceneChange(m_parent->GetTitleScene());
 	}
 
 
-	return GAME_SCENE::NONE;
+	
 }
 
 /*--------------------------------------------------
@@ -242,6 +242,9 @@ void ResultScene::Draw()
 --------------------------------------------------*/
 void ResultScene::Finalize()
 {
+	//Adx2の終了処理
+	m_pAdx2->Finalize();
+
 }
 /*--------------------------------------------------
 リソースの読み込み

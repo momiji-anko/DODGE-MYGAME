@@ -17,7 +17,7 @@ public:
 	virtual void Initialize() = 0;
 
 	// çXêV
-	virtual GAME_SCENE Update(const DX::StepTimer& timer) = 0;
+	virtual void Update(const DX::StepTimer& timer) = 0;
 
 	// ï`âÊ
 	virtual void Draw() = 0;

@@ -32,7 +32,7 @@ public:
 	void Draw(const DirectX::SimpleMath::Matrix& world, const DirectX::SimpleMath::Matrix& view, const DirectX::SimpleMath::Matrix& projection,const DirectX::XMFLOAT4& color);
 
 	//“–‚½‚è”»’è‚ğs‚¤
-	bool HitCheck(AABBFor3D* other);
+	bool DetectCollition(AABBFor3D* other);
 
 private:
 

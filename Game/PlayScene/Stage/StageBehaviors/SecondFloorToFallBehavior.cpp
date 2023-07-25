@@ -63,29 +63,34 @@ void SecondFloorToFallBehavior::Execute(const DX::StepTimer& timer, Actor* actor
 
 		break;
 	case 1:
+		//タイマーの初期化とルーチンを進める
 		time_s = 0;
 		routine++;
 	case 2:
 
 		break;
 	case 3:
+		//タイマーの初期化とルーチンを進める
 		time_s = 0;
 		routine++;
 	case 4:
 		break;
 	case 5:
+		//タイマーの初期化とルーチンを進める
 		time_s = 0;
 		routine++;
 	case 6:
 
 		break;
 	case 7:
+		//タイマーの初期化とルーチンを進める
 		time_s = 0;
 		routine++;
 	case 8:
 
 		break;
 	case 9:
+		//タイマーの初期化とルーチンを進める
 		time_s = 0;
 		routine++;
 	case 10:
@@ -97,6 +102,7 @@ void SecondFloorToFallBehavior::Execute(const DX::StepTimer& timer, Actor* actor
 
 		break;
 	case 11:
+		//タイマーの初期化とルーチンを進める
 		time_s = 0;
 		routine++;
 	case 12:
@@ -107,6 +113,7 @@ void SecondFloorToFallBehavior::Execute(const DX::StepTimer& timer, Actor* actor
 
 		break;
 	case 13:
+		//タイマーの初期化とルーチンを進める
 		time_s = 0;
 		routine++;
 	case 14:
@@ -127,36 +134,42 @@ void SecondFloorToFallBehavior::Execute(const DX::StepTimer& timer, Actor* actor
 
 		break;
 	case 15:
+		//タイマーの初期化とルーチンを進める
 		time_s = 0;
 		routine++;
 	case 16:
 
 		break;
 	case 17:
+		//タイマーの初期化とルーチンを進める
 		time_s = 0;
 		routine++;
 	case 18:
 
 		break;
 	case 19:
+		//タイマーの初期化とルーチンを進める
 		time_s = 0;
 		routine++;
 	case 20:
 
 		break;
 	case 21:
+		//タイマーの初期化とルーチンを進める
 		time_s = 0;
 		routine++;
 	case 22:
 
 		break;
 	case 23:
+		//タイマーの初期化とルーチンを進める
 		time_s = 0;
 		routine++;
 	case 24:
 
 		break;
 	case 25:
+		//タイマーの初期化とルーチンを進める
 		time_s = 0;
 		routine++;
 	case 26:

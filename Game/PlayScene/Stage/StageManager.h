@@ -81,7 +81,7 @@ public:
 	/// <param name="linePos">線分の両端座標</param>
 	/// <param name="normalVector">法線ベクトルのポインタ</param>
 	/// <returns>true=当たっている　false=当っていない</returns>
-	bool StageHitCheck(const std::vector<DirectX::SimpleMath::Vector3>& vertices, const std::vector<DirectX::SimpleMath::Vector3>& linePos, DirectX::SimpleMath::Vector3* normalVector);
+	bool StageDetectCollition(const std::vector<DirectX::SimpleMath::Vector3>& vertices, const std::vector<DirectX::SimpleMath::Vector3>& linePos, DirectX::SimpleMath::Vector3* normalVector);
 private:
 
 	/// <summary>
@@ -125,6 +125,15 @@ private:
 	/// <param name="actorVel">アクターの移動量</param>
 	/// <returns>スライドベクトル</returns>
 	DirectX::SimpleMath::Vector3 SlideVecCalculation(const DirectX::SimpleMath::Vector3& normalVec,const DirectX::SimpleMath::Vector3& actorVel);
+	
+	/// <summary>
+	/// jsonで読み込んだ座標をVector3に変換
+	/// </summary>
+	/// <param name="nums">jsonで読み込んだ座標</param>
+	/// <returns>変換した座標</returns>
+	DirectX::SimpleMath::Vector3 ConvertIntoVector3(const std::vector<float> nums);
+
+	
 
 public:
 
@@ -147,7 +156,7 @@ private:
 
 	//ビヘイビアーの数
 	static const int BEHAVIOR_NUM;
-
+	
 
 	//ステージ配列
 	std::vector<std::unique_ptr<Stage>>     m_stage;

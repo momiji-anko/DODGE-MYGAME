@@ -47,7 +47,7 @@ public:
 	/// <summary>
 	/// コンストラクタ
 	/// </summary>
-	TitleScene();
+	TitleScene(GameMain* parent);
 
 	/// <summary>
 	/// コンストラクタ
@@ -63,8 +63,7 @@ public:
 	/// 更新
 	/// </summary>
 	/// <param name="timer">タイマー</param>
-	/// <returns>次のシーン</returns>
-	GAME_SCENE Update(const DX::StepTimer& timer) override;
+	void Update(const DX::StepTimer& timer) override;
 
 	/// <summary>
 	/// 描画
@@ -166,4 +165,6 @@ private:
 	//タイトル文字
 	std::unique_ptr<TitleText> m_titleText;
 	
+	GameMain* m_parent;
+
 };

@@ -16,22 +16,50 @@
 #include "Game/LoadingScreen/LoadingScreen.h"
 #include"Libraries/MyLibraries/MemoryLeakDetector.h"
 
+#include"Game/PlayScene/PlayScene.h"
+#include"Game/TitleScene/TitleScene.h"
+#include"Game/ResultScene/ResultScene.h"
 
+/// <summary>
+/// プレイシーンの取得
+/// </summary>
+/// <returns>プレイシーンの生ポインタ</returns>
+IScene* GameMain::GetPlayScene() 
+{
+	return m_playScene.get();
+}
 
+/// <summary>
+/// タイトルシーンの取得
+/// </summary>
+/// <returns>タイトルシーンの生ポインタ</returns>
+IScene* GameMain::GetTitleScene()
+{
+	return m_titleScene.get();
+}
 
+/// <summary>
+/// リザルトシーンの取得
+/// </summary>
+/// <returns>リザルトシーンの生ポインタ</returns>
+IScene* GameMain::GetResultScene()
+{
+	return m_resultScene.get();
+}
 
 //-------------------------------------------------------------------
 // コンストラクタ
 //-------------------------------------------------------------------
 GameMain::GameMain()
 	: 
-	m_nextScene(GAME_SCENE::TITLE),		// 初期シーンの設定 
 	m_pScene(nullptr),
-	m_playerMode(GameMain::PlayerMode::NONE),
 	m_stageNum(0),
 	m_keybord{}, 
 	m_mouse{},
-	m_loadingScreen{}
+	m_loadingScreen{},
+	m_playScene{},
+	m_titleScene{},
+	m_resultScene{}
 {
 
 }
@@ -58,8 +86,16 @@ void GameMain::Initialize()
 	m_mouse = std::make_unique<DirectX::Mouse>();
 	m_mouse->SetWindow(pDR->GetHwnd());
 
-	// シーン作成
-	CreateScene();
+	//プレイシーンの作成
+	m_playScene = std::make_unique<PlayScene>(this);
+	//タイトルシーンの作成
+	m_titleScene = std::make_unique<TitleScene>(this);
+	//リザルトシーンの作成
+	m_resultScene = std::make_unique<ResultScene>(this);
+
+	//タイトルシーンを変える
+	SceneChange(m_titleScene.get());
+
 }
 
 //-------------------------------------------------------------------
@@ -76,15 +112,6 @@ void GameMain::Update(const DX::StepTimer& timer)
 		PostQuitMessage(0);
 	}
 
-	// 次のシーンが設定されていたらシーン切り替え
-	if (m_nextScene != GAME_SCENE::NONE)
-	{
-		// シーン削除
-		DeleteScene();
-		
-		// シーン作成
-		CreateScene();
-	}
 	// ロード画面の実体があれば更新
 	if (m_loadingScreen != nullptr)
 	{
@@ -104,8 +131,15 @@ void GameMain::Update(const DX::StepTimer& timer)
 	// 実態があれば更新
 	if (m_pScene != nullptr)
 	{
-		m_nextScene = m_pScene->Update(timer);
+		m_pScene->Update(timer);
 	}
+
+	if (m_titleScene != nullptr)
+	{
+		m_stageNum = m_titleScene->GetStageNum();
+	}
+
+	
 }
 
 //-------------------------------------------------------------------
@@ -132,97 +166,33 @@ void GameMain::Render()
 //-------------------------------------------------------------------
 void GameMain::Finalize()
 {
-	DeleteScene();
+	
 }
 
-/*--------------------------------------------------
-シーンの作成
---------------------------------------------------*/
-void GameMain::CreateScene()
+/// <summary>
+/// シーンを変える
+/// </summary>
+/// <param name="scene">次のシーン</param>
+void GameMain::SceneChange(IScene* scene)
 {
-	// シーンが作成されているときは処理しない
-	if (m_pScene != nullptr)
-	{
-		return;
-	}
+	//実態があれば終了処理をする
+	if(m_pScene!=nullptr)
+		m_pScene->Finalize();
 
-	// 次シーンの作成
-	switch (m_nextScene)
-	{
-	case GAME_SCENE::TITLE:
-	{
-		
-		m_pScene = std::make_unique<TitleScene>();
-		break;
-	}
-	case GAME_SCENE::PLAY:
-	{
+	//シーンを変更
+	m_pScene = scene;
 
-		std::unique_ptr<PlayScene> playScene = std::make_unique<PlayScene>();
-
-		playScene->SetPlayerMode(m_playerMode);
-		playScene->SetStageNum(m_stageNum);
-
-		m_pScene = std::move(playScene);
-		
-
-		break;
-	}
-	case GAME_SCENE::RESULT:
-	{
-		m_pScene = std::make_unique<ResultScene>();
-
-		m_pScene->SetStageNum(m_stageNum);
+	//リーソスの読み込み
+	LoadResources();
 	
+	m_pScene->SetStageNum(m_stageNum);
 
-		break;
-	}
-	default:
-	{
-		// 例外なので処理を中断
-		return;
-	}
-	}
-	// リソースの読み込み
-	LoadResources(true);
-
-	// 作成したシーンを初期化
+	//シーンの初期化
 	m_pScene->Initialize();
-
-
-
-	// シーンを切り替えたのでリセット
-	m_nextScene = GAME_SCENE::NONE;
-}
-
-/*--------------------------------------------------
-シーンの削除
---------------------------------------------------*/
-void GameMain::DeleteScene()
-{
-	// シーンが作成されていなければ処理しない
-	if (m_pScene == nullptr)
-	{
-		return;
-	}
 	
-	if (m_nextScene == GAME_SCENE::PLAY)
-	{
-		TitleScene* title = dynamic_cast<TitleScene*>(m_pScene.get());
-		//タイトルからステージ番号とプレイヤーモードを取得
-		if (title != nullptr)
-		{
-			m_playerMode = title->GetPlayerMode();
-			m_stageNum = title->GetStageNum();
-		}
-	}
 
-	// 現シーンの終了処理
-	m_pScene->Finalize();
-
-	// 現シーンの削除
-	m_pScene = nullptr;
 }
+
 /*--------------------------------------------------
 リソースの読み込み
 --------------------------------------------------*/
@@ -231,7 +201,7 @@ void GameMain::LoadResources(bool useLoadingScreen)
 	if (useLoadingScreen)
 	{
 		m_loadingScreen = std::make_unique<LoadingScreen>();
-		m_loadingScreen->Initialize(m_pScene.get());
+		m_loadingScreen->Initialize(m_pScene);
 	}
 	else
 	{

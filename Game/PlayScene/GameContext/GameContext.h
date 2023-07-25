@@ -8,7 +8,7 @@
 #include<CommonStates.h>
 #include<SpriteBatch.h>
 #include<Keyboard.h>
-
+#include"Game/GameMain.h"
 
 /// <summary>
 /// ゲームコンテキスト
@@ -61,6 +61,16 @@ public:
 	/// <param name="flag">true = 死亡していいる、false = 死亡していない</param>
 	void SetIsPlayerDeath(bool flag) { m_isPlayerDeath = flag; }
 
+	/// <summary>
+	/// プレイヤーモードの取得
+	/// </summary>
+	/// <returns>プレイヤーモード</returns>
+	GameMain::PlayerMode GetPlayerMode() { return m_playerMode; }
+	/// <summary>
+	/// プレイヤーモードの設定
+	/// </summary>
+	/// <param name="playerMode">プレイヤーモード</param>
+	void SetPlayerMode(GameMain::PlayerMode playerMode) { m_playerMode=playerMode; }
 
 public:
 	/// <summary>
@@ -87,4 +97,6 @@ private:
 	DirectX::Keyboard::KeyboardStateTracker* m_keyBoardStateTracker;
 	//プレイシーンストップ
 	bool m_isPlayerDeath;
+	//プレイヤーモード
+	GameMain::PlayerMode m_playerMode;
 };

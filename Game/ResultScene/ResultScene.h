@@ -49,7 +49,7 @@ public:
 	/// <summary>
 	/// コンストラクタ
 	/// </summary>
-	ResultScene();
+	ResultScene(GameMain* parent);
 
 	/// <summary>
 	/// デストラクタ
@@ -65,8 +65,7 @@ public:
 	/// 更新
 	/// </summary>
 	/// <param name="timer">タイマー</param>
-	/// <returns>次のシーン</returns>
-	GAME_SCENE Update(const DX::StepTimer& timer) override;
+	void Update(const DX::StepTimer& timer) override;
 
 	/// <summary>
 	/// 描画
@@ -161,5 +160,7 @@ private:
 
 	//ステージ番号
 	StageManager::StageSelect m_stageNum;
+
+	GameMain* m_parent;
 
 };

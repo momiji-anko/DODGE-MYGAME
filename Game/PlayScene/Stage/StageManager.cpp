@@ -9,21 +9,21 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+	#include<cstdlib>
+#include <windows.h>
 #include"StageManager.h"
 #include"DeviceResources.h"
 #include"../MyRandom.h"
-#include<stdlib.h>
-#include"Libraries/MyLibraries/ModelManager.h"
-#include <windows.h>
-#include"Libraries/MyLibraries/FileLoadManager.h"
 #include"Game/PlayScene/GameContext/GameContext.h"
+#include"Libraries/MyLibraries/ModelManager.h"
+#include"Libraries/MyLibraries/FileLoadManager.h"
 
 //ビヘイビアーのインクルード
 #include"StageBehaviors/FirstFloorToFallBehavior.h"
 #include"StageBehaviors/SecondFloorToFallBehavior.h"
 #include"StageBehaviors/ThirdFloorToFallBehavior.h"
 #include"StageBehaviors/NormalFloorBehavior.h"
-#include"StageBehaviors/TiltingFloorbehavior.h"
+#include"StageBehaviors/TiltingFloorBehavior.h"
 #include"StageBehaviors/RotationCubeBehavior.h"
 
 //ビヘイビアーの数
@@ -146,7 +146,7 @@ void StageManager::CreateBehavior()
 	//普通の床
 	m_behavior[3] = std::make_unique<NormalFloorBehavior>();
 	//傾く床
-	m_behavior[4] = std::make_unique<TiltingFloorbehavior>();
+	m_behavior[4] = std::make_unique<TiltingFloorBehavior>();
 	//回転するキューブ
 	m_behavior[5] = std::make_unique<RotationCubeBehavior>();
 
@@ -167,21 +167,21 @@ void StageManager::LoadStageJson(const std::wstring& fileName)
 	file.close();
 
 	//ステージの座標
-	std::vector<DirectX::SimpleMath::Vector3> stagePositions;
+	std::vector<DirectX::SimpleMath::Vector3> floorPositions;
 
 	//ベース頂点座標
 	std::vector<DirectX::SimpleMath::Vector3> baseVertices;
 	//インデックス
 	std::vector<std::vector<int>> indices;
 	//ステートタイプ
-	std::vector<int> stageType;
+	std::vector<int> floor;
 
 	//ステージの数取得
-	int stageNum = stageJson["StageNum"];
+	size_t stageNum = stageJson["Floor"].size();
 	//ステージの数分確保
-	stagePositions.resize(stageNum);
+	floorPositions.resize(stageNum);
 	//ステージの数分確保
-	stageType.resize(stageNum);
+	floor.resize(stageNum);
 
 	//ステージじの情報を読み込む
 	for (int i = 0; i < stageNum; i++)
@@ -189,15 +189,15 @@ void StageManager::LoadStageJson(const std::wstring& fileName)
 		//番号をストリングにする
 		std::string str = std::to_string(i);
 		//ステージタイプ取得
-		stageType[i] = stageJson["Stage"][str.c_str()]["StageType"];
+		
+		floor[i] = stageJson["Floor"][i]["FloorType"];
 		//ステージのポジションを取得
-		stagePositions[i].x = stageJson["Stage"][str.c_str()]["X"];
-		stagePositions[i].y = stageJson["Stage"][str.c_str()]["Y"];
-		stagePositions[i].z = stageJson["Stage"][str.c_str()]["Z"];
+		floorPositions[i] = ConvertIntoVector3(stageJson["Floor"][i]["Position"]);
+		
 	}
 
 	//頂点の数取得
-	int vertexNum = stageJson["VertexNum"];
+	int vertexNum = stageJson["VertexPosition"].size();
 	//頂点の数分確保
 	baseVertices.resize(vertexNum);
 	
@@ -207,34 +207,30 @@ void StageManager::LoadStageJson(const std::wstring& fileName)
 		//番号をストリングにする
 		std::string str = std::to_string(i);
 		//頂点座標の取得
-		baseVertices[i].x = stageJson["VertexPosition"][str.c_str()]["X"];
-		baseVertices[i].y = stageJson["VertexPosition"][str.c_str()]["Y"];
-		baseVertices[i].z = stageJson["VertexPosition"][str.c_str()]["Z"];
+		baseVertices[i] = ConvertIntoVector3(stageJson["VertexPosition"][i]);
 	}
 
-	
-
 	//頂点座標インデックスの数取得
-	int vertexIndex = stageJson["VertexIndexNum"];
+	size_t vertexIndexNum = stageJson["VertexIndex"].size();
+	indices.resize(vertexIndexNum);
 
-	//頂点インデックスの数分確保
-	indices.resize(vertexIndex);
+	//1ポリゴンの頂点座標の数
+	int onePolygonVertexIndex = 3;
 
 	//頂点インデックスの読み込み
-	for (int i = 0; i < vertexIndex; i++)
+	for (int i = 0; i < vertexIndexNum; i++)
 	{
 		//インデックスの配列確保
-		indices[i].resize(3);
-		//番号をストリングにする
-		std::string str = std::to_string(i);
+		indices[i].resize(onePolygonVertexIndex);
 		//インデックス番号の取得
-		indices[i][0] = stageJson["VertexIndex"][str.c_str()]["1"];
-		indices[i][1] = stageJson["VertexIndex"][str.c_str()]["2"];
-		indices[i][2] = stageJson["VertexIndex"][str.c_str()]["3"];
+		for (int j = 0; j < onePolygonVertexIndex; j++)
+		{
+			indices[i][j] = stageJson["VertexIndex"][i][j];
+		}		
 	}
 
 	//モデルのファイルのパスを取得（string）
-	std::string modelFileName = stageJson["StageModelFileName"];
+	std::string modelFileName = stageJson["FloorModelFileName"];
 	//取得したファイルパスをstringからwstringに変換する
 	std::wstring modelFile = ConvertWString(modelFileName);
 	//モデル作成
@@ -251,15 +247,15 @@ void StageManager::LoadStageJson(const std::wstring& fileName)
 		//ステージのユニークポインタで作成
 		m_stage[i] = std::make_unique<Stage>();
 
-		//ステージタイプ
-		m_stage[i]->SetTypeInt(stageType[i]);
+		//ステージタイプ設定
+		m_stage[i]->SetTypeInt(floor[i]);
 		//ベース頂点座標
 		m_stage[i]->SetBaseVertices(baseVertices);
-		//インデックス
+		//インデックス設定
 		m_stage[i]->SetIndices(indices);
 
 		//読み込んだステージ情報でステージを初期化する
-		m_stage[i]->Initialize(DirectX::SimpleMath::Vector3::Zero, stagePositions[i], scale, DirectX::SimpleMath::Vector3::Zero, true, m_behavior[stageType[i]].get(), stageModel);
+		m_stage[i]->Initialize(DirectX::SimpleMath::Vector3::Zero, floorPositions[i], scale, DirectX::SimpleMath::Vector3::Zero, true, m_behavior[floor[i]].get(), stageModel);
 		
 		
 	}
@@ -380,6 +376,16 @@ DirectX::SimpleMath::Vector3 StageManager::SlideVecCalculation(const DirectX::Si
 }
 
 /// <summary>
+/// jsonで読み込んだ座標をVector3に変換
+/// </summary>
+/// <param name="nums">jsonで読み込んだ座標</param>
+/// <returns>変換した座標</returns>
+DirectX::SimpleMath::Vector3 StageManager::ConvertIntoVector3(const std::vector<float> nums)
+{
+	return DirectX::SimpleMath::Vector3(nums[0], nums[1], nums[2]);
+}
+
+/// <summary>
 /// ステージとアクターの当たり判定
 /// </summary>
 /// <param name="actor">アクター</param>
@@ -408,7 +414,7 @@ bool StageManager::StageToActorHitCheck(Actor* actor)
 			DirectX::SimpleMath::Vector3 normalVec = DirectX::SimpleMath::Vector3::Zero;
 
 			//当たっていた場合スライドする
-			if (StageHitCheck(polygonVertexPos, actorLinePos, &normalVec))
+			if (StageDetectCollition(polygonVertexPos, actorLinePos, &normalVec))
 			{
 				//めり込み処理
 				ActorPolygonPenetration(actor, polygonVertexPos, normalVec);
@@ -417,7 +423,7 @@ bool StageManager::StageToActorHitCheck(Actor* actor)
 				DirectX::SimpleMath::Vector3 actorVel = actor->GetVelocity();
 
 				//アクターのスライドする量
-				float actorSlideGravity = -0.7f;
+				float actorSlideGravity = -1.9f;
 				actorVel.y = actorSlideGravity;
 
 				//スライドベクトル計算
@@ -450,7 +456,7 @@ bool StageManager::StageToActorHitCheck(Actor* actor)
 /// <param name="linePos">線分の両端座標</param>
 /// <param name="normalVector">法線ベクトルのポインタ</param>
 /// <returns>true=当たっている　false=当っていない</returns>
-bool StageManager::StageHitCheck(const std::vector<DirectX::SimpleMath::Vector3>& vertices, const std::vector<DirectX::SimpleMath::Vector3>& linePos, DirectX::SimpleMath::Vector3* normalVector)
+bool StageManager::StageDetectCollition(const std::vector<DirectX::SimpleMath::Vector3>& vertices, const std::vector<DirectX::SimpleMath::Vector3>& linePos, DirectX::SimpleMath::Vector3* normalVector)
 {
 	//各頂点座標
 	DirectX::SimpleMath::Vector3 vertex0 = vertices[0];

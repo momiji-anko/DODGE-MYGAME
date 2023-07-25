@@ -346,7 +346,7 @@ bool ObstacleManager::PlayerHitCheck(AABBFor3D* playerAABB)
 			continue;
 
 		//障害物をプレイヤーと当たり判定を取る
-		if (obstacle->GetAABB()->HitCheck(playerAABB))
+		if (obstacle->GetAABB()->DetectCollition(playerAABB))
 		{
 
 			//プレイヤーに当たった障害物のタイプ設定
@@ -400,7 +400,7 @@ bool ObstacleManager::PlayerCapsuleHitCheck(Actor* player, DirectX::SimpleMath::
 		//障害物の角度取得
 		Capsule* cap = obstacle->GetCapsule();
 		//当たっていれば実行する
-		if (CapsuleHit::HitCheck_Capsule2Capsule(*cap, *player->GetCapsule(),m_capsuleHitC1,m_capsuleHitC2))
+		if (CapsuleCollision::DetectCollition_Capsule2Capsule(*cap, *player->GetCapsule(),m_capsuleHitC1,m_capsuleHitC2))
 		{
 			bool isRoteStick = obstacle->GetTypeInt() == static_cast<int>(Obstacle::ObstacleType::ROTATESTICK);
 

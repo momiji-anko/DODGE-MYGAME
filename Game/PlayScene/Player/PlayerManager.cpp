@@ -77,7 +77,7 @@ void PlayerManager::Draw(Camera* camera)
 		DirectX::SimpleMath::Vector3 c1;
 		DirectX::SimpleMath::Vector3 c2;
 		//ƒvƒŒƒCƒ„[“¯Žm‚ª“–‚½‚Á‚Ä‚¢‚½ê‡‰Ÿ‚µ‡‚¢‚·‚é
-		if (CapsuleHit::HitCheck_Capsule2Capsule(*m_players[0]->GetCapsule(), *m_players[1]->GetCapsule(), c1, c2))
+		if (CapsuleCollision::DetectCollition_Capsule2Capsule(*m_players[0]->GetCapsule(), *m_players[1]->GetCapsule(), c1, c2))
 		{
 			PlayerCapuslePenetration(m_players[0].get(), c2 - c1, m_players[0]->GetCapsule()->r, m_players[1]->GetCapsule()->r);
 			PlayerCapuslePenetration(m_players[1].get(), c1 - c2, m_players[1]->GetCapsule()->r, m_players[0]->GetCapsule()->r);

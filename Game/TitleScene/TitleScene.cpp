@@ -27,7 +27,7 @@ const float TitleScene::ALPHA_MIN_NUM = 0.0f;
 /// <summary>
 /// コンストラクタ
 /// </summary>
-TitleScene::TitleScene()
+TitleScene::TitleScene(GameMain* parent)
 	:
 	m_alpha(1.0f),
 	m_alphaSpeed(-0.01f),
@@ -37,7 +37,8 @@ TitleScene::TitleScene()
 	m_stageManager{},
 	m_playerMode(GameMain::PlayerMode::Player1),
 	m_pAdx2(),
-	m_musicID(0)
+	m_musicID(0),
+	m_parent(parent)
 {
 }
 
@@ -46,8 +47,7 @@ TitleScene::TitleScene()
 /// </summary>
 TitleScene::~TitleScene()
 {
-	//Adx2の終了処理
-	m_pAdx2->Finalize();
+	
 
 	m_CRIWARETexture.Reset();
 	m_pushTexture.Reset();
@@ -100,8 +100,8 @@ void TitleScene::Initialize()
 /// 更新
 /// </summary>
 /// <param name="timer">タイマー</param>
-/// <returns>次のシーン</returns>
-GAME_SCENE TitleScene::Update(const DX::StepTimer& timer)
+
+void TitleScene::Update(const DX::StepTimer& timer)
 {
 	// キー入力情報を取得する
 	DirectX::Keyboard::State keyState = DirectX::Keyboard::Get().GetState();
@@ -135,10 +135,12 @@ GAME_SCENE TitleScene::Update(const DX::StepTimer& timer)
 	{
 		//BGMを止める
 		m_pAdx2->Stop(m_musicID);
+		//プレイヤーモードの設定
+		GameContext::GetInstance().SetPlayerMode(m_playerMode);
 		//プレイシーンに移行
-		return GAME_SCENE::PLAY;
+		m_parent->SceneChange(m_parent->GetPlayScene());
 	}
-	return GAME_SCENE::NONE;
+	
 }
 
 /// <summary>
@@ -320,8 +322,10 @@ void TitleScene::TitleStateDraw()
 /// </summary>
 void TitleScene::Finalize()
 {
+	m_titleSelect = TitleState::FADEIN;
+	//Adx2の終了処理
+	m_pAdx2->Finalize();
 
-	
 }
 /// <summary>
 /// リーソスの読み込み

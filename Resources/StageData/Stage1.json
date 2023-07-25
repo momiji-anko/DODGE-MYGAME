@@ -1,80 +1,22 @@
 {
-	"StageNum": 4,
+	"FloorModelFileName": "Resources/Models/StageObject.cmo",
 
-	"StageModelFileName": "Resources/Models/StageObject.cmo",
+	"Floor": [
+		{	"FloorType": 0,		"Position": [  6.0, -1.0,  6.0 ]	},
+		{	"FloorType": 1,		"Position": [ -6.0, -1.0,  6.0 ]	},
+		{	"FloorType": 2,		"Position": [  6.0, -1.0, -6.0 ]	},
+		{	"FloorType": 3,		"Position": [ -6.0, -1.0, -6.0 ]	}
+	],
 
-	"Stage": {
+	"VertexPosition": [
+		[ -6.0, 0.8, -6.0 ],
+		[ -6.0, 0.8, 6.0 ],
+		[ 6.0, 0.8, -6.0 ],
+		[ 6.0, 0.8, 6.0 ]
+	],
 
-		"0": {
-			"StageType": 0,
-			"X": 6.0,
-			"Y": -1.0,
-			"Z": 6.0
-		},
-
-		"1": {
-			"StageType": 1,
-			"X": -6.0,
-			"Y": -1.0,
-			"Z": 6.0
-		},
-
-		"2": {
-			"StageType": 2,
-			"X": 6.0,
-			"Y": -1.0,
-			"Z": -6.0
-		},
-
-		"3": {
-			"StageType": 3,
-			"X": -6.0,
-			"Y": -1.0,
-			"Z": -6.0
-		}
-
-	},
-
-	"VertexNum": 4,
-
-	"VertexPosition": {
-		"0": {
-			"X": -6.0,
-			"Y": 0.8,
-			"Z": -6.0
-		},
-		"1": {
-			"X": -6.0,
-			"Y": 0.8,
-			"Z": 6.0
-		},
-		"2": {
-			"X": 6.0,
-			"Y": 0.8,
-			"Z": -6.0
-		},
-		"3": {
-			"X": 6.0,
-			"Y": 0.8,
-			"Z": 6.0
-		}
-
-	},
-
-
-	"VertexIndexNum": 2,
-
-	"VertexIndex": {
-		"0": {
-			"1": 0,
-			"2": 1,
-			"3": 2
-		},
-		"1": {
-			"1": 2,
-			"2": 1,
-			"3": 3
-		}
-	}
-
+	"VertexIndex": [
+		[ 0, 1, 2 ],
+		[ 2, 1, 3 ]
+	]
 }

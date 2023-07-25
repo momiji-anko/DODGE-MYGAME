@@ -241,7 +241,7 @@
     <ClInclude Include="Game\PlayScene\Stage\StageBehaviors\RotationCubeBehavior.h" />
     <ClInclude Include="Game\PlayScene\Stage\StageBehaviors\SecondFloorToFallBehavior.h" />
     <ClInclude Include="Game\PlayScene\Stage\StageBehaviors\ThirdFloorToFallBehavior.h" />
-    <ClInclude Include="Game\PlayScene\Stage\StageBehaviors\TiltingFloorbehavior.h" />
+    <ClInclude Include="Game\PlayScene\Stage\StageBehaviors\TiltingFloorBehavior.h" />
     <ClInclude Include="Game\PlayScene\Stage\StageManager.h" />
     <ClInclude Include="Game\PlayScene\AliveTimer.h" />
     <ClInclude Include="Game\ResultScene\ResultScene.h" />
@@ -310,7 +310,7 @@
     <ClCompile Include="Game\PlayScene\Stage\StageBehaviors\RotationCubeBehavior.cpp" />
     <ClCompile Include="Game\PlayScene\Stage\StageBehaviors\SecondFloorToFallBehavior.cpp" />
     <ClCompile Include="Game\PlayScene\Stage\StageBehaviors\ThirdFloorToFallBehavior.cpp" />
-    <ClCompile Include="Game\PlayScene\Stage\StageBehaviors\TiltingFloorbehavior.cpp" />
+    <ClCompile Include="Game\PlayScene\Stage\StageBehaviors\TiltingFloorBehavior.cpp" />
     <ClCompile Include="Game\PlayScene\Stage\StageManager.cpp" />
     <ClCompile Include="Game\PlayScene\AliveTimer.cpp" />
     <ClCompile Include="Game\ResultScene\ResultScene.cpp" />

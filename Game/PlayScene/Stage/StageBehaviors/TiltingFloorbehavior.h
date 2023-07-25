@@ -10,11 +10,11 @@
 /// <summary>
 /// ステージ２の傾く床
 /// </summary>
-class TiltingFloorbehavior : public IBehavior
+class TiltingFloorBehavior : public IBehavior
 {
 public:
-	TiltingFloorbehavior() = default;
-	~TiltingFloorbehavior()override = default;
+	TiltingFloorBehavior() = default;
+	~TiltingFloorBehavior()override = default;
 
 	/// <summary>
 	/// ステージ２の傾く床の動き

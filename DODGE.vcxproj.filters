@@ -258,9 +258,6 @@
     <ClInclude Include="Game\PlayScene\Stage\StageBehaviors\ThirdFloorToFallBehavior.h">
       <Filter>Game\PlayScene\Stage\StageBehaviors</Filter>
     </ClInclude>
-    <ClInclude Include="Game\PlayScene\Stage\StageBehaviors\TiltingFloorbehavior.h">
-      <Filter>Game\PlayScene\Stage\StageBehaviors</Filter>
-    </ClInclude>
     <ClInclude Include="Libraries\MyLibraries\ModelManager.h">
       <Filter>Libraries\MyLibraries</Filter>
     </ClInclude>
@@ -293,6 +290,9 @@
     </ClInclude>
     <ClInclude Include="Libraries\MyLibraries\MemoryLeakDetector.h">
       <Filter>Libraries\MyLibraries</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\PlayScene\Stage\StageBehaviors\TiltingFloorBehavior.h">
+      <Filter>Game\PlayScene\Stage\StageBehaviors</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -440,9 +440,6 @@
     <ClCompile Include="Game\PlayScene\Stage\StageBehaviors\ThirdFloorToFallBehavior.cpp">
       <Filter>Game\PlayScene\Stage\StageBehaviors</Filter>
     </ClCompile>
-    <ClCompile Include="Game\PlayScene\Stage\StageBehaviors\TiltingFloorbehavior.cpp">
-      <Filter>Game\PlayScene\Stage\StageBehaviors</Filter>
-    </ClCompile>
     <ClCompile Include="Libraries\MyLibraries\ModelManager.cpp">
       <Filter>Libraries\MyLibraries</Filter>
     </ClCompile>
@@ -472,6 +469,9 @@
     </ClCompile>
     <ClCompile Include="Game\TitleScene\StageSelect.cpp">
       <Filter>Game\TitleScene</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\PlayScene\Stage\StageBehaviors\TiltingFloorBehavior.cpp">
+      <Filter>Game\PlayScene\Stage\StageBehaviors</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

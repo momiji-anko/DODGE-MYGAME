@@ -6,7 +6,7 @@
 */
 #include"pch.h"
 #include"Game/PlayScene/Actor/Actor.h"
-#include "TiltingFloorbehavior.h"
+#include "TiltingFloorBehavior.h"
 #include"Game/PlayScene/Stage/Stage.h"
 #include"Game/PlayScene/MyRandom.h"
 
@@ -16,7 +16,7 @@
 /// </summary>
 /// <param name="timer">タイマー</param>
 /// <param name="actor">ステージのポインター</param>
-void TiltingFloorbehavior::Execute(const DX::StepTimer& timer, Actor* actor)
+void TiltingFloorBehavior::Execute(const DX::StepTimer& timer, Actor* actor)
 {
 	//回転量
 	static const float ROTATION_ANGLE = DirectX::XMConvertToRadians(3.5f);

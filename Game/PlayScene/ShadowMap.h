@@ -7,16 +7,12 @@ class ShadowMap
 {
 
 private:
-
+	
 	// パス付きの名前に変換する関数
-	wchar_t* GetFullName(const wchar_t* name)
+	std::wstring GetFullName(const std::wstring& name)
 	{
-		static wchar_t fullName[MAX_PATH];
-
-		wcscpy_s(fullName, m_Path);
-		wcscat_s(fullName, name);
-
-		return fullName;
+	
+		return m_Path+ name;
 	}
 
 public:
@@ -46,7 +42,7 @@ public:
 		return m_shaderView.Get();
 	}
 	
-	void SetDirectory(const wchar_t* path);
+	void SetDirectory(const std::wstring& path);
 
 private:
 
@@ -54,7 +50,7 @@ private:
 	static const int SM_RESOLUTION = 1024;
 
 	// csoの場所
-	wchar_t m_Path[MAX_PATH];
+	std::wstring m_Path;
 
 	// 頂点シェーダーのデータ
 	Microsoft::WRL::ComPtr<ID3DBlob> m_vsBlob;

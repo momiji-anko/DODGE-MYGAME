@@ -142,7 +142,7 @@ void AABBFor3D::SetData(const DirectX::SimpleMath::Vector3& minPos, const Direct
 	“–‚½‚Á‚Ä‚¢‚é true
 	“–‚Á‚Ä‚¢‚È‚¢ false
 */
-bool AABBFor3D::HitCheck(AABBFor3D* other)
+bool AABBFor3D::DetectCollition(AABBFor3D* other)
 {
 	//’†S“_“¯m‚Ì‹——£‚ğ‘ª‚é
 	DirectX::SimpleMath::Vector3 centerLength = other->m_center - this->m_center;

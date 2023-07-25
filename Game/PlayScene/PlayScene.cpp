@@ -18,7 +18,7 @@ const float PlayScene::COUNT_DOWN_TIME_S = 4.0f;
 /// <summary>
 /// コンストラクタ
 /// </summary>
-PlayScene::PlayScene()
+PlayScene::PlayScene(GameMain* parent)
 	:
 	m_commonState{},
 	m_countDownTime(0.0f),
@@ -36,7 +36,8 @@ PlayScene::PlayScene()
 	m_aliveTime{},
 	m_playerMode(),
 	m_stageNum(),
-	m_playerManager{}
+	m_playerManager{},
+	m_parent{parent}
 {
 
 	m_pCamera = std::make_unique<Camera>();
@@ -48,9 +49,7 @@ PlayScene::PlayScene()
 PlayScene::~PlayScene()
 {
 	
-	ModelManager::GetInstance().Reset();
-
-	m_pAdx2->Finalize();
+	
 }
 
 /// <summary>
@@ -125,8 +124,8 @@ void PlayScene::Initialize()
 /// 更新
 /// </summary>
 /// <param name="timer">タイマー</param>
-/// <returns>次のシーン</returns>
-GAME_SCENE PlayScene::Update(const DX::StepTimer& timer)
+
+void PlayScene::Update(const DX::StepTimer& timer)
 {
 	//経過時間
 	float elapsedTime = static_cast<float>(timer.GetElapsedSeconds());
@@ -141,7 +140,7 @@ GAME_SCENE PlayScene::Update(const DX::StepTimer& timer)
 	//押している場合これ以降の処理を行わない
 	if (m_isTabKey)
 	{
-		return GAME_SCENE::NONE;
+		return ;
 	}
 
 	//フェード更新
@@ -150,13 +149,13 @@ GAME_SCENE PlayScene::Update(const DX::StepTimer& timer)
 	//フェードアウトしたならリザルトシーンへ移行
 	if (m_fadeInOut->ISClose())
 	{
-		return GAME_SCENE::RESULT;
+		m_parent->SceneChange(m_parent->GetResultScene());
 	}
 
 	//フェードインするまで処理しない
 	if (m_fadeInOut->ISOpen() == false)
 	{
-		return GAME_SCENE::NONE;
+		return ;
 	}
 	
 	//カウントダウンを経過時間で引く
@@ -165,7 +164,7 @@ GAME_SCENE PlayScene::Update(const DX::StepTimer& timer)
 	//カウントダウンが０になるまで処理しない
 	if (m_countDownTime > 0)
 	{
-		return GAME_SCENE::NONE;
+		return ;
 	}
 	
 	//アライブタイム更新
@@ -193,8 +192,6 @@ GAME_SCENE PlayScene::Update(const DX::StepTimer& timer)
 		m_fadeInOut->FadeOut();
 	}
 	
-
-	return GAME_SCENE::NONE;
 }
 
 /// <summary>
@@ -256,6 +253,9 @@ void PlayScene::Draw()
 /// </summary>
 void PlayScene::Finalize()
 {
+	ModelManager::GetInstance().Reset();
+
+	m_pAdx2->Finalize();
 }
 
 /// <summary>
@@ -307,13 +307,20 @@ void PlayScene::LoadResources()
 	//カウントダウンの画像
 	m_countDownTexture = textureManager.LoadTexture(L"Resources/Textures/num.png");
 
+	//プレイヤーモードの取得
+	m_playerMode = GameContext::GetInstance().GetPlayerMode();
+
+
 	//１ｐモードと２ｐモードの操作方法画像ファイルパス
 	std::wstring playerMoveKeyTex[2] = { 
 		{L"Resources/Textures/1playerMoveKey.png"},
 		{L"Resources/Textures/2playerMoveKey.png"}
 	};
+
+	int tes = static_cast<int>(m_playerMode) - 1;
+
 	//モードによって読み込む画像を変える
-	m_playerMoveKey = textureManager.LoadTexture(playerMoveKeyTex[static_cast<int>(m_playerMode) - 1]);
+	m_playerMoveKey = textureManager.LoadTexture(playerMoveKeyTex[tes]);
 
 }
 

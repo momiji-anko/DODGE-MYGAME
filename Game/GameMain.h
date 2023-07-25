@@ -8,7 +8,9 @@
 #include "StepTimer.h"
 #include"ILoadingScreen.h"
 
-
+class ResultScene;
+class PlayScene;
+class TitleScene;
 
 // シーンの列挙
 enum class GAME_SCENE : int
@@ -26,13 +28,30 @@ enum class GAME_SCENE : int
 // 前方宣言
 class DebugCamera;
 class IScene;
-class TitleScene;
 
 /// <summary>
 /// Gameクラスから、ユーザ処理部分を抜き出したクラス
 /// </summary>
 class GameMain
 {
+public:
+	/// <summary>
+	/// プレイシーンの取得
+	/// </summary>
+	/// <returns>プレイシーンの生ポインタ</returns>
+	IScene* GetPlayScene();
+
+	/// <summary>
+	/// タイトルシーンの取得
+	/// </summary>
+	/// <returns>タイトルシーンの生ポインタ</returns>
+	IScene* GetTitleScene();
+
+	/// <summary>
+	/// リザルトシーンの取得
+	/// </summary>
+	/// <returns>リザルトシーンの生ポインタ</returns>
+	IScene* GetResultScene();
 
 public:
 	GameMain();
@@ -45,13 +64,15 @@ public:
 
 	// シーン関係処理
 
-	// シーンの作成
-	void CreateScene();
+	/// <summary>
+	/// シーンを変える
+	/// </summary>
+	/// <param name="scene">次のシーン</param>
+	void SceneChange(IScene* scene);
 
-	// シーンの削除
-	void DeleteScene();
 
 private:
+
 	void LoadResources(bool useLoadingScreen = true);
 
 public:
@@ -72,19 +93,20 @@ private:
 	// マウス
 	std::unique_ptr<DirectX::Mouse> m_mouse;
 
-	// 次のシーン番号
-	GAME_SCENE m_nextScene;
 
 	// シーン
-	std::unique_ptr<IScene> m_pScene;
-
+	IScene* m_pScene;
+	//プレイシーン
+	std::unique_ptr<PlayScene>   m_playScene;
+	//タイトルシーン
+	std::unique_ptr<TitleScene>  m_titleScene;
+	//リザルトシーン
+	std::unique_ptr<ResultScene> m_resultScene;
+		
 
 	// ロード画面 
 	std::unique_ptr<ILoadingScreen> m_loadingScreen;
 
-	PlayerMode m_playerMode;
 	int m_stageNum;
-
-
 
 };
