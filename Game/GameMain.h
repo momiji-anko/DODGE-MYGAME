@@ -72,7 +72,10 @@ public:
 
 
 private:
-
+	/// <summary>
+	/// リソース読み込み
+	/// </summary>
+	/// <param name="useLoadingScreen">ロード画面にするか</param>
 	void LoadResources(bool useLoadingScreen = true);
 
 public:
@@ -107,6 +110,7 @@ private:
 	// ロード画面 
 	std::unique_ptr<ILoadingScreen> m_loadingScreen;
 
+	//ステージ番号
 	int m_stageNum;
 
 };

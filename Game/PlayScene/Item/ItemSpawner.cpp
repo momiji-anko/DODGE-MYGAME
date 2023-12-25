@@ -20,7 +20,6 @@
 /// <returns>true＝生成成功　false＝生成失敗</returns>
 bool ItemSpawner::Create( std::vector< std::unique_ptr<Actor>>& actors, const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Vector3& rotation, IBehavior* behavior,DirectX::Model* model)
 {
-	UNREFERENCED_PARAMETER(behavior);
 
 	for (std::unique_ptr<Actor>& actor : actors)
 	{
@@ -28,11 +27,11 @@ bool ItemSpawner::Create( std::vector< std::unique_ptr<Actor>>& actors, const Di
 		if (actor->IsActive())
 			continue;
 
-		
+		//タイプの設定
 		actor->SetTypeInt(static_cast<int>(Item::ItemType::SHIELD_ITEM));
-
+		//拡大率
 		DirectX::SimpleMath::Vector3 scale = { 0.008f,0.008f ,0.008f };
-
+		//移動量
 		DirectX::SimpleMath::Vector3 velocity = { 0.0f, -3.0f, 0.0 };
 
 

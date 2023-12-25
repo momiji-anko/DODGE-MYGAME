@@ -193,18 +193,23 @@ void GameMain::SceneChange(IScene* scene)
 
 }
 
-/*--------------------------------------------------
-リソースの読み込み
---------------------------------------------------*/
+/// <summary>
+/// リソース読み込み
+/// </summary>
+/// <param name="useLoadingScreen">ロード画面にするか（初期値でtrueになっている）</param>
 void GameMain::LoadResources(bool useLoadingScreen)
 {
+	//ロード画面にするか
 	if (useLoadingScreen)
 	{
+		//ロード画面作成
 		m_loadingScreen = std::make_unique<LoadingScreen>();
+		//初期化
 		m_loadingScreen->Initialize(m_pScene);
 	}
 	else
 	{
+		//リソース読み込み
 		m_pScene->LoadResources();
 	}
 }

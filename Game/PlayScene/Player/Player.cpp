@@ -98,7 +98,7 @@ Player::~Player()
 /// <param name="position">初期座標</param>
 /// <param name="rotation">角度</param>
 /// <param name="active">存在しているか</param>
-/// <param name="behavia">ビヘイビアー（Playrでは使わないのでNULLでOK）</param>
+/// <param name="behavia">ビヘイビア（Playrでは使わないのでNULLでOK）</param>
 /// <param name="model">プレイヤーのモデルだがNULLでOK</param>
 void Player::Initialize(const DirectX::SimpleMath::Vector3& velocity, const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Vector3& scale, const DirectX::SimpleMath::Vector3& rotation, bool active, IBehavior* behavia, DirectX::Model* model)
 {
@@ -133,17 +133,23 @@ void Player::Initialize(const DirectX::SimpleMath::Vector3& velocity, const Dire
 	float blinkTime_s = 0.25f;
 	//点滅回数
 	int blinkCount = 12;
-	//ブリンクする
+
+	//点滅生成
 	m_blink = std::make_unique<Blink>();
 	//初期化
 	m_blink->Initialize(blinkTime_s, blinkCount);
 
+	//エフェクト生存時間
+	m_effectLifeTime_s = 3.0f;
+
+	//エフェクト作成
 	m_fireEffect = std::make_unique<FireEffectManager>();
+	//エフェクト生成
 	m_fireEffect->Create();
-	m_fireEffect->Initialize(3.0f, GetPosition());
+	//エフェクト初期化
+	m_fireEffect->Initialize(m_effectLifeTime_s, GetPosition());
 
-	m_effectLifeTime_s = 1.0f;
-
+	//プレイヤーが死んでいない状態にする
 	GameContext::GetInstance().SetIsPlayerDeath(false);
 }
 
@@ -191,15 +197,7 @@ void Player::Update(const DX::StepTimer& timer)
 
 	//プレイヤーの移動
 	PlayerMove(timer);
-
-	//吹き飛ばす量
-	DirectX::SimpleMath::Vector3 flyVelocity = DirectX::SimpleMath::Vector3::Zero;
-
-	//回転する棒と当たり判定取る,当たっていた場合プレイヤーを吹き飛ばす
-	if (m_obstacleManager->PlayerCapsuleHitCheck(this, &flyVelocity))
-	{
-		m_flyVelocity = flyVelocity;
-	}
+	
 
 	//障害物と当たっていた場合シールドを減らす
 	if (m_obstacleManager->PlayerHitCheck(GetAABB()))
@@ -221,29 +219,31 @@ void Player::Update(const DX::StepTimer& timer)
 		m_blink->Stop();
 	}
 
+	//吹き飛ばす量
+	DirectX::SimpleMath::Vector3 flyVelocity = DirectX::SimpleMath::Vector3::Zero;
+
+	//回転する棒と当たり判定取る,当たっていた場合プレイヤーを吹き飛ばす
+	if (m_obstacleManager->PlayerCapsuleHitCheck(this, &flyVelocity))
+	{
+		m_flyVelocity = flyVelocity;
+	}
+
 	//吹き飛ばされている状態であればだんだん減速する
 	if (m_flyVelocity.Length() != 0.0f)
 	{
+		//移動
 		SetPosition(GetPosition() + m_flyVelocity);
+		//減速用Vec
+		DirectX::SimpleMath::Vector3 decelerationVector = DirectX::SimpleMath::Vector3(0.91f, 0.91f, 0.91f);
 		//減速
-		m_flyVelocity *= DirectX::SimpleMath::Vector3(0.91f, 0.91f, 0.91f);
+		m_flyVelocity *= decelerationVector;
 	}
-
 
 	//当たり判定の領域の更新
 	HitAreaUpdate();
 
-	//落下してY座標が-50になったら死亡する
-	if (GetPosition().y < FALL_DEAD_AREA)
-	{
-		//ダメージ音を出す
-		m_pAdx2->Play(CRI_CUESHEET_0_DAMAGE1);
-
-		m_shieldCount = -1;
-
-		//カメラの揺れをリセット
-		m_camera->ShakeReset();
-	}
+	//プレイヤーがステージから落ちたか確認、死亡させる
+	PlayerFallDeathAreaCheck();
 
 	//ブリンクの更新
 	m_blink->Update(timer);
@@ -285,11 +285,10 @@ void Player::Draw(Camera* camera)
 	//盾が-1であればプレイヤー死亡
 	if (m_shieldCount <= -1) 
 	{
-
 		//プレイヤー死亡演出
 		PlayerDeath(m_obstacleManager->GetHitType(),camera);
-
 	}
+
 	//盾UIの描画
 	TextureDraw();
 }
@@ -299,9 +298,9 @@ void Player::Draw(Camera* camera)
 /// </summary>
 void Player::TextureDraw()
 {
-
+	//スプライトバッチ設定
 	DirectX::SpriteBatch* spriteBatch = GameContext::GetInstance().GetSpriteBatcth();
-
+	//描画開始
 	spriteBatch->Begin(DirectX::SpriteSortMode_Deferred, GameContext::GetInstance().GetCommonState()->NonPremultiplied());
 
 	//盾があれば盾描画
@@ -310,9 +309,10 @@ void Player::TextureDraw()
 		//盾同士の離れている距離
 		DirectX::SimpleMath::Vector2 shieldTexDistance = DirectX::SimpleMath::Vector2(0.0f, 64.0f * i);
 
-
+		//描画
 		spriteBatch->Draw(m_shieldTexture.Get(), PLAYERS_SHIELD_TEXTURE_POSITION[m_playerID] + shieldTexDistance, nullptr);
 	}
+	//描画終了
 	spriteBatch->End();
 }
 
@@ -613,7 +613,8 @@ void Player::PlayerDeath(Obstacle::ObstacleType hitType, Camera* camera)
 	{
 		//描画の設定
 		m_fireEffect->SetRenderState(camera->GetEyePosition(), camera->GetViewMatrix(), camera->GetProjectionMatrix());
-		
+
+		//ファイヤーの座標
 		std::vector<DirectX::SimpleMath::Vector3> firePositions = 
 		{
 			DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.3f),
@@ -624,7 +625,9 @@ void Player::PlayerDeath(Obstacle::ObstacleType hitType, Camera* camera)
 		//エフェクト表示する
 		for (const DirectX::SimpleMath::Vector3& firePosition : firePositions)
 		{
+			//座標設定
 			m_fireEffect->SetOffsetPosition(GetPosition() + firePosition);
+			//描画
 			m_fireEffect->Render();
 		}
 
@@ -632,23 +635,36 @@ void Player::PlayerDeath(Obstacle::ObstacleType hitType, Camera* camera)
 	//当たった障害物が棒だったらプレイヤーが紫色になる
 	else if (hitType != Obstacle::ObstacleType::NORMAL && hitType != Obstacle::ObstacleType::MEANDERING)
 	{
-
+		//d3dドライブ取得
 		ID3D11Device1* device = pDR->GetD3DDevice();
 
+		//ベーシックエフェクト
 		static std::shared_ptr<DirectX::BasicEffect> effect;
 
+		//nullチェック
 		if (effect == nullptr)
+			//nullであれば作成
 			effect = std::make_shared<DirectX::BasicEffect>(device);
 
+		//ワールド行列設定
 		effect->SetWorld(DirectX::SimpleMath::Matrix::Identity);
+		//ビュー行列設定
 		effect->SetView(camera->GetViewMatrix());
+		//プロジェクション行列
 		effect->SetProjection(camera->GetProjectionMatrix());
-		effect->SetColorAndAlpha(DirectX::SimpleMath::Vector4(0.5f,0.0f,0.5f,0.5f));
 
+		//紫
+		DirectX::SimpleMath::Vector4 purple = DirectX::SimpleMath::Vector4(0.5f, 0.0f, 0.5f, 0.5f);
+		//カラー設定
+		effect->SetColorAndAlpha(purple);
+
+		//テクスチャなし
 		effect->SetTextureEnabled(false);
 
+		//ライティング
 		effect->EnableDefaultLighting();
 
+		//モデルに対してエフェクトを適応させる
 		for (const auto& mesh : m_playerModel[m_playerModelNum[static_cast<int>(m_modelTime_s)]]->meshes)
 		{
 			for (const auto& part : mesh->meshParts)
@@ -657,10 +673,31 @@ void Player::PlayerDeath(Obstacle::ObstacleType hitType, Camera* camera)
 			}
 		}
 
+		//角度取得
 		DirectX::SimpleMath::Vector3 rotation = GetRotation().ToEuler();
-		rotation.x = DirectX::XM_PI/2;
+		//x軸回転を90度にする
+		rotation.x = DirectX::XM_PI / 2;
 		//角度設定
 		SetRotation(rotation);
 	}
 
+}
+
+/// <summary>
+/// プレイヤーがステージから落ちているか確認
+/// 落ちた場合死亡させる
+/// </summary>
+void Player::PlayerFallDeathAreaCheck()
+{
+	//落下してY座標が-50になったら死亡する
+	if (GetPosition().y < FALL_DEAD_AREA)
+	{
+		//ダメージ音を出す
+		m_pAdx2->Play(CRI_CUESHEET_0_DAMAGE1);
+
+		m_shieldCount = -1;
+
+		//カメラの揺れをリセット
+		m_camera->ShakeReset();
+	}
 }

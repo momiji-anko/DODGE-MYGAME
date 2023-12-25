@@ -78,8 +78,6 @@ void StageSelect::Initialize()
 	FileLoadManager& fileLoadManager = FileLoadManager::GetInstance();
 	//ƒtƒ@ƒCƒ‹‚Ì”æ“¾
 	m_stageMaxNum = static_cast<int>(fileLoadManager.LoadFile(L"Resources/StageData/").size());
-
-
 }
 
 /// <summary>

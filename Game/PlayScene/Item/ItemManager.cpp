@@ -51,8 +51,6 @@ ItemManager::~ItemManager()
 /// </summary>
 void ItemManager::Initialize()
 {
-
-	
 	//アイテムの配列をアイテムの最大数でリサイズする
 	m_items.resize(ITEM_MAX_NUM);
 
@@ -67,7 +65,6 @@ void ItemManager::Initialize()
 
 	//アイテムのモデル生成
 	m_pModel[Item::ItemType::SHIELD_ITEM] = ModelManager::GetInstance().LoadModel(L"Resources/Models/shield.cmo");
-
 
 	//スポーンタイム初期化
 	m_spawneTime_s = ITEM_SPAWNE_COOL_TIME_S;
@@ -137,7 +134,6 @@ void ItemManager::Draw(Camera* camera)
 
 		//描画
 		item->Draw(camera);
-
 	}
 }
 
@@ -147,8 +143,6 @@ void ItemManager::Draw(Camera* camera)
 void ItemManager::Finalize()
 {
 }
-
-
 
 /// <summary>
 /// アイテムとプレイヤーが当たっているか判定
@@ -175,8 +169,6 @@ Item::ItemType ItemManager::PlayerHitItemType(AABBFor3D* player)
 			item->Reset();
 			//当たっているアイテムタイプを返す
 			return hitItemType;
-
-			
 		}	
 	}
 
@@ -204,7 +196,6 @@ void ItemManager::Shadow(ShadowMap* shadowMap, const DirectX::SimpleMath::Matrix
 
 		//影生成
 		item->CreateShadow(shadowMap, view, projection);
-		
 	}
 }
 
@@ -217,7 +208,6 @@ void ItemManager::Shadow(ShadowMap* shadowMap, const DirectX::SimpleMath::Matrix
 /// <returns>true = 生成成功、false = 生成失敗</returns>
 bool ItemManager::CreateItem(const DirectX::SimpleMath::Vector3& position, Item::ItemType type, const DirectX::SimpleMath::Vector3& rot)
 {
-
 	//アイテムの生成
 	return m_spawners[type]->Create(m_items, position, rot, nullptr, m_pModel[type]);
 }
@@ -245,9 +235,7 @@ void ItemManager::ItemToStageCheckHit()
 			bool isHit = m_stageManeger->StageToActorHitCheck(item.get());
 			//結果をアイテムに設定する
 			i->SetStageHit(isHit);
-
 		}
-
 	}
 }
 

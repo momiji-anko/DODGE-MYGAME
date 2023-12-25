@@ -257,7 +257,6 @@ void ObstacleManager::Draw(Camera* camera)
 		//障害物の描画
 		obstacle->Draw(camera);
 	}
-
 }
 
 /// <summary>
@@ -265,7 +264,6 @@ void ObstacleManager::Draw(Camera* camera)
 /// </summary>
 void ObstacleManager::Finalize()
 {
-
 }
 
 /// <summary>
@@ -273,43 +271,62 @@ void ObstacleManager::Finalize()
 /// </summary>
 void ObstacleManager::CreateSpawner()
 {
-	//普通の炎
-	m_spawners[Obstacle::ObstacleType::NORMAL] = std::make_unique<NormalObstacleSpawner>();
-	//棒
-	m_spawners[Obstacle::ObstacleType::STICK] = std::make_unique<StickObstacleSpawner>();
-	//隕石
-	m_spawners[Obstacle::ObstacleType::METEORITE] = std::make_unique<MeteoriteObstacleSpawner>();
-	//回転する棒
-	m_spawners[Obstacle::ObstacleType::ROTATESTICK] = std::make_unique<RotateStickObstacleSpawner>();
-	//
-	m_spawners[Obstacle::ObstacleType::REVERSE_ROTATESTICK] = std::make_unique<ReverseRotateStickObstacleSpawner>();
-	//蛇行する炎
-	m_spawners[Obstacle::ObstacleType::MEANDERING] = std::make_unique<MeanderingObstacleSpawner>();
-	//鳥
-	m_spawners[Obstacle::ObstacleType::BIRD] = std::make_unique<BirdObstacleSpawner>();
-}
+	//スポナー
+	std::vector<ISpawner*> spawners =
+	{
+		//普通の炎
+		new NormalObstacleSpawner(),
+		//棒
+		new StickObstacleSpawner(),
+		//隕石
+		new MeteoriteObstacleSpawner(),
+		//下側の回転する棒
+		new RotateStickObstacleSpawner(),
+		//上側の反対回転する棒
+		new ReverseRotateStickObstacleSpawner(),
+		//蛇行する炎
+		new MeanderingObstacleSpawner(),
+		//鳥
+		new BirdObstacleSpawner()
 
+	};
+
+	//スポナー登録
+	for (int i = 0; i < spawners.size(); i++)
+	{
+		m_spawners[static_cast<Obstacle::ObstacleType>(i)].reset(spawners[i]);
+	}
+}
 
 /// <summary>
 /// ビヘイビアー作成
 /// </summary>
 void ObstacleManager::CreateBehavior()
 {
-	//普通の炎
-	m_behavior[Obstacle::ObstacleType::NORMAL] = std::make_unique<NormalBehavior>();
-	//棒
-	m_behavior[Obstacle::ObstacleType::STICK] = std::make_unique<StickBehavior>();
-	//隕石
-	m_behavior[Obstacle::ObstacleType::METEORITE] = std::make_unique<MeteoriteBehavior>();
-	//回転する棒
-	m_behavior[Obstacle::ObstacleType::ROTATESTICK] = std::make_unique<RotateStickBehavior>();
-	//時計回りに回転する棒
-	m_behavior[Obstacle::ObstacleType::REVERSE_ROTATESTICK] = std::make_unique<ReverseRotateStickBehavior>();
-	//蛇行する炎
-	m_behavior[Obstacle::ObstacleType::MEANDERING] = std::make_unique<MeanderingBehavior>();
-	//鳥
-	m_behavior[Obstacle::ObstacleType::BIRD] = std::make_unique<BirdBehavior>();
+	//ビヘイビアー
+	std::vector<IBehavior*> behaviors =
+	{
+		//普通の炎
+		new NormalBehavior(),
+		//棒
+		new StickBehavior(),
+		//隕石
+		new MeteoriteBehavior(),
+		//下側の回転する棒
+		new RotateStickBehavior(),
+		//上側の反対回転するする棒
+		new ReverseRotateStickBehavior(),
+		//蛇行する炎
+		new MeanderingBehavior(),
+		//鳥
+		new BirdBehavior(),
+	};
 
+	//ビヘイビアー登録
+	for (int i = 0; i < behaviors.size(); i++)
+	{
+		m_behavior[static_cast<Obstacle::ObstacleType>(i)].reset(behaviors[i]);
+	}
 }
 
 /// <summary>
@@ -324,11 +341,9 @@ void ObstacleManager::SetPlayerPosition(const DirectX::SimpleMath::Vector3& posi
 	//全ての障害物にプレイヤーの座標設定
 	for (std::unique_ptr<Actor>& obstacle : m_obstacles)
 	{
-
 		//プレイヤーの座標設定
 		obstacle->SetPlayerPosition(m_playerPosition);
 	}
-
 }
 
 /// <summary>
@@ -447,20 +462,27 @@ void ObstacleManager::CreateModel()
 	//モデルマネージャー取得
 	ModelManager& modelManager = ModelManager::GetInstance();
 
-	//	隕石モデル
-	m_models[Obstacle::ObstacleType::METEORITE] = modelManager.LoadModel(L"Resources/Models/star.cmo");
-
-	//	棒モデル
-	m_models[Obstacle::ObstacleType::STICK] = modelManager.LoadModel(L"Resources/Models/stickObstale.cmo"); 
+	//モデルのファイルパス
+	std::map<Obstacle::ObstacleType, std::wstring> modelFiles = 
+	{
+		//隕石
+		{Obstacle::ObstacleType::METEORITE,L"Resources/Models/star.cmo"},
+		//棒
+		{Obstacle::ObstacleType::STICK,L"Resources/Models/stickObstale.cmo"},
+		//下側の回転する棒
+		{Obstacle::ObstacleType::ROTATESTICK,L"Resources/Models/roll.cmo"},
+		//上側の回転する棒
+		{Obstacle::ObstacleType::REVERSE_ROTATESTICK,L"Resources/Models/roll2.cmo"},
+		//鳥
+		{Obstacle::ObstacleType::BIRD,L"Resources/Models/bule.cmo"},
+	};
 	
-	//　回る棒モデル
-	m_models[Obstacle::ObstacleType::ROTATESTICK] = modelManager.LoadModel(L"Resources/Models/roll.cmo"); 
-
-	//	鳥モデル
-	m_models[Obstacle::ObstacleType::BIRD] = modelManager.LoadModel(L"Resources/Models/bule.cmo"); 
-
-	//	反対に回る棒モデル
-	m_models[Obstacle::ObstacleType::REVERSE_ROTATESTICK] = modelManager.LoadModel(L"Resources/Models/roll2.cmo"); 
+	//モデルの読み込み
+	for (const std::pair<Obstacle::ObstacleType, std::wstring>& modelFile : modelFiles)
+	{
+		m_models[modelFile.first] = modelManager.LoadModel(modelFile.second);
+	}
+		
 }
 
 
@@ -468,7 +490,6 @@ void ObstacleManager::CreateModel()
 /// プレイヤーを吹き飛ばす	
 /// </summary>
 /// <param name="rotSpeed">障害物の回転速度</param>
-/// <param name="player">プレイヤー</param>
 DirectX::SimpleMath::Vector3 ObstacleManager::FlyPlayer(float rotSpeed)
 {
 

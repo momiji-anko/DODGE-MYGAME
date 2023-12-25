@@ -294,6 +294,9 @@
     <ClInclude Include="Game\PlayScene\Stage\StageBehaviors\TiltingFloorBehavior.h">
       <Filter>Game\PlayScene\Stage\StageBehaviors</Filter>
     </ClInclude>
+    <ClInclude Include="Game\PlayScene\Stage\StageBehaviors\FloorToFallBehavior.h">
+      <Filter>Game\PlayScene\Stage\StageBehaviors</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -471,6 +474,9 @@
       <Filter>Game\TitleScene</Filter>
     </ClCompile>
     <ClCompile Include="Game\PlayScene\Stage\StageBehaviors\TiltingFloorBehavior.cpp">
+      <Filter>Game\PlayScene\Stage\StageBehaviors</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\PlayScene\Stage\StageBehaviors\FloorToFallBehavior.cpp">
       <Filter>Game\PlayScene\Stage\StageBehaviors</Filter>
     </ClCompile>
   </ItemGroup>

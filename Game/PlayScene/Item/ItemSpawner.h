@@ -13,8 +13,15 @@
 class ItemSpawner :public ISpawner
 {
 public:
+	/// <summary>
+	/// コンストラクタ
+	/// </summary>
 	ItemSpawner() = default;
-	 ~ItemSpawner()override = default;
+	/// <summary>
+	/// デストラクタ
+	/// </summary>
+	~ItemSpawner()override = default;
+
 	/// <summary>
 	/// 盾のアイテムのスポナー
 	/// </summary>

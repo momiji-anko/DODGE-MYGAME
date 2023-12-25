@@ -40,9 +40,6 @@ bool RotateStickObstacleSpawner::Create(std::vector< std::unique_ptr<Actor>>& ac
 		//è·äQï®èâä˙âª
 		actor->Initialize(DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f), position, scale, rotation, true, behavior, model);
 
-
-
-
 		//è·äQï®ÇÃê∂ê¨Ç…ê¨å˜
 		return true;
 

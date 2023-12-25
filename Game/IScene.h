@@ -6,11 +6,13 @@
 #include "StepTimer.h"
 #include "GameMain.h"
 
-
+/// <summary>
+/// シーンのインターフェースクラス
+/// </summary>
 class IScene
 {
 public:
-
+	// デストラクタ
 	virtual ~IScene() = default;
 
 	// 初期化

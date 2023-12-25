@@ -11,7 +11,7 @@
 #include "Game/GameMain.h"
 
 
-#include"Libraries/AXD2/Adx2.h"
+#include"Libraries/ADX2/Adx2.h"
 #include"../../Helpers/CueSheet_0.h"
 #include"../../Helpers/DODGESound_acf.h"
 

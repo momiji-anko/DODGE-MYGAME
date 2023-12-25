@@ -157,11 +157,15 @@ void Obstacle::Reset()
 /// <returns>目標へのベクトル</returns>
 DirectX::SimpleMath::Vector3 Obstacle::Seek(const DirectX::SimpleMath::Vector3& targetPosition)
 {
+	//自分からターゲットへの移動量
 	DirectX::SimpleMath::Vector3 desiredVelocity = targetPosition - GetPosition();
+	//正規化し方向だけにする
 	desiredVelocity.Normalize();
+	//速度をかける
 	desiredVelocity *= GetMaxSpeed();
+	//目標への移動量計算
 	DirectX::SimpleMath::Vector3 steeringForce = desiredVelocity - GetVelocity();
-
+	//目標への移動量を返す
 	return steeringForce;
 }
 

@@ -39,6 +39,7 @@ PlayerManager::~PlayerManager()
 /// </summary>
 void PlayerManager::Initialize()
 {
+	//プレイヤー作成
 	CreatePlayer();
 }
 
@@ -74,11 +75,15 @@ void PlayerManager::Draw(Camera* camera)
 	//プレイヤーモードがマルチモードの時
 	if (m_playerMode == GameMain::PlayerMode::Player2)
 	{
+		//1Pのカプセルの線分の当たった位置
 		DirectX::SimpleMath::Vector3 c1;
+		//2Pのカプセルの線分の当たった位置
 		DirectX::SimpleMath::Vector3 c2;
+
 		//プレイヤー同士が当たっていた場合押し合いする
 		if (CapsuleCollision::DetectCollition_Capsule2Capsule(*m_players[0]->GetCapsule(), *m_players[1]->GetCapsule(), c1, c2))
 		{
+			//プレイヤー同士のめり込み判定
 			PlayerCapuslePenetration(m_players[0].get(), c2 - c1, m_players[0]->GetCapsule()->r, m_players[1]->GetCapsule()->r);
 			PlayerCapuslePenetration(m_players[1].get(), c1 - c2, m_players[1]->GetCapsule()->r, m_players[0]->GetCapsule()->r);
 		}
@@ -139,9 +144,11 @@ void PlayerManager::PlayerShadow(ShadowMap* shadowMap, const DirectX::SimpleMath
 	//プレイヤーの更新
 	for (std::unique_ptr<Player>& player : m_players)
 	{
+		//生存していない場合は処理しない
 		if (!player->IsActive())
 			continue;
 
+		//影作成
 		player->CreateShadow(shadowMap, view, projection);
 	}
 
@@ -155,24 +162,66 @@ void PlayerManager::CreatePlayer()
 	//プレイヤーのキーデータ
 	std::vector<std::vector<DirectX::Keyboard::Keys>> playerKeyData =
 	{
-		//プレイヤー１のキーデータ(右、左、前、後ろ、ジャンプ)
-		{DirectX::Keyboard::Keys::Right,DirectX::Keyboard::Keys::Left,DirectX::Keyboard::Keys::Up,DirectX::Keyboard::Keys::Down,DirectX::Keyboard::Keys::RightShift},
-		//プレイヤー２のキーデータ(右、左、前、後ろ、ジャンプ)
-		{DirectX::Keyboard::Keys::D,DirectX::Keyboard::Keys::A,DirectX::Keyboard::Keys::W,DirectX::Keyboard::Keys::S,DirectX::Keyboard::Keys::Space}
+		//プレイヤー１のキーデータ
+		{
+			//右へ移動するボタン(右キー)
+			DirectX::Keyboard::Keys::Right,
+			//左へ移動するボタン(左キー)
+			DirectX::Keyboard::Keys::Left,
+			//上へ移動するボタン(上キー)
+			DirectX::Keyboard::Keys::Up,
+			//下へ移動するボタン(下キー)
+			DirectX::Keyboard::Keys::Down,
+			//ジャンプするボタン(右シフトキー)
+			DirectX::Keyboard::Keys::RightShift
+		},
+		//プレイヤー２のキーデータ
+		{
+			//右へ移動するボタン(Ｄキー)
+			DirectX::Keyboard::Keys::D,
+			//左へ移動するボタン(Ａキー)
+			DirectX::Keyboard::Keys::A,
+			//上へ移動するボタン(Ｗキー)
+			DirectX::Keyboard::Keys::W,
+			//下ろへ移動するボタン(Ｓキー)
+			DirectX::Keyboard::Keys::S,
+			//ジャンプするボタン(スペースキーキー)
+			DirectX::Keyboard::Keys::Space
+		}
 	};
 
 	//プレイヤーのモデルファイルパス
 	std::vector<std::vector<std::wstring>>playerModelFile = {
-		//プレイヤー１のモデルファイルパス（アイドル状態、左足出している状態、右足出している状態、ジャンプしている状態）
-		{ L"Resources/Models/playeraidoru.cmo",L"Resources/Models/playerhidari.cmo",L"Resources/Models/playermigiasi.cmo",L"Resources/Models/playerjanp.cmo"},
-		//プレイヤー２のモデルファイルパス（アイドル状態、左足出している状態、右足出している状態、ジャンプしている状態）
-		{L"Resources/Models/Player2idoru.cmo",L"Resources/Models/Player2hidari.cmo",L"Resources/Models/Player2Migi.cmo",L"Resources/Models/Player2Janp.cmo"}
+		//プレイヤー１のモデルファイルパス
+		{ 
+			//アイドルモデル
+			L"Resources/Models/playeraidoru.cmo",
+			//右足出しているモデル
+			L"Resources/Models/playerhidari.cmo",
+			//左足出しているモデル
+			L"Resources/Models/playermigiasi.cmo",
+			//ジャンプしているモデル
+			L"Resources/Models/playerjanp.cmo"
+		},
+		//プレイヤー２のモデルファイルパス
+		{
+			//アイドルモデル
+			L"Resources/Models/Player2idoru.cmo",
+			//右足出しているモデル
+			L"Resources/Models/Player2hidari.cmo",
+			//左足出しているモデル
+			L"Resources/Models/Player2Migi.cmo",
+			//ジャンプしているモデル
+			L"Resources/Models/Player2Janp.cmo"
+		}
 	};
 
 	//二人用プレイヤースタート座標
 	DirectX::SimpleMath::Vector3 playersStartPos[2] =
 	{
+		//1P
 		DirectX::SimpleMath::Vector3{3.0f,0.0f,6.0f} ,
+		//2P
 		DirectX::SimpleMath::Vector3{-3.0f,0.0f,6.0f}
 	};
 
@@ -182,6 +231,7 @@ void PlayerManager::CreatePlayer()
 		playersStartPos[0] = DirectX::SimpleMath::Vector3(0.0f, 7.0f, 6.0f);
 		playerKeyData[0] = { DirectX::Keyboard::Keys::Right,DirectX::Keyboard::Keys::Left,DirectX::Keyboard::Keys::Up,DirectX::Keyboard::Keys::Down,DirectX::Keyboard::Keys::Space };
 	}
+
 	//プレイヤーモードの数プレイヤーを作成
 	for (int i = 0; i < static_cast<int>(m_playerMode); i++)
 	{
@@ -201,12 +251,13 @@ void PlayerManager::CreatePlayer()
 		//プレイヤーID設定
 		m_players[i]->SetTypeInt(i);
 
+		//拡大率
+		DirectX::SimpleMath::Vector3 scale = DirectX::SimpleMath::Vector3(2.0f, 2.0f, 2.0f);
+
 		//初期化
-		m_players[i]->Initialize(DirectX::SimpleMath::Vector3::Zero, playersStartPos[i], DirectX::SimpleMath::Vector3(2.0f, 2.0f, 2.0f), DirectX::SimpleMath::Vector3::Zero, true, nullptr, nullptr);
+		m_players[i]->Initialize(DirectX::SimpleMath::Vector3::Zero, playersStartPos[i], scale, DirectX::SimpleMath::Vector3::Zero, true, nullptr, nullptr);
 	}
 }
-
-
 
 /// <summary>
 /// プレイヤーのめり込み処理

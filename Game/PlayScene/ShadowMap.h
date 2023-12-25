@@ -12,7 +12,7 @@ private:
 	std::wstring GetFullName(const std::wstring& name)
 	{
 	
-		return m_Path+ name;
+		return m_Path + name;
 	}
 
 public:

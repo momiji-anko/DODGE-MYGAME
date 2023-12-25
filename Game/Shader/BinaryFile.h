@@ -9,9 +9,14 @@ class BinaryFile
 {
 public:
 
-	// ファイル名を指定してロード
+	/// <summary>
+	/// バイナリファイル読み込み
+	/// </summary>
+	/// <param name="fileName">ファイルパス</param>
+	/// <returns>バイナリファイル</returns>
 	static BinaryFile LoadFile(const wchar_t* fileName);
 
+	//コンストラクタ
 	BinaryFile();
 
 	// ムーブコンストラクタ

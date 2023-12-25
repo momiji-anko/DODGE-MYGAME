@@ -20,6 +20,9 @@ class LoadingScreen : public ILoadingScreen
 
 public:
 
+	static const float TEXTURE_MOVE_SPEED;
+	static const float TEXTURE_POSITION_RESET;
+
 	// コンストラクタ
 	LoadingScreen();
 
@@ -47,6 +50,8 @@ private:
 
 private:
 
+	
+
 	// リソース読み込み用
 	std::thread m_loadingThread;
 	std::atomic<bool> m_isLoading;
@@ -61,7 +66,7 @@ private:
 	// テクスチャ
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_texture;
 
-	DirectX::SimpleMath::Vector2 m_texPosition;
+	DirectX::SimpleMath::Vector2 m_textureStartPosition;
 	std::vector<DirectX::SimpleMath::Vector2> m_texturePositions;
 
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_blackTexture;

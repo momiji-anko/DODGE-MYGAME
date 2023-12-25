@@ -114,10 +114,6 @@ private:
 	/// シェーダー描画
 	/// </summary>
 	void ShaderDraw();
-	/// <summary>
-	/// 描画
-	/// </summary>
-	void Draw();
 
 private:
 	//シェーダーに渡すバッファー
@@ -163,11 +159,9 @@ private:
 	DirectX::SimpleMath::Vector3 m_startVelocity;
 	//初期寿命
 	float						 m_startLife;
-	//ウェイト						 
+	//待ち時間						 
 	float						 m_wait;
 								 
-	//ポジションリスト
-	std::vector < DirectX::SimpleMath::Vector3 > m_positionList;
 	//回転
 	float m_rot;
 	//角度

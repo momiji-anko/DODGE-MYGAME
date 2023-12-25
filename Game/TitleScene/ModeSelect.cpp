@@ -8,7 +8,7 @@
 #include"ModeSelect.h"
 #include"Libraries/MyLibraries/TextureManager.h"
 #include"Game/PlayScene/GameContext/GameContext.h"
-#include"Libraries/AXD2/Adx2.h"
+#include"Libraries/ADX2/Adx2.h"
 #include"DeviceResources.h"
 #include"../../Helpers/CueSheet_0.h"
 #include"../../Helpers/DODGESound_acf.h"

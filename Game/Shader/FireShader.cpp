@@ -18,7 +18,7 @@
 #include"Game/PlayScene/MyRandom.h"
 
 
-
+//インプットレイアウト
 const std::vector<D3D11_INPUT_ELEMENT_DESC> FireShader::INPUT_LAYOUT =
 {
 	{ "POSITION",	0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
@@ -51,12 +51,12 @@ FireShader::FireShader()
 	m_startVelocity{},
 	m_startLife{},
 	m_wait{},
-	m_positionList{},
 	m_rot{},
 	m_angle{},
 	m_offsetPos{}
 {
 }
+
 /// <summary>
 /// デストラクタ
 /// </summary>
@@ -64,12 +64,10 @@ FireShader::~FireShader()
 {
 	Lost();
 }
-//-----------------------------------------------------------------------------------
-//	Create()
-//	シェーダ等を生成
-//	IN	:	デバイス			DX::DeviceResources* deviceResources
-//	RE	:	void
-//-----------------------------------------------------------------------------------
+
+/// <summary>
+/// シェーダーの作成
+/// </summary>
 void FireShader::Create()
 {
 	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
@@ -114,8 +112,10 @@ void FireShader::Create()
 	// プリミティブバッチの作成
 	m_batch = std::make_unique<DirectX::PrimitiveBatch<DirectX::VertexPositionColorTexture>>(pDR->GetD3DDeviceContext());
 
+	//コモンステータス生成
 	m_states = std::make_unique<DirectX::CommonStates>(device);
 
+	//バッファ作成
 	D3D11_BUFFER_DESC bd;
 	ZeroMemory(&bd, sizeof(bd));
 	bd.Usage = D3D11_USAGE_DEFAULT;
@@ -124,27 +124,21 @@ void FireShader::Create()
 	bd.CPUAccessFlags = 0;
 	device->CreateBuffer(&bd, nullptr, &m_CBuffer);
 
+	//ワールド行列初期化
 	m_world = DirectX::SimpleMath::Matrix::Identity;
 
-
+	//角度初期化
 	m_angle = 0.0f;
 
-	int count = 8;
-
-	for (int i = 0; i < count; i++)
-	{
-		m_positionList.push_back(DirectX::SimpleMath::Vector3(1.0f, 0.0f, 1.0f));
-	}
 
 }
-//-----------------------------------------------------------------------------------
-//	SetRenderState()
-//	カメラ、ビュー、射影の反映
-//	IN	:	カメラ		DirectX::SimpleMath::Vector3 camera
-//			ビュー行列	DirectX::SimpleMath::Matrix view
-//			射影行列	DirectX::SimpleMath::Matrix proj
-//	RE	:	void
-//-----------------------------------------------------------------------------------
+
+/// <summary>
+/// 描画設定
+/// </summary>
+/// <param name="camera">カメラの座標</param>
+/// <param name="view">ビュー行列</param>
+/// <param name="proj">プロジェクション行列</param>
 void FireShader::SetRenderState(const DirectX::SimpleMath::Vector3& camera, const DirectX::SimpleMath::Matrix& view, const DirectX::SimpleMath::Matrix& proj)
 {
 	m_camera = camera;
@@ -168,12 +162,16 @@ void FireShader::Initialize(float life, const DirectX::SimpleMath::Vector3& pos,
 
 	//シード値
 	int seed = 100;
+	//動き始める時間を決める
 	m_wait = ((rand() % seed) / (float)seed) * m_startLife;
 
 	//リセット
 	Reset();
 }
 
+/// <summary>
+/// リセット
+/// </summary>
 void FireShader::Reset()
 {
 	m_position = m_startPosition;
@@ -181,12 +179,11 @@ void FireShader::Reset()
 	m_life = m_startLife;
 	m_scale = 0.2f;
 }
-//-----------------------------------------------------------------------------------
-//	Update()
-//	更新処理
-//	IN	:	タイマー		DX::StepTimer timer
-//	RE	:	void
-//-----------------------------------------------------------------------------------
+
+/// <summary>
+/// 更新
+/// </summary>
+/// <param name="timer">更新</param>
 void FireShader::Update(DX::StepTimer timer)
 {
 	//処理に使う秒速計(1秒で1.0f)を取得する。
@@ -199,6 +196,7 @@ void FireShader::Update(DX::StepTimer timer)
 		return;
 	}
 
+	//横に移動する量
 	DirectX::SimpleMath::Vector3 vel = DirectX::SimpleMath::Vector3(0.002f, 0, 0);
 
 	//中心に向かう
@@ -231,42 +229,46 @@ void FireShader::Update(DX::StepTimer timer)
 
 }
 
-//-----------------------------------------------------------------------------------
-//	Render()
-//	描画処理(メイン以外の外部要因）
-//	IN	:	void
-//	RE	:	void
-//-----------------------------------------------------------------------------------
+/// <summary>
+/// 描画
+/// </summary>
 void FireShader::Render()
 {
-	////ビルボード化
+	///ビルボード化
 	m_world = DirectX::SimpleMath::Matrix::Identity;
 
 	DirectX::SimpleMath::Matrix wrold = DirectX::SimpleMath::Matrix::Identity;
+	//ビルボード
 	wrold = DirectX::SimpleMath::Matrix::CreateBillboard(m_position + m_offsetPos, m_camera, DirectX::SimpleMath::Vector3::UnitY);
 
+	//左座標系だから反転させる用行列
 	DirectX::SimpleMath::Matrix revMat = DirectX::SimpleMath::Matrix::Identity;
 	revMat._11 = -1.0f;
 	revMat._33 = -1.0f;
 
+
 	DirectX::SimpleMath::Matrix scaleMat, rotMat;
+	//拡大率
 	scaleMat = DirectX::SimpleMath::Matrix::CreateScale(m_scale);
+	//回転
 	rotMat = DirectX::SimpleMath::Matrix::CreateRotationZ(m_angle);
+
 	//ワールド行列計算
 	m_world = scaleMat * rotMat * revMat * wrold;
 
+	//シャドウ表示
 	ShaderDraw();
 }
-//-----------------------------------------------------------------------------------
-//	ShaderDraw()
-//	メイン描画処理
-//	IN	:	void
-//	RE	:	void
-//-----------------------------------------------------------------------------------
+
+/// <summary>
+/// シェーダー描画
+/// </summary>
 void FireShader::ShaderDraw()
 {
+	//デバイスリソース取得
 	DX::DeviceResources* pDR = DX::DeviceResources::GetInstance();
 
+	//コンテキスト取得
 	auto context = pDR->GetD3DDeviceContext();
 
 	// 頂点情報(板ポリゴンの４頂点の座標情報）
@@ -324,7 +326,6 @@ void FireShader::ShaderDraw()
 	context->IASetInputLayout(m_inputLayout.Get());
 
 
-
 	// 板ポリゴンを描画
 	m_batch->Begin();
 	//m_batch->DrawQuad(vertex[0], vertex[1], vertex[2], vertex[3]);
@@ -338,10 +339,9 @@ void FireShader::ShaderDraw()
 
 }
 
-void FireShader::Draw()
-{
-}
-
+/// <summary>
+/// 消去
+/// </summary>
 void FireShader::Lost()
 {
 	m_CBuffer.Reset();

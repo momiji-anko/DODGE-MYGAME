@@ -9,7 +9,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
-	#include<cstdlib>
+#include<cstdlib>
 #include <windows.h>
 #include"StageManager.h"
 #include"DeviceResources.h"
@@ -17,14 +17,14 @@
 #include"Game/PlayScene/GameContext/GameContext.h"
 #include"Libraries/MyLibraries/ModelManager.h"
 #include"Libraries/MyLibraries/FileLoadManager.h"
+#include"Libraries/Json/json.hpp"
 
 //ビヘイビアーのインクルード
-#include"StageBehaviors/FirstFloorToFallBehavior.h"
-#include"StageBehaviors/SecondFloorToFallBehavior.h"
-#include"StageBehaviors/ThirdFloorToFallBehavior.h"
 #include"StageBehaviors/NormalFloorBehavior.h"
 #include"StageBehaviors/TiltingFloorBehavior.h"
 #include"StageBehaviors/RotationCubeBehavior.h"
+#include"StageBehaviors/FloorToFallBehavior.h"
+
 
 //ビヘイビアーの数
 const int StageManager::BEHAVIOR_NUM = 6;
@@ -99,13 +99,11 @@ void StageManager::Update(const DX::StepTimer& timer)
 	if (GameContext::GetInstance().GetIsPlayerDeath())
 		return;
 
-
 	//ステージの更新
 	for (int i = 0; i < m_stage.size(); i++)
 	{
 		m_stage[i]->Update(timer);
 	}
-
 }
 
 /// <summary>
@@ -119,7 +117,6 @@ void StageManager::Draw(Camera* camera)
 	{
 		stage->Draw(camera);
 	}
-
 }
 
 /// <summary>
@@ -135,21 +132,33 @@ void StageManager::Finalize()
 /// </summary>
 void StageManager::CreateBehavior()
 {
+	//何番目に落ちる床の配列
+	std::vector<int> fallFloorList = {1,2,3};
+
+	//ビヘイビアー
+	std::vector<IBehavior*> behaviors =
+	{
+		//一番目に落ちる床
+		new FloorToFallBehavior(fallFloorList[0]),
+		//二番目に落ちる床
+		new FloorToFallBehavior(fallFloorList[1]),
+		//三番目に落ちる床
+		new FloorToFallBehavior(fallFloorList[2]),
+		//普通の床
+		new NormalFloorBehavior(),
+		//傾く床
+		new TiltingFloorBehavior(),
+		//回転するキューブ
+		new RotationCubeBehavior()
+	};
 
 	m_behavior.resize(BEHAVIOR_NUM);
-	//一番目に落ちる床のビヘイビアー
-	m_behavior[0] = std::make_unique<FirstFloorToFallBehavior>();
-	//二番目に落ちる床のビヘイビアー
-	m_behavior[1] = std::make_unique<SecondFloorToFallBehavior>();
-	//三番目に落ちる床のビヘイビアー
-	m_behavior[2] = std::make_unique<ThirdFloorToFallBehavior>();
-	//普通の床
-	m_behavior[3] = std::make_unique<NormalFloorBehavior>();
-	//傾く床
-	m_behavior[4] = std::make_unique<TiltingFloorBehavior>();
-	//回転するキューブ
-	m_behavior[5] = std::make_unique<RotationCubeBehavior>();
-
+	
+	//ビヘイビアー登録
+	for (int i = 0; i < behaviors.size(); i++)
+	{
+		m_behavior[i].reset(behaviors[i]);
+	}
 }
 
 
@@ -193,11 +202,10 @@ void StageManager::LoadStageJson(const std::wstring& fileName)
 		floor[i] = stageJson["Floor"][i]["FloorType"];
 		//ステージのポジションを取得
 		floorPositions[i] = ConvertIntoVector3(stageJson["Floor"][i]["Position"]);
-		
 	}
 
 	//頂点の数取得
-	int vertexNum = stageJson["VertexPosition"].size();
+	int vertexNum = static_cast<int>(stageJson["VertexPosition"].size());
 	//頂点の数分確保
 	baseVertices.resize(vertexNum);
 	
@@ -369,7 +377,7 @@ DirectX::SimpleMath::Vector3 StageManager::SlideVecCalculation(const DirectX::Si
 	float dot = actorVel.Dot(normalVector);
 	//スライドする量計算
 	DirectX::SimpleMath::Vector3 slideAmount = { actorVel.x - dot,actorVel.y - dot,actorVel.z - dot };
-	//スライドベクトルを計算
+	//壁擦りベクトルを計算
 	DirectX::SimpleMath::Vector3 slideVec = normalVector * slideAmount;
 	//スライドベクトルを返す
 	return slideVec;

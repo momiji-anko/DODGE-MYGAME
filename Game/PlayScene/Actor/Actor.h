@@ -15,10 +15,9 @@
 #include"Game/PlayScene/ShadowMap.h"
 #include"Game/Shader/FireEffectManager.h"
 
+//前方宣言
+//ステージマネージャー
 class StageManager;
-class ObstacleManager;
-class ItemManager;
-
 
 /// <summary>
 /// アクター
@@ -47,7 +46,7 @@ public:
 	/// 座標の取得
 	/// </summary>
 	/// <returns>座標</returns>
-	DirectX::SimpleMath::Vector3 GetPosition()const { return m_position; }
+	const DirectX::SimpleMath::Vector3& GetPosition()const { return m_position; }
 
 	/// <summary>
 	/// 移動量の設定
@@ -58,7 +57,7 @@ public:
 	/// 移動量の取得
 	/// </summary>
 	/// <returns>現在の移動量</returns>
-	DirectX::SimpleMath::Vector3 GetVelocity() const { return m_velocity; }
+	const DirectX::SimpleMath::Vector3& GetVelocity() const { return m_velocity; }
 
 	/// <summary>
 	/// 角度の設定
@@ -74,7 +73,7 @@ public:
 	/// 角度の取得
 	/// </summary>
 	/// <returns>角度</returns>
-	DirectX::SimpleMath::Quaternion GetRotation() const { return m_rotation; }
+	const DirectX::SimpleMath::Quaternion& GetRotation() const { return m_rotation; }
 
 	/// <summary>
 	/// 当たり判定用AABBの取得
@@ -91,7 +90,7 @@ public:
 	/// ワールド行列の取得
 	/// </summary>
 	/// <returns>ワールド行列</returns>
-	DirectX::SimpleMath::Matrix GetWorld() const { return m_world; }
+	const DirectX::SimpleMath::Matrix& GetWorld() const { return m_world; }
 
 	/// <summary>
 	/// カプセルの設定
@@ -114,7 +113,7 @@ public:
 	/// スケール取得
 	/// </summary>
 	/// <returns>スケール</returns>
-	DirectX::SimpleMath::Vector3 GetScale() const { return m_scale; }
+	const DirectX::SimpleMath::Vector3& GetScale() const { return m_scale; }
 
 	/// <summary>
 	/// ビヘイビアー設定
@@ -259,7 +258,7 @@ public:
 	/// ワールド行列の計算
 	/// </summary>
 	/// <returns>ワールド行列</returns>
-	DirectX::SimpleMath::Matrix CalculateWorld();
+	const DirectX::SimpleMath::Matrix& CalculateWorld();
 
 
 	/// <summary>
@@ -297,12 +296,12 @@ private:
 	//アクティブ
 	bool                            m_active;
 	//AABB当たり判定
-	std::unique_ptr<AABBFor3D> m_AABBObject;
+	std::unique_ptr<AABBFor3D>      m_AABBObject;
 	//カプセル当たり判定
-	std::unique_ptr<Capsule>   m_capsule;
+	std::unique_ptr<Capsule>        m_capsule;
 	//ワールド行列
-	DirectX::SimpleMath::Matrix  m_world;
+	DirectX::SimpleMath::Matrix     m_world;
 	//拡縮
-	DirectX::SimpleMath::Vector3 m_scale;
+	DirectX::SimpleMath::Vector3    m_scale;
 
 };

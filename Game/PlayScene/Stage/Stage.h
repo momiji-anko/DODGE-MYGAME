@@ -16,6 +16,10 @@
 class Stage :public Actor
 {
 public:
+	///床の動作(Behaviorsで関数ポインタとして使う)
+	
+
+
 	/// <summary>
 	/// タイムの設定
 	/// </summary>

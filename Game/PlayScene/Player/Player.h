@@ -11,7 +11,7 @@
 #include<map>
 #include"../ShadowMap.h"
 
-#include"Libraries/AXD2/Adx2.h"
+#include"Libraries/ADX2/Adx2.h"
 #include"../../../Helpers/CueSheet_0.h"
 #include"Helpers/DODGESound_acf.h"
 #include"../Objects.h"
@@ -118,6 +118,7 @@ public:
 		IBehavior* behavia,
 		DirectX::Model* model
 	)override;
+
 	/// <summary>
 	/// 更新
 	/// </summary>
@@ -188,7 +189,10 @@ private:
 	/// <param name="camera">カメラ</param>
 	void PlayerDeath(Obstacle::ObstacleType hitType, Camera* camera);
 
-
+	/// <summary>
+	/// プレイヤーがステージから落ちているか確認
+	/// </summary>
+	void PlayerFallDeathAreaCheck();
 
 private:
 

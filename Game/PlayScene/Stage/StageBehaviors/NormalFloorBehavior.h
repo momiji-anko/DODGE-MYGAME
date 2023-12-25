@@ -5,13 +5,13 @@
 * –ƒ¶@•–
 */
 #pragma once
-#include"Game/PlayScene/IBehavior.h"
+#include"BaseFloorToFallBehavior.h"
 
 
 /// <summary>
 /// •’Ê‚Ì°‚Ì“®‚«
 /// </summary>
-class NormalFloorBehavior : public IBehavior
+class NormalFloorBehavior : public BaseFloorToFallBehavior
 {
 public:
 	NormalFloorBehavior() = default;

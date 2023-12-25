@@ -10,7 +10,7 @@
 
 #include"AABBFor3D.h"
 #include"DeviceResources.h"
-
+#include<vector>
 
 //コンストラクタ
 AABBFor3D::AABBFor3D():
@@ -174,16 +174,11 @@ bool AABBFor3D::DetectCollition(AABBFor3D* other)
 */
 void AABBFor3D::DrawBox(const DirectX::XMFLOAT4& color)
 {
-	DirectX::VertexPositionColor lineList[24];
+	const int lineNum = 24;
+	DirectX::VertexPositionColor lineList[lineNum] = {};
 	DirectX::SimpleMath::Vector3 minPos;
 	DirectX::SimpleMath::Vector3 maxPos;
-	DirectX::SimpleMath::Vector3 tmp;
 
-	
-	for (int i = 0; i < 24; i++)
-	{
-		lineList[i].color = color;
-	}
 
 	//最小座標と最大座標を計算する
 	minPos.x = m_center.x - m_r.x;
@@ -194,54 +189,42 @@ void AABBFor3D::DrawBox(const DirectX::XMFLOAT4& color)
 	maxPos.y = m_center.y + m_r.y;
 	maxPos.z = m_center.z + m_r.z;
 
-	lineList[0].position = minPos;
-	lineList[1].position = minPos + DirectX::SimpleMath::Vector3(m_r.x * 2.0f, 0.0f, 0.0f);
+	//xが最小値yzが最大値の座標
+	DirectX::SimpleMath::Vector3 xMinPos_yzMaxPos = DirectX::SimpleMath::Vector3(minPos.x, maxPos.y, maxPos.z);
+	//xyが最小値zが最大値の座標
+	DirectX::SimpleMath::Vector3 xyMinPos_zMaxPos = DirectX::SimpleMath::Vector3(minPos.x, minPos.y, maxPos.z);
+	//yが最小値xzが最大値の座標
+	DirectX::SimpleMath::Vector3 yMinPos_xzMaxPos = DirectX::SimpleMath::Vector3(maxPos.x, minPos.y, maxPos.z);
 
-	lineList[2].position = minPos;
-	lineList[3].position = minPos + DirectX::SimpleMath::Vector3( 0.0f, m_r.y * 2.0f, 0.0f);
+	//線のオフセット
+	DirectX::SimpleMath::Vector3 offsetX = DirectX::SimpleMath::Vector3(m_r.x * 2.0f, 0.0f, 0.0);
+	DirectX::SimpleMath::Vector3 offsetY = DirectX::SimpleMath::Vector3( 0.0f, m_r.y * 2.0f, 0.0);
+	DirectX::SimpleMath::Vector3 offsetZ = DirectX::SimpleMath::Vector3( 0.0f, 0.0, m_r.z * 2.0f);
 
-	lineList[4].position = minPos;
-	lineList[5].position = minPos + DirectX::SimpleMath::Vector3( 0.0f, 0.0f, m_r.z * 2.0f);
+	//表示する線の座標の計算
+	std::vector<DirectX::SimpleMath::Vector3> lineListPosition =
+	{
+		//線の始点　　線の終点
+		minPos,		minPos + offsetX,
+		minPos,		minPos + offsetY,
+		minPos,		minPos + offsetZ,
+		maxPos,		maxPos - offsetX,
+		maxPos,		maxPos - offsetY,
+		maxPos,		maxPos - offsetZ,
+		xMinPos_yzMaxPos,		xMinPos_yzMaxPos - offsetZ,
+		xMinPos_yzMaxPos,		xMinPos_yzMaxPos - offsetY,
+		xyMinPos_zMaxPos,		xyMinPos_zMaxPos - offsetX,
+		xyMinPos_zMaxPos,		xyMinPos_zMaxPos - offsetY,
+		yMinPos_xzMaxPos,		yMinPos_xzMaxPos - offsetX,
+		yMinPos_xzMaxPos,		yMinPos_xzMaxPos - offsetZ,
+	};
 
-	
-	lineList[6].position = maxPos;
-	lineList[7].position = maxPos - DirectX::SimpleMath::Vector3(m_r.x * 2.0f, 0.0f, 0.0f);
-
-	lineList[8].position = maxPos;
-	lineList[9].position = maxPos - DirectX::SimpleMath::Vector3(0.0f, m_r.y * 2.0f, 0.0f);
-
-	lineList[10].position = maxPos;
-	lineList[11].position = maxPos - DirectX::SimpleMath::Vector3( 0.0f, 0.0f, m_r.z * 2.0f);
-
-	
-	tmp.x = minPos.x;
-	tmp.y = maxPos.y;
-	tmp.z = maxPos.z;
-	lineList[12].position = tmp;
-	lineList[13].position = tmp - DirectX::SimpleMath::Vector3( 0.0f, 0.0f, m_r.z * 2.0f);
-
-	lineList[14].position = tmp;
-	lineList[15].position = tmp - DirectX::SimpleMath::Vector3( 0.0f, m_r.y * 2.0f, 0.0f);
-
-	
-	tmp.x = maxPos.x;
-	tmp.y = maxPos.y;
-	tmp.z = minPos.z;
-	lineList[16].position = tmp;
-	lineList[17].position = tmp - DirectX::SimpleMath::Vector3(m_r.x * 2.0f, 0.0f, 0.0f);
-
-	lineList[18].position = tmp;
-	lineList[19].position = tmp - DirectX::SimpleMath::Vector3(0.0f, m_r.y * 2.0f, 0.0f);
-
-	//Yが最小値、ZXが最大値の点から2本
-	tmp.x = maxPos.x;
-	tmp.y = minPos.y;
-	tmp.z = maxPos.z;
-	lineList[20].position = tmp;
-	lineList[21].position = tmp - DirectX::SimpleMath::Vector3(m_r.x * 2.0f, 0.0f, 0.0f);
-
-	lineList[22].position = tmp;
-	lineList[23].position = tmp - DirectX::SimpleMath::Vector3(0.0f, 0.0f, m_r.z * 2.0f);
+	//表示する線の情報を代入
+	for (int i = 0; i < lineListPosition.size(); i++)
+	{
+		lineList[i].color = color;
+		lineList[i].position = lineListPosition[i];
+	}
 
 	//ラインリストを渡して描画してもらう
 	m_primitiveBach->Draw(D3D_PRIMITIVE_TOPOLOGY_LINELIST, lineList, 24);

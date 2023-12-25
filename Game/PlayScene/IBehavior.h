@@ -21,7 +21,7 @@ public:
 	/// <summary>
 	/// デストラクタ
 	/// </summary>
-	virtual~IBehavior() = default;
+	virtual ~IBehavior() = default;
 
 	/// <summary>
 	/// 動く
@@ -29,5 +29,4 @@ public:
 	/// <param name="timer">タイマー</param>
 	/// <param name="actor">アクター</param>
 	virtual void Execute(const DX::StepTimer& timer, Actor* actor) = 0;
-
 };

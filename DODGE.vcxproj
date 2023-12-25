@@ -237,6 +237,7 @@
     <ClInclude Include="Game\PlayScene\ShadowMap.h" />
     <ClInclude Include="Game\PlayScene\Stage\Stage.h" />
     <ClInclude Include="Game\PlayScene\Stage\StageBehaviors\FirstFloorToFallBehavior.h" />
+    <ClInclude Include="Game\PlayScene\Stage\StageBehaviors\FloorToFallBehavior.h" />
     <ClInclude Include="Game\PlayScene\Stage\StageBehaviors\NormalFloorBehavior.h" />
     <ClInclude Include="Game\PlayScene\Stage\StageBehaviors\RotationCubeBehavior.h" />
     <ClInclude Include="Game\PlayScene\Stage\StageBehaviors\SecondFloorToFallBehavior.h" />
@@ -306,6 +307,7 @@
     <ClCompile Include="Game\PlayScene\ShadowMap.cpp" />
     <ClCompile Include="Game\PlayScene\Stage\Stage.cpp" />
     <ClCompile Include="Game\PlayScene\Stage\StageBehaviors\FirstFloorToFallBehavior.cpp" />
+    <ClCompile Include="Game\PlayScene\Stage\StageBehaviors\FloorToFallBehavior.cpp" />
     <ClCompile Include="Game\PlayScene\Stage\StageBehaviors\NormalFloorBehavior.cpp" />
     <ClCompile Include="Game\PlayScene\Stage\StageBehaviors\RotationCubeBehavior.cpp" />
     <ClCompile Include="Game\PlayScene\Stage\StageBehaviors\SecondFloorToFallBehavior.cpp" />

@@ -32,7 +32,7 @@ Actor::Actor():
 /// ワールド行列の計算
 /// </summary>
 /// <returns>ワールド行列</returns>
-DirectX::SimpleMath::Matrix Actor::CalculateWorld()
+const DirectX::SimpleMath::Matrix& Actor::CalculateWorld()
 {
 	//ワールド行列に単位行列を入れる
 	m_world = DirectX::SimpleMath::Matrix::Identity;

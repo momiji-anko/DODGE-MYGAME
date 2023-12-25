@@ -96,7 +96,6 @@ void PlayScene::Initialize()
 		"Resources/Sounds/CueSheet_0.acb"
 	);
 
-
 	//BGMを鳴らす
 	m_musicID = m_pAdx2->Play(CRI_CUESHEET_0_PLAY);
 
@@ -124,7 +123,6 @@ void PlayScene::Initialize()
 /// 更新
 /// </summary>
 /// <param name="timer">タイマー</param>
-
 void PlayScene::Update(const DX::StepTimer& timer)
 {
 	//経過時間
@@ -140,7 +138,7 @@ void PlayScene::Update(const DX::StepTimer& timer)
 	//押している場合これ以降の処理を行わない
 	if (m_isTabKey)
 	{
-		return ;
+		return;
 	}
 
 	//フェード更新
@@ -185,13 +183,11 @@ void PlayScene::Update(const DX::StepTimer& timer)
 	//ステージマネージャー更新
 	m_stageManager->Update(timer);
 	
-
 	//全てプレイヤーが死んでいればフェードアウトする
 	if (m_playerManager->GetPlayerIsAllDaed())
 	{
 		m_fadeInOut->FadeOut();
 	}
-	
 }
 
 /// <summary>
@@ -310,7 +306,6 @@ void PlayScene::LoadResources()
 	//プレイヤーモードの取得
 	m_playerMode = GameContext::GetInstance().GetPlayerMode();
 
-
 	//１ｐモードと２ｐモードの操作方法画像ファイルパス
 	std::wstring playerMoveKeyTex[2] = { 
 		{L"Resources/Textures/1playerMoveKey.png"},
@@ -323,8 +318,6 @@ void PlayScene::LoadResources()
 	m_playerMoveKey = textureManager.LoadTexture(playerMoveKeyTex[tes]);
 
 }
-
-
 
 /// <summary>
 /// カウントダウンの表示
